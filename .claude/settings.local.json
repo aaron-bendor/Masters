@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(.venv/bin/python *)"
+      "Bash(.venv/bin/python *)",
+      "Bash(pdfinfo Identification_of_new_patterns_v3.pdf)",
+      "Bash(pdfinfo NIPS-2013-solving-inverse-problem-of-markov-chain-with-partial-observations-Paper.pdf)",
+      "Bash(mdls -name kMDItemNumberOfPages /Users/aaronbendor/DESENG/Masters/Identification_of_new_patterns_v3.pdf /Users/aaronbendor/DESENG/Masters/NIPS-2013-solving-inverse-problem-of-markov-chain-with-partial-observations-Paper.pdf)",
+      "Bash(python3 -c \"import fitz; print\\(fitz.__version__\\)\")",
+      "Bash(python3 -c \"import pypdf; print\\(pypdf.__version__\\)\")",
+      "Bash(python3 -c \"import PyPDF2; print\\(PyPDF2.__version__\\)\")",
+      "Bash(python3 -c \"import pdfplumber; print\\(pdfplumber.__version__\\)\")",
+      "Bash(brew install *)",
+      "Bash(pdftotext -layout Identification_of_new_patterns_v3.pdf /tmp/gu.txt)",
+      "Bash(pdftotext -layout NIPS-2013-solving-inverse-problem-of-markov-chain-with-partial-observations-Paper.pdf /tmp/morimura.txt)",
+      "Read(//tmp/**)"
     ]
   }
 }
