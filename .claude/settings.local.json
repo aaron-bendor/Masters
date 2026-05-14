@@ -12,7 +12,9 @@
       "Bash(brew install *)",
       "Bash(pdftotext -layout Identification_of_new_patterns_v3.pdf /tmp/gu.txt)",
       "Bash(pdftotext -layout NIPS-2013-solving-inverse-problem-of-markov-chain-with-partial-observations-Paper.pdf /tmp/morimura.txt)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
