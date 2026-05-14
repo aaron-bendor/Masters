@@ -22,7 +22,11 @@ Two-class experiment
 --------------------
   * Sample station counts f at X_o from K * pi_intr  and from K * pi_satnav
     (separate "off-peak" and "rush-hour" observation phases).
-  * Fit the Morimura inverter twice  ->  pT_intr_hat, pT_satnav_hat.
+  * Also compute hitting rates g(x, x') on X_o x X_o for each regime
+    (clean, as in Phase 1).
+  * Fit the Morimura inverter four times: f-only and f+g per regime.
+    Stationary-only (gamma=1.0) for the f-only fit; gamma=0.1 for the f+g
+    fit (matches the Phase 1 paper default).
   * Sample N test trajectories of length T from each regime (no restart -
     a real car doesn't teleport mid-trip).
   * Score with the log-likelihood ratio
@@ -31,12 +35,17 @@ Two-class experiment
     positive => sat-nav-like, negative => intrinsic-like.
   * ROC of Lambda against ground-truth class.
 
-Baselines
----------
+Detector variants
+-----------------
+  * fitted_f  - Lambda using f-only fitted chains. The original Phase 3
+                detector.
+  * fitted_fg - Lambda using f+g fitted chains. The headline detector
+                once hitting rates are available.
   * oracle    - same Lambda using true pT_intr, pT_satnav. Upper bound.
-  * one_class - score = -sum_t log pT_intr_hat(x_{t+1}|x_t). Tests whether
-                modelling both regimes beats just flagging "unlikely
-                under intrinsic".
+  * one_class - score = -sum_t log pT_intr_hat_fg(x_{t+1}|x_t). Tests
+                whether modelling both regimes beats just flagging
+                "unlikely under intrinsic" (using the best available
+                intrinsic chain).
 
 Run:  python per_car_detector.py
 """
@@ -47,7 +56,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-from morimura import make_truth, stationary, Inverter, softmax
+from morimura import make_truth, stationary, Inverter, softmax, true_g
 from congestion_filter import roc
 
 
@@ -92,12 +101,17 @@ def satnav_pT(adj_out, PT_intr, pI, beta, alpha,
 #  Two-regime population observation + Morimura double-fit
 # ===============================================================
 
-def fit_chain(adj, beta, X_o, f_obs, lam=1e-3, maxiter=300):
-    """Fit pT (and pI) to a single count vector at X_o via the Morimura
-    inverter, stationary-only (gamma=1.0). Returns the fitted pI, pT and
-    the resulting stationary."""
-    inv = Inverter(adj, beta, gamma=1.0, lam=lam)
-    theta, _ = inv.fit(X_o, f_obs, None, maxiter=maxiter)
+def fit_chain(adj, beta, X_o, f_obs, g_obs=None, gamma=None,
+              lam=1e-3, maxiter=300):
+    """Fit pT (and pI) to observations at X_o via the Morimura inverter.
+    g_obs is the |X_o| x |X_o| hitting-rate matrix; pass None for an
+    f-only fit. gamma defaults to 1.0 when g_obs is None and 0.1 when
+    g_obs is given (matches the Phase 1 paper choice). Returns the
+    fitted pI, pT and the resulting stationary."""
+    if gamma is None:
+        gamma = 1.0 if g_obs is None else 0.1
+    inv = Inverter(adj, beta, gamma=gamma, lam=lam)
+    theta, _ = inv.fit(X_o, f_obs, g_obs, maxiter=maxiter)
     pI_h, PT_h = inv.forward(theta)
     pi_h = stationary(beta * PT_h + (1.0 - beta) * pI_h[None, :])
     return pI_h, PT_h, pi_h
@@ -165,8 +179,13 @@ def run_trial(n=50, mean_out_degree=3, beta=0.9, alpha=1.5,
 
     f_intr   = rng.poisson(K * pi_intr  )[X_o]
     f_satnav = rng.poisson(K * pi_satnav)[X_o]
-    _, PT_intr_h,   _ = fit_chain(adj, beta, X_o, f_intr)
-    _, PT_satnav_h, _ = fit_chain(adj, beta, X_o, f_satnav)
+    g_intr   = true_g(PT_intr,   beta, X_o)
+    g_satnav = true_g(PT_satnav, beta, X_o)
+
+    _, PT_intr_h_f,    _ = fit_chain(adj, beta, X_o, f_intr)
+    _, PT_satnav_h_f,  _ = fit_chain(adj, beta, X_o, f_satnav)
+    _, PT_intr_h_fg,   _ = fit_chain(adj, beta, X_o, f_intr,   g_intr)
+    _, PT_satnav_h_fg, _ = fit_chain(adj, beta, X_o, f_satnav, g_satnav)
 
     T_max = max(T_values)
     trajs_intr   = [sample_trajectory(pI, PT_intr,   T_max, rng)
@@ -182,9 +201,10 @@ def run_trial(n=50, mean_out_degree=3, beta=0.9, alpha=1.5,
         cut_satnav = [t[: T + 1] for t in trajs_satnav]
         cut_all = cut_intr + cut_satnav
         scores = {
-            "fitted":    _scores_for_chains(cut_all, PT_intr_h, PT_satnav_h),
-            "oracle":    _scores_for_chains(cut_all, PT_intr,   PT_satnav),
-            "one_class": _scores_one_class (cut_all, PT_intr_h),
+            "fitted_f":  _scores_for_chains(cut_all, PT_intr_h_f,  PT_satnav_h_f),
+            "fitted_fg": _scores_for_chains(cut_all, PT_intr_h_fg, PT_satnav_h_fg),
+            "oracle":    _scores_for_chains(cut_all, PT_intr,      PT_satnav),
+            "one_class": _scores_one_class (cut_all, PT_intr_h_fg),
         }
         rocs = {name: roc(s, labels) for name, s in scores.items()}
         per_T[T] = dict(scores=scores, roc=rocs,
@@ -213,11 +233,15 @@ def plot_single(trial, T_show=None,
 
     # ROC
     ax = axes[0]
-    styles = dict(fitted=dict(color="C0", lw=2),
-                  oracle=dict(color="C2", lw=2, linestyle="--"),
-                  one_class=dict(color="C3", lw=1.6, linestyle=":"))
-    for name, r in info["roc"].items():
-        fpr, tpr, auc = r
+    styles = dict(
+        fitted_f =dict(color="C0", lw=1.6, linestyle="-"),
+        fitted_fg=dict(color="C1", lw=2.2, linestyle="-"),
+        oracle   =dict(color="C2", lw=2.0, linestyle="--"),
+        one_class=dict(color="C3", lw=1.6, linestyle=":"),
+    )
+    legend_order = ["oracle", "fitted_fg", "fitted_f", "one_class"]
+    for name in legend_order:
+        fpr, tpr, auc = info["roc"][name]
         ax.plot(fpr, tpr, label=f"{name}  (AUC = {auc:.3f})", **styles[name])
     ax.plot([0, 1], [0, 1], "k:", alpha=0.4)
     ax.set_xlabel("false positive rate")
@@ -227,9 +251,9 @@ def plot_single(trial, T_show=None,
     ax.legend(loc="lower right")
     ax.grid(alpha=0.3)
 
-    # Score histogram (fitted)
+    # Score histogram (fitted_fg - the headline detector)
     ax = axes[1]
-    s = info["scores"]["fitted"]
+    s = info["scores"]["fitted_fg"]
     lbl = trial["labels"]
     bins = np.linspace(s.min(), s.max(), 35)
     ax.hist(s[lbl == 0], bins=bins, alpha=0.6, color="C0",
@@ -239,7 +263,7 @@ def plot_single(trial, T_show=None,
     ax.axvline(0, color="k", linestyle="--", alpha=0.5)
     ax.set_xlabel(r"$\Lambda(\tau) = \log L_{\mathrm{sat\,nav}} - \log L_{\mathrm{intr}}$")
     ax.set_ylabel("# trajectories")
-    ax.set_title("LR score distribution (fitted chains)")
+    ax.set_title("LR score distribution  (fitted_fg chains)")
     ax.legend()
     ax.grid(alpha=0.3)
 
@@ -270,10 +294,10 @@ def plot_single(trial, T_show=None,
 def run_sweep(alpha_values=(0.5, 1.0, 1.5, 2.5, 4.0),
               T_values=(20, 35, 50),
               n_trials=3, base_seed=42, **kwargs):
-    methods = ("fitted", "oracle", "one_class")
+    methods = ("fitted_f", "fitted_fg", "oracle", "one_class")
     auc = {m: np.zeros((len(alpha_values), len(T_values)))
            for m in methods}
-    auc_std = {m: np.zeros_like(auc["fitted"]) for m in methods}
+    auc_std = {m: np.zeros_like(auc[methods[0]]) for m in methods}
     for i, a in enumerate(alpha_values):
         per = {(m, j): [] for m in methods for j in range(len(T_values))}
         for t in range(n_trials):
@@ -287,7 +311,8 @@ def run_sweep(alpha_values=(0.5, 1.0, 1.5, 2.5, 4.0),
                 auc[m][i, j]     = float(np.mean(per[(m, j)]))
                 auc_std[m][i, j] = float(np.std (per[(m, j)]))
             print(f"  alpha={a:>4.2f}  T={T:>3d}  "
-                  f"fitted={auc['fitted'][i, j]:.3f}  "
+                  f"fitted_f={auc['fitted_f'][i, j]:.3f}  "
+                  f"fitted_fg={auc['fitted_fg'][i, j]:.3f}  "
                   f"oracle={auc['oracle'][i, j]:.3f}  "
                   f"one_class={auc['one_class'][i, j]:.3f}")
     return dict(alpha_values=np.asarray(alpha_values),
@@ -302,7 +327,8 @@ def plot_sweep(sweep, out_path="per_car_detector_sweep.png"):
                              figsize=(4.6 * len(Ts), 4.5), sharey=True)
     if len(Ts) == 1:
         axes = [axes]
-    methods = [("fitted",    "C0", "o", "-"),
+    methods = [("fitted_f",  "C0", "o", "-"),
+               ("fitted_fg", "C1", "D", "-"),
                ("oracle",    "C2", "s", "--"),
                ("one_class", "C3", "^", ":")]
     for j, T in enumerate(Ts):
@@ -341,7 +367,8 @@ if __name__ == "__main__":
                       n_test_per_class=300, seed=42)
     for T in trial["T_values"]:
         a = trial["per_T"][T]["aucs"]
-        print(f"  T={T:>3d}  fitted={a['fitted']:.3f}  "
+        print(f"  T={T:>3d}  fitted_f={a['fitted_f']:.3f}  "
+              f"fitted_fg={a['fitted_fg']:.3f}  "
               f"oracle={a['oracle']:.3f}  one_class={a['one_class']:.3f}")
     plot_single(trial)
 

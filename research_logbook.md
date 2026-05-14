@@ -11,13 +11,17 @@ reflects drivers' intrinsic preferences.
 
 | File | Purpose |
 |------|---------|
-| `NIPS-2013-...-Paper.pdf` | The reference paper. |
+| `NIPS-2013-...-Paper.pdf` | The reference paper (Morimura, Osogami, Idé 2013). |
+| `Identification_of_new_patterns_v3.pdf` | Gu, Crisostomi, Liu, Shorten (2018). Population-level junction-turning anomaly detection — the conceptual reference for Phase 3. |
 | `morimura.py` | Reproduction of the synthetic experiment in §6.1 of the paper. |
-| `congestion_filter.py` | Extension. Detect externally-influenced observations and use the detection to clean an intrinsic-chain fit. |
+| `congestion_filter.py` | Phase 2. Detect externally-influenced *snapshots* and use the detection to clean an intrinsic-chain fit. |
+| `per_car_detector.py` | Phase 3. Detect whether a *single car's* trajectory was sat-nav-influenced via a log-likelihood ratio. |
 | `morimura_fig.png` | Output of `morimura.py` — RMAE curves vs. number of observation states. |
 | `congestion_filter_fig.png` | Output of `congestion_filter.py` — detection ROC, score histogram, recovery RMAE. |
+| `per_car_detector_fig.png` | Output of `per_car_detector.py` — single-config ROC, LR score histogram, stationary-distribution comparison. |
+| `per_car_detector_sweep.png` | Output of `per_car_detector.py` — AUC vs. sat-nav strength $\alpha$ at three trajectory lengths. |
 
-Both scripts are self-contained; run with `python morimura.py` or `python congestion_filter.py`.
+All three scripts are self-contained; run with `python morimura.py`, `python congestion_filter.py` or `python per_car_detector.py`.
 
 ---
 
@@ -190,6 +194,139 @@ Total runtime: ≈ 1 s.
 
 ---
 
+## Phase 3 — Per-car sat-nav detection (`per_car_detector.py`)
+
+### Motivation
+
+Phase 2 detects contamination at the *snapshot* level: given a Poisson count vector $f_t$ at $X_o$, decide whether it came from the intrinsic or the influenced regime. Useful for cleaning an aggregate fit, but it says nothing about individual drivers.
+
+The complementary task, posed by the supervisor: given a *single car's trajectory* through the network, decide whether that car is using a sat-nav. The proximal reference is Gu et al. (2018), which monitors per-junction turning-probability matrices $M_i$ over time windows and flags changes via the Frobenius norm $\lVert M_i(k+\Delta T) - M_i(k) \rVert_F$. That detector is *population-level* and *temporal* — it compares two time-window matrices, each estimated from many trajectories — and it does not transfer directly to a single trajectory: one car visiting each junction 0–2 times cannot supply an empirical $M$ to subtract. Phase 3 keeps the spirit (anomaly defined via turning probabilities) but moves the test statistic to a sequence log-likelihood ratio.
+
+### Two-regime model with a fixed-point sat-nav chain
+
+Two chains over the same road graph:
+
+- $p_T^{\text{intr}}$ — drivers' natural preferences. The Phase 1 chain, unchanged.
+- $p_T^{\text{sat-nav}}$ — a *self-consistent* congestion-minimising chain, defined as the fixed point of
+
+$$p_T^{\text{sat-nav}}(x' \mid x) \;\propto\; p_T^{\text{intr}}(x' \mid x) \, \exp\bigl(-\alpha\, \text{cong}_{\text{sat-nav}}(x')\bigr), \qquad \text{cong}_{\text{sat-nav}}(x) = \frac{\pi^{\text{sat-nav}}(x)}{\max_y \pi^{\text{sat-nav}}(y)},$$
+
+where $\pi^{\text{sat-nav}}$ is the stationary distribution of $p_T^{\text{sat-nav}}$ *itself*. At the solution, drivers route around the congestion they themselves produce, not the un-influenced congestion. Distinct from `congestion_filter.influenced_pT`, which uses $\pi^{\text{intr}}$ — the Phase 2 model is a one-step perturbation, the Phase 3 model is the equilibrium. The supervisor's framing was "the sat-nav minimises congestion in the network"; the fixed-point chain is the cleanest Markov-chain expression of that statement, and the resulting $\pi^{\text{sat-nav}}$ is visibly flatter than $\pi^{\text{intr}}$ (right panel of `per_car_detector_fig.png`).
+
+`satnav_pT` solves the fixed point by damped Picard iteration on $\pi$: alternately recompute $p_T^{\text{sat-nav}}$ from the current $\pi$ and recompute $\pi$ from the new $p_T$, with $\pi \leftarrow (1-d)\pi + d\,\pi_{\text{new}}$ ($d = 0.5$). Converges in 15–30 iterations at default $\alpha$, tolerance $10^{-8}$.
+
+### Two-class experiment
+
+1. **Population observation.** From each regime separately, sample station counts
+$f^{\text{intr}}(x), f^{\text{sat-nav}}(x) \sim \text{Poisson}(K\,\pi(x))$ at $x \in X_o$ — i.e. an "off-peak" observation phase and a "rush-hour" observation phase, each large enough to fit. Also compute hitting rates $g^{\text{intr}}, g^{\text{sat-nav}}$ on $X_o \times X_o$ for each regime (exact rates, as in Phase 1 — this is an upper bound on what hitting-rate data can buy). Run the Phase 1 inverter four times: an $f$-only fit ($\gamma = 1$) and an $f + g$ fit ($\gamma = 0.1$, matching the Phase 1 paper default) for each regime, yielding $\hat p_T^{\text{intr,\,f}}, \hat p_T^{\text{sat-nav,\,f}}, \hat p_T^{\text{intr,\,fg}}, \hat p_T^{\text{sat-nav,\,fg}}$.
+2. **Test trajectories.** Sample $N$ trajectories of length $T+1$ from each ground-truth chain. **No restart** — a real car doesn't teleport mid-trip — so $x_0 \sim p_I$, then a pure $p_T$ walk.
+3. **Score.** For each trajectory $\tau = (x_0, x_1, \ldots, x_T)$, compute the log-likelihood ratio
+
+$$\Lambda(\tau) \;=\; \sum_{t=0}^{T-1} \Bigl[ \log \hat p_T^{\text{sat-nav}}(x_{t+1} \mid x_t) - \log \hat p_T^{\text{intr}}(x_{t+1} \mid x_t) \Bigr].$$
+
+Positive ⇒ trajectory looks more sat-nav-like; negative ⇒ more intrinsic-like. The initial-state term $\log p_I(x_0)$ is dropped — a real car observed mid-journey has no reason for $x_0$ to follow $p_I$, and the term is the same under both hypotheses anyway, so it cancels in the ratio.
+
+### Detector variants
+
+| Detector | Score | What it tests |
+|---|---|---|
+| `fitted_f` | $\Lambda(\tau)$ with the $f$-only fitted chains. | The Phase 1 inverter run on stationary observations alone. |
+| `fitted_fg` | $\Lambda(\tau)$ with the $f + g$ fitted chains. | The headline detector once hitting rates are available. |
+| `oracle` | $\Lambda(\tau)$ with the true chains. | Upper bound; isolates the inverter error. |
+| `one_class` | $-\sum_t \log \hat p_T^{\text{intr,\,fg}}(x_{t+1} \mid x_t)$. | Does modelling *both* regimes beat just flagging "unlikely under intrinsic"? Uses the best available intrinsic chain. |
+
+> **Note on choice of statistic.** Gu et al.'s Frobenius norm $\lVert M_{\text{car}} - M_{\text{pop}} \rVert_F$ does not transfer here: a single trajectory of 20–50 steps cannot supply an empirical per-junction matrix $M_{\text{car}}$. The natural per-trajectory analogue is the log-likelihood ratio above — it is the per-trajectory version of the same "turning-probability deviation" anomaly principle.
+
+### Result
+
+`per_car_detector_fig.png` — single config ($n = 50$, $\alpha = 1.5$, $T = 50$, $\lvert X_o\rvert/n = 0.10$, 300 trajectories per class):
+
+- **Oracle AUC = 0.83.** The LR test has substantial power *given* known chains. This is the information-theoretic ceiling at this regime gap and trajectory length: even a perfect classifier cannot reach 1.0, because the two chains overlap — some intrinsic and sat-nav drivers genuinely take statistically indistinguishable paths.
+- **`fitted_fg` AUC = 0.60.** The $f + g$ detector. Recovers slightly more than the $f$-only version but is still well short of oracle at this sparse observation level.
+- **`fitted_f` AUC = 0.57.** The $f$-only detector.
+- **`one_class` AUC = 0.53.** Indistinguishable from chance — at this observation coverage, $\hat p_T^{\text{intr,\,fg}}$ is not reliable enough on its own to flag deviations.
+- **Sat-nav flattens flow.** Stationary plot: $\pi^{\text{sat-nav}}$ has lower peaks and higher valleys than $\pi^{\text{intr}}$ — empirical confirmation that the fixed-point chain does what its name says.
+
+`per_car_detector_sweep.png` — AUC vs. $\alpha \in \{0.5,\,1.0,\,1.5,\,2.5,\,4.0\}$ at $T \in \{20,\,35,\,50\}$, 3 trials per cell. Headline numbers at $T = 50$:
+
+| $\alpha$ | `fitted_f` | `fitted_fg` | gain from $g$ | `oracle` | gap to oracle |
+|---|---|---|---|---|---|
+| 0.5 | 0.52 | 0.54 | +0.02 | 0.66 | 0.12 |
+| 1.0 | 0.57 | 0.62 | +0.05 | 0.79 | 0.17 |
+| 1.5 | 0.60 | 0.68 | +0.08 | 0.87 | 0.19 |
+| 2.5 | 0.64 | 0.75 | +0.11 | 0.94 | 0.19 |
+| 4.0 | 0.67 | **0.78** | **+0.12** | 0.98 | 0.20 |
+
+Three things to read off:
+
+- **Hitting rates help, and the help grows with $\alpha$.** At small $\alpha$ the two chains are too similar for $g$ to extract much signal that $f$ doesn't already see; at large $\alpha$ the divergence between $g^{\text{intr}}$ and $g^{\text{sat-nav}}$ becomes the dominant information channel.
+- **`fitted_fg` still trails `oracle` by ~0.20 AUC across the board.** At 10 % observation coverage, Morimura recovery is fundamentally noisy and hitting rates alone don't close the gap.
+- **`one_class` is uniformly the worst** once $g$ is in the picture. Modelling both regimes is strictly better than the simpler null-only score at any decent regime gap.
+
+> **Where the rest of the gap lives — observation coverage.** A focused sweep at $\alpha = 2.5$, $T = 50$, 3 trials per cell:
+>
+> | $\lvert X_o\rvert / n$ | `fitted_f` | `fitted_fg` | `oracle` | gap (`fg` to `oracle`) |
+> |---|---|---|---|---|
+> | 0.10 (5 states)  | 0.72 | 0.73 | 0.94 | 0.21 |
+> | 0.20 (10 states) | 0.75 | 0.86 | 0.94 | 0.08 |
+> | 0.30 (15 states) | 0.77 | 0.90 | 0.92 | **0.02** |
+> | 0.50 (25 states) | 0.84 | 0.93 | 0.93 | **0.00** |
+>
+> At 30 % observation coverage the $f + g$ detector is statistically indistinguishable from the oracle. **The two levers compound: hitting rates plus a modest increase in observation budget closes the entire fitted–oracle gap.** Without $g$, even 50 % coverage leaves ~0.10 AUC on the table. The bottleneck has shifted: at 10 % obs the binding constraint is *Morimura recovery noise*; at 30 %+ obs the binding constraint is the *inherent chain overlap* (oracle ceiling), which can only be lifted by stronger $\alpha$ or longer trajectories.
+
+Total runtime: ≈ 13 s.
+
+### Reading the figures (plain-English walkthrough)
+
+The two output figures pack quite a lot of statistical machinery into six panels. This section walks through each one in non-technical terms so the results stay legible during the writeup.
+
+#### `per_car_detector_fig.png` — the single-config snapshot
+
+All three panels come from the same experiment: $n = 50$ junctions, 5 of them observed for the population fits, 300 non-sat-nav and 300 sat-nav test cars each driving 50 junctions at $\alpha = 1.5$.
+
+**Left panel — the ROC curve.** Imagine sliding a threshold across the score: "any car scoring above this is flagged as sat-nav". For each setting of the threshold you get two numbers — the **true positive rate** ($y$-axis: of 300 real sat-nav cars, fraction correctly caught) and the **false positive rate** ($x$-axis: of 300 real non-sat-nav cars, fraction wrongly accused). As you slide from strict to lenient, you trace a curve. The AUC is the area under it: 0.5 is the diagonal (coin flip), 1.0 is the top-left corner (perfect).
+
+- Green dashed (`oracle`, 0.83) bows up and to the left — at a 20 % false-positive rate it catches ~75 % of sat-nav drivers. Best possible given the true chains.
+- Orange (`fitted_fg`, 0.60) and blue (`fitted_f`, 0.57) sit close to the diagonal. The detectors are working, but barely. To catch 50 % of sat-nav drivers, you wrongly accuse ~35 % of non-sat-nav drivers.
+- Red dotted (`one_class`, 0.53) is essentially the diagonal.
+
+**Middle panel — the score histogram.** For each of the 600 test cars the `fitted_fg` detector produced a score $\Lambda$. The histogram shows where those scores land, split by true class. A perfect detector would produce two non-overlapping piles — blue on one side, red on the other, with a clean dividing line. In reality, blue centres slightly left of zero (~$-0.2$), red slightly right (~$+0.2$), and they overlap heavily. *That overlap is the reason the ROC curve hugs the diagonal.* No threshold choice can do better than the score itself allows.
+
+**Right panel — the stationary distributions.** A sanity check on the sat-nav *model*, not the detector. For each of the 50 junctions, how busy is it in steady state? Blue: the no-sat-nav world. Red: the all-sat-nav world. Junctions are sorted on the $x$-axis from busiest-under-blue to least-busy-under-blue.
+
+- Blue is a clean monotone slope from 4 % down to 0.5 %.
+- Red is jagged and *less extreme* — peaks lower (3.3 % vs. 4 %), valleys raised (the lowest junction climbs from 0.3 % to 0.4 %).
+
+This is what "sat-nav minimises congestion" should look like: traffic is pushed off busy junctions onto quieter ones. The two worlds *are* different — that difference is the signal the detector is trying to extract.
+
+#### `per_car_detector_sweep.png` — the sweep
+
+Three panels, one per trajectory length $T \in \{20, 35, 50\}$. Each panel: AUC on the $y$-axis, sat-nav strength $\alpha$ on the $x$-axis, four lines for the four detectors. Error bars are the std across 3 trials.
+
+**How to scan the figure.**
+
+- *Moving right within one panel* (increasing $\alpha$): sat-nav drivers avoid congestion more aggressively, the two worlds diverge more, so the detector has more to work with. All AUC lines climb.
+- *Moving from the left panel to the right panel* (increasing $T$): each test car drives more junctions, so the detector has more evidence to stack up. All AUC lines climb.
+
+**What each line says.**
+
+- *Green dashed (`oracle`).* Upper envelope. Tells you how good detection *could* be with perfect chain knowledge. Sweeps from 0.59 (weak signal, short trips) to 0.98 (strong signal, long trips). Confirms the detector concept scales as expected.
+- *Orange (`fitted_fg`).* The realistic detector with hitting-rate data. Lags the oracle by ~0.20 AUC across the sweep. Mirroring its shape is good — it means estimation noise reduces detector *quality* but doesn't change *which regimes are detectable in principle*.
+- *Blue (`fitted_f`).* Without hitting rates. The gap to `fitted_fg` *widens* as $\alpha$ grows: equal at $\alpha = 0.5$ (when the chains are nearly identical, no extra observation type can extract signal that isn't there), +0.12 AUC at $\alpha = 4$. This gap is the value of adding hitting-rate data.
+- *Red dotted (`one_class`).* Modelling only the intrinsic regime. Worst at every $\alpha$. Confirms that learning a sat-nav-specific chain genuinely helps over flagging "anything weird".
+
+**One-sentence read of the sweep.** The detector idea works (`oracle` reaches 0.98), adding hitting rates pulls the realistic detector up by ~0.12 AUC at the right end, but the realistic detector still trails the oracle by ~0.20 AUC because 10 % station coverage is too sparse for Morimura to recover the chains cleanly. The focused obs-coverage probe (table in the result section) closes that residual gap by ~30 % station coverage.
+
+### Open threads (Phase 3-specific)
+
+- ~~**Closing the fitted–oracle gap with hitting rates.**~~ Done. Adding $g$ buys +0.02 to +0.12 AUC depending on $\alpha$, but only closes the gap entirely once observation coverage reaches ~30 %. Below that, Morimura recovery noise is the bottleneck and neither $g$ nor longer trajectories help much.
+- **Noisy $g$.** Currently we use the *exact* hitting rates. In a real deployment, $g(x, x')$ would be estimated from observed transit-time data and carry its own Poisson/log-Gaussian noise. The numbers above are therefore an upper bound on the gain from $g$. A useful next experiment: sample $g$ counts at a configurable per-pair flow rate and re-sweep.
+- **Origin–destination confound.** The synthetic experiment samples trajectories by Markov walk — drivers have no destinations. Real (and SUMO-simulated) drivers have OD pairs, and a car heading to an unusual destination will look "anomalous" under any pure-MC scoring scheme regardless of sat-nav use. Plausible fixes: restrict evaluation to fixed OD pairs, or jointly model the chain on $(\text{state}, \text{destination})$ pairs (Markov in the joint, non-Markov in the state alone). Worth scoping before moving to SUMO — the synthetic detector is genuinely OD-blind so the issue does not appear yet.
+- **Sat-nav model fidelity.** The fixed-point chain assumes all sat-nav users follow the same congestion-minimising rule. Heterogeneous adoption (some users on sat-nav, others not — as in Phase 2 with parameter $\rho_c$) and Wardrop-equilibrium routing (true system-optimum, not the per-step user-equilibrium we have here) are obvious next steps if the simple model proves insufficient when fit to SUMO data.
+- **Initial-state term.** Currently $x_0 \sim p_I$ identically for both classes, so the $\log p_I$ term cancels in the LR. If a more realistic setup samples $x_0$ from the chain's own stationary $\pi$ (a car observed at a random moment in its journey), the initial term carries weak class signal and is worth keeping.
+
+---
+
 ## Open threads
 
 - **Latent regime.** The current setup assumes we know which snapshots came from the
@@ -268,6 +405,19 @@ in `morimura.make_truth` and (via that function) in `congestion_filter.generate_
 | `fpr_target` | 0.05 | Target false-positive rate of the filter against the labelled set. The threshold is set at the $(1-\text{fpr\_target})$ quantile of labelled scores. | Higher → looser threshold → more unlabelled snapshots kept, both intrinsic and influenced (more contamination). Lower → tighter threshold → drops genuine intrinsic snapshots from the kept set (less data, but cleaner). Below ~$1/T_{\text{label}}$ the quantile is dominated by the maximum labelled score and becomes unstable. |
 | `seed` | 42 | RNG seed. | Same as Phase 1. Note that AUC can swing between trials when the regime gap is small (low $\alpha$); use ≥5 seeds before drawing conclusions. |
 
+### Per-car detector (Phase 3)
+
+`run_trial` and `run_sweep` in `per_car_detector.py`. The graph / chain / inverter knobs from Phases 1–2 all carry over with the same effect; only the new ones are listed here.
+
+| Variable | Default | What it controls | ↑ effect |
+|---|---|---|---|
+| `alpha` | 1.5 | Sat-nav avoidance strength, same role as in Phase 2 but now in the *self-consistent* fixed-point chain. | Higher → regime gap widens → all AUCs ↑. Differs from Phase 2: at high $\alpha$, the fixed-point $\pi^{\text{sat-nav}}$ visibly flattens because heavy redistribution is needed to remain self-consistent. |
+| `obs_frac` | 0.10 | Fraction of states observed at $X_o$ for the Morimura fits of each regime. | Higher → both $\hat p_T$ chains are sharper → `fitted` AUC ↑, and (separately) `one_class` AUC ↑. **The most important Phase 3 knob.** Crossover where `fitted` overtakes `one_class` sits around 0.20–0.25. |
+| `T_values` | (20, 35, 50) | Trajectory lengths to evaluate (sampled once at $\max T$ and truncated, so curves across $T$ are paired). | More transitions = more terms in the log-likelihood = sharper score = AUC ↑. Effect saturates once $T$ is comparable to mixing time. |
+| `n_test_per_class` | 300 | Trajectories sampled per ground-truth class. Only affects ROC noise, not the underlying detection problem. | Higher → tighter ROC curve and tighter AUC error bars; no effect on the expected AUC. |
+| `K` | 20 000 | Counts per regime's station-observation phase. Sets the Morimura SNR. | Higher → cleaner $\hat p_T$ chains → `fitted` and `one_class` AUC ↑. Independent of `obs_frac` to first order. |
+| (FP `tol`, `max_iter`, `damping` in `satnav_pT`) | $10^{-8}$, 200, 0.5 | Numerical control of the sat-nav fixed-point iteration. | Tighter `tol` → marginally cleaner $\pi^{\text{sat-nav}}$ at cost of iterations; never the bottleneck. Raise `damping` only if the iteration oscillates (hasn't happened at default $\alpha \leq 4$). |
+
 ### Hard-coded modelling choices
 
 Not surfaced as parameters, but they materially shape the results. Worth keeping in mind
@@ -310,6 +460,9 @@ python3 -m venv .venv
 
 # Phase 2 — congestion filter, ~1 s
 .venv/bin/python congestion_filter.py
+
+# Phase 3 — per-car sat-nav detector, ~3 s
+.venv/bin/python per_car_detector.py
 ```
 
 Both produce a PNG in the working directory and print per-trial summary lines to stdout.
