@@ -1,0 +1,21 @@
+<configuration>
+    <input>
+        <net-file value="net.net.xml"/>
+        <route-files value="routes.xml"/>
+        <additional-files value="edgedata.satnav.add.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <processing>
+        <device.rerouting.probability value="1.0"/>
+        <device.rerouting.period value="60"/>
+        <device.rerouting.adaptation-interval value="30"/>
+        <device.rerouting.adaptation-weight value="0.5"/>
+    </processing>
+    <output>
+        <vehroute-output value="vehroutes.satnav.xml"/>
+        <vehroute-output.exit-times value="true"/>
+    </output>
+</configuration>

@@ -14,7 +14,11 @@
       "Bash(pdftotext -layout NIPS-2013-solving-inverse-problem-of-markov-chain-with-partial-observations-Paper.pdf /tmp/morimura.txt)",
       "Read(//tmp/**)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(/Users/aaronbendor/DESENG/Masters/.venv/bin/python -m pip list)",
+      "Bash(brew update *)",
+      "Bash(brew upgrade *)",
+      "Read(//Users/aaronbendor/.claude/**)"
     ]
   }
 }

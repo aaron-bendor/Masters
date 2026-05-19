@@ -1,0 +1,15 @@
+<configuration>
+    <input>
+        <net-file value="net.net.xml"/>
+        <route-files value="routes.xml"/>
+        <additional-files value="edgedata.intr.add.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <output>
+        <vehroute-output value="vehroutes.intr.xml"/>
+        <vehroute-output.exit-times value="true"/>
+    </output>
+</configuration>

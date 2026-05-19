@@ -20,8 +20,11 @@ reflects drivers' intrinsic preferences.
 | `congestion_filter_fig.png` | Output of `congestion_filter.py` — detection ROC, score histogram, recovery RMAE. |
 | `per_car_detector_fig.png` | Output of `per_car_detector.py` — single-config ROC, LR score histogram, stationary-distribution comparison. |
 | `per_car_detector_sweep.png` | Output of `per_car_detector.py` — AUC vs. sat-nav strength $\alpha$ at three trajectory lengths. |
+| `sumo_validation/sumo_to_phase3.py` | Phase 4. Maps a pair of SUMO runs (intrinsic vs. rerouting) onto the Phase 3 detector. |
+| `sumo_validation/sumo_phase3_fig.png` | Output of the Phase 4 script — ROC curves comparing fitted detectors against an empirical-chain upper bound. |
+| `sumo_validation/{net.net.xml, routes.xml, edgedata.*.xml, vehroutes.*.xml, *.sumocfg, *.add.xml}` | SUMO artefacts for the Phase 4 validation: network, demand, edge counts, per-vehicle routes, and the two run configs (intrinsic / sat-nav). |
 
-All three scripts are self-contained; run with `python morimura.py`, `python congestion_filter.py` or `python per_car_detector.py`.
+All three scripts are self-contained; run with `python3 morimura.py`, `python3 congestion_filter.py` or `python3 per_car_detector.py`. Phase 4 is driven by SUMO + `sumo_to_phase3.py`; see that section for the run order.
 
 ---
 
@@ -324,6 +327,111 @@ Three panels, one per trajectory length $T \in \{20, 35, 50\}$. Each panel: AUC 
 - **Origin–destination confound.** The synthetic experiment samples trajectories by Markov walk — drivers have no destinations. Real (and SUMO-simulated) drivers have OD pairs, and a car heading to an unusual destination will look "anomalous" under any pure-MC scoring scheme regardless of sat-nav use. Plausible fixes: restrict evaluation to fixed OD pairs, or jointly model the chain on $(\text{state}, \text{destination})$ pairs (Markov in the joint, non-Markov in the state alone). Worth scoping before moving to SUMO — the synthetic detector is genuinely OD-blind so the issue does not appear yet.
 - **Sat-nav model fidelity.** The fixed-point chain assumes all sat-nav users follow the same congestion-minimising rule. Heterogeneous adoption (some users on sat-nav, others not — as in Phase 2 with parameter $\rho_c$) and Wardrop-equilibrium routing (true system-optimum, not the per-step user-equilibrium we have here) are obvious next steps if the simple model proves insufficient when fit to SUMO data.
 - **Initial-state term.** Currently $x_0 \sim p_I$ identically for both classes, so the $\log p_I$ term cancels in the LR. If a more realistic setup samples $x_0$ from the chain's own stationary $\pi$ (a car observed at a random moment in its journey), the initial term carries weak class signal and is worth keeping.
+
+---
+
+## Phase 4 — Validation on SUMO (`sumo_validation/`)
+
+### Motivation
+
+Phases 1–3 are end-to-end synthetic: chains generated under the framework's own softmax model (slightly perturbed by Dirichlet noise) and trajectories sampled from those chains. That tests internal consistency but not whether the framework recovers signal when the *data-generating process* is not a small-noise Markov chain. SUMO provides the realistic counterpart — microscopic traffic on an OSM-derived city network with optional in-loop congestion-aware rerouting. The Phase 3 detector should hold up here if the framework is to be useful for real traffic data.
+
+### Mapping Phase 3 onto SUMO outputs
+
+| Phase 3 quantity | SUMO source |
+|---|---|
+| State graph `adj_out` | `net.net.xml`. Edges are states, junctions are transitions. Restricted to the largest strongly-connected component of passenger-vclass edges. |
+| Two regimes (intrinsic / sat-nav) | Two `.sumocfg` runs over identical `routes.xml`: one with no rerouting, one with `device.rerouting.probability=1.0`, period 60 s, adaptation interval 30 s, adaptation weight 0.5. |
+| Station counts `f` | Aggregated edge `entered` from each run's `edgedata.xml`. |
+| Test trajectories | Reconstructed from each `vehroutes.xml`. For rerouted vehicles, the actually-driven sequence is stitched from successive `<route>` elements in `<routeDistribution>` (each truncated at its `replacedOnIndex`), with consecutive duplicates at the boundaries deduped. |
+| Restart parameter `beta` | $1 - 1/\overline{\lvert\tau\rvert}$ from parsed trajectory lengths. |
+| Hitting rates `g` | Empirically estimated from training trajectories (`empirical_g`): the discounted first-hit probability matrix on $X_o \times X_o$, the analog of `morimura.true_g`. |
+
+`sumo_to_phase3.py` is the driver: reads the four SUMO output files, builds the adjacency, picks `X_o`, holds out a test set, fits intrinsic and sat-nav chains via Morimura (both `gamma=1` f-only and `gamma=0.1` f+g), scores test trajectories via the Phase 3 LR, and reports AUCs alongside two diagnostics (empirical-chain upper bound, branching-only scoring).
+
+### Pipeline
+
+1. **OSM extract** — `bbox 11.420,48.760,11.445,48.775` (~2 km × 2 km of central Ingolstadt). Downloaded via `curl` against `overpass-api.de/api/map` with a User-Agent header; `osmGet.py` was unreliable because of SSL flakiness from the default Python on macOS.
+2. **netconvert** — passenger-vclass filter only, `--geometry.remove --ramps.guess --junctions.join --tls.guess-signals --tls.discard-simple`. *No* `--keep-edges.by-type` filter (see iteration log). Yields 2604 raw edges; 686 in the largest passenger SCC; mean out-degree 2.18.
+3. **Demand** — `randomTrips.py -p 0.5` (≈7200 trips/h) routed through `duarouter` on free-flow times. This is the moderate-congestion regime — higher demand causes gridlock that *collapses* the two regimes together (see iteration log).
+4. **Two SUMO runs** — same `routes.xml`, same end time, headless (`sumo`, not `sumo-gui`). Each emits `edgedata.*.xml` and `vehroutes.*.xml`.
+5. **Analysis** — `sumo_to_phase3.py`. Trajectories split into training and test pools (the test set is held-out long trajectories truncated to `T = 20`; everything else is training). Empirical `g` is estimated from training pools only. Four chains are fit (`{intr, satnav} × {f, fg}`) and the test set scored.
+
+### Iteration log
+
+> **Iter 1 — over-aggressive road-class filter, detector at chance.** First `netconvert` kept only highway types tertiary and above plus residential/unclassified, dropping service roads and living streets to keep `n` small. After SCC restriction: $n = 269$, mean out-degree 1.55. `fitted_f` AUC 0.537. Indistinguishable from chance.
+
+> **Iter 2 — diagnostic showed a structural ceiling at AUC 0.585.** Added `empirical_chain`: the per-edge transition matrix estimated *directly* from training trajectories with full observation, used as the "what if we observed everything?" upper bound. At $n = 269$ that ceiling was only 0.585 — so the regimes barely differed at the 1-step Markov level on this network. A branching-only scorer (`_scores_branching`, ignoring forced-transition steps) gave the same number, ruling out the "signal hidden at branching points" hypothesis.
+
+> **Iter 3 — cranking demand backfired.** Tried `-p 0.15` (~24k trips/h) to widen the regime gap by intensifying congestion. The sat-nav advantage *collapsed*: at saturating demand all alternative routes are congested too, so rerouting offers no improvement. Sat-nav total `entered` halved (67k → 34k); empirical AUC moved 0.585 → 0.571. The sweet spot for rerouting impact is moderate, not maximum.
+
+> **Iter 4 — network was the bottleneck, not the method.** User flagged that the road-class filter was the more likely culprit (real drivers and real rerouters both use service roads and living streets, especially when dodging congestion). Re-ran `netconvert` with only the passenger-vclass filter. New numbers: $n = 686$, mean out-degree 2.18 — within the realistic range for a German city centre. **Empirical AUC jumped to 0.721**, confirming the data carries a 1-step Markov signal once the network has realistic route diversity. `fitted_f` stayed at 0.531, so the inversion had become the binding constraint.
+
+> **Iter 5 — raising observation coverage closes most of the gap.** With $n = 686$, the original 10 % coverage gave only 68 observed edges. Raised `obs_frac` to 0.25 ($\lvert X_o\rvert = 171$): `fitted_f` climbed 0.531 → 0.649, recovering about 60 % of the gap to the empirical ceiling. The diagnosis flipped cleanly from "structural limit" to "fittable, given more observation".
+
+> **Iter 6 (in progress at time of writing) — fitted_fg with empirical hitting rates.** Implemented `empirical_g`, the trajectory-based analog of `morimura.true_g`: for each $(i, j) \in X_o \times X_o$, estimate the discounted first-hit probability of $j$ from $i$ across training trajectories, floored at $10^{-3}$ to keep `log(g)` finite in the inverter. Fitting with $\gamma = 0.1$ mirrors the Phase 3 toy's headline detector. Run time at $\lvert X_o\rvert = 171$ is ~1–2 hours per pair because each L-BFGS gradient step performs 171 LU factorisations of $(I - \beta P_T^{\setminus j})$. Result pending.
+
+### Current state
+
+`sumo_validation/sumo_phase3_fig.png`. Numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class:
+
+| Detector | AUC | Note |
+|---|---|---|
+| empirical (full obs, all steps) | 0.721 | Per-source-state Laplace-smoothed MLE from training trajectories. The 1-step-Markov ceiling on this data. |
+| empirical (full obs, branching only) | 0.721 | Forced-transition steps masked out. No gain over all-steps — signal is uniform across the trajectory. |
+| `fitted_f` (γ = 1, all steps) | 0.649 | Morimura f-only at 25 % coverage. ~60 % of the gap closed vs. iter 4. |
+| `fitted_f` (branching only) | 0.649 | Same as empirical: no separation between branching-step and forced-step contributions. |
+| `fitted_fg` (γ = 0.1, all steps) | *pending* | Morimura f+g with empirical $g$. Expected to close most of the remaining 0.07 to the ceiling. |
+
+**Headline read.** The Phase 3 framework recovers a real rerouting signal from SUMO data once two conditions are met: the network has realistic topology (no aggressive road-class trimming) and observation density is on the order of 25 % rather than the 10 % the synthetic toy used. Whether `fitted_fg` matches the empirical ceiling — making the validation positive in the same way the toy was — is the open question being resolved by the current run.
+
+### Diagnostic tools added (`sumo_to_phase3.py`)
+
+| Tool | Purpose |
+|---|---|
+| `empirical_chain(trajs, adj_out, smoothing)` | Per-source-state Laplace-smoothed transition matrix from observed `(x_t, x_{t+1})` pairs. The "full observation" upper bound — distinguishes an inversion bottleneck from a structural Markov limit. |
+| `empirical_g(trajs, X_o, beta, floor)` | Empirical analog of `morimura.true_g`. Discounted first-hit probabilities on $X_o \times X_o$, floored to keep `log` finite. The realistic-noise replacement for the toy's exact $g$. |
+| `_scores_branching(trajs, PT_a, PT_b, out_deg)` | LR scoring with forced-transition (out-degree 1) steps masked out. Tests whether signal is concentrated at branching points or diffuse across the trajectory. |
+
+### Reproducing the SUMO pipeline
+
+Set `SUMO_HOME` to point at the directory containing `tools/` (on the macOS Eclipse `.pkg` installer that is `/Library/Frameworks/EclipseSUMO.framework/Versions/<v>/EclipseSUMO/share/sumo`). Then from `sumo_validation/`:
+
+```bash
+# 1. Network (one-off)
+curl --fail --retry 5 -A "sumo-research/1.0 (aaron.bendor22@imperial.ac.uk)" \
+    -o city_bbox.osm.xml \
+    "https://overpass-api.de/api/map?bbox=11.420,48.760,11.445,48.775"
+netconvert --osm-files city_bbox.osm.xml -o net.net.xml \
+    --keep-edges.by-vclass passenger \
+    --geometry.remove --ramps.guess --junctions.join \
+    --tls.guess-signals --tls.discard-simple
+
+# 2. Demand
+python3 $SUMO_HOME/tools/randomTrips.py -n net.net.xml \
+    -o trips.xml -e 3600 -p 0.5 --seed 42 \
+    --vehicle-class passenger --validate
+duarouter -n net.net.xml -t trips.xml -o routes.xml \
+    --ignore-errors --remove-loops
+
+# 3. Two runs
+sumo -c intr.sumocfg   --no-step-log --duration-log.disable
+sumo -c satnav.sumocfg --no-step-log --duration-log.disable
+
+# 4. Analysis (from repo root)
+cd ..
+.venv/bin/python sumo_validation/sumo_to_phase3.py
+```
+
+The four `.sumocfg`/`.add.xml` files in the directory pin all run-time options.
+
+### Open threads (Phase 4-specific)
+
+- **Origin–destination confound.** Still unaddressed and now visible. SUMO vehicles have OD pairs; the LR score is OD-blind. A vehicle headed to an unusual destination looks "anomalous" under any pure-MC score regardless of rerouting use. Possible fixes carried over from Phase 3 open threads: restrict evaluation to fixed OD pairs, or extend to joint $(\text{state},\text{destination})$ chains. Worth checking whether the residual gap from 0.721 to 1.0 is intrinsic-vs-sat-nav chain overlap or OD heterogeneity.
+- **Demand sweep.** `-p 0.5` was chosen by trial-and-error (iters 3, 5). A proper sweep over demand × rerouting-fraction — the SUMO analog of Phase 2's $\alpha \times \rho_c$ — would establish the operating regime where the detector is strongest.
+- **Mixed sat-nav adoption.** Currently 0 % vs. 100 %. The realistic case is mixed adoption (some drivers on sat-nav, others not, as in Phase 2). Requires a vehicle-type-stratified `routes.xml` with `device.rerouting` enabled per vType.
+- **Multiple city extracts.** Single Ingolstadt bbox so far. Validating across multiple OSM extracts (different topologies, different demand patterns) would generalise the result.
+- **Hitting-rate noise — answered here.** Phase 3's open thread about $g$ being "too clean" is implicitly addressed by Phase 4: `empirical_g` is finite-sample noisy, and `fitted_fg` here is therefore the realistic-noise version of the toy's exact-$g$ detector. If `fitted_fg` matches the empirical ceiling in iter 6, the framework survives that noise.
 
 ---
 
