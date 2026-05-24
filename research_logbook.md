@@ -375,7 +375,11 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 
 > **Iter 8 — quadrupling the data (4 h sim, $\gamma = 0.5$).** Re-ran `randomTrips.py -e 14400`, regenerated routes, re-ran both sims; same spawn rate (`-p 0.5`) just for longer, so per-moment congestion is unchanged. Diagnostic numbers: $g$ at-floor fraction dropped 90 % → 79 % (intr) and 80 % → 55 % (satnav); empirical-chain ceiling rose 0.721 → 0.747. **`fitted_f` jumped 0.649 → 0.714** — now within 0.033 of the ceiling (96 % of the recoverable gap closed). `fitted_fg` climbed 0.438 → 0.561, a real improvement, but still well below `fitted_f`. Read: more data helps both detectors, but $f$ converges faster (171 stations are easy to estimate well; 29 k pairs are not), so `fitted_f` keeps its lead.
 
-### Current state
+> **Iter 9 — pipeline audit retracts the iter-8 headline.** Audit triggered before pushing to new experiments. Added `<statistic-output value="stats.*.xml"/>` to both `.sumocfg` files (zero-cost change, fully back-compatible) and re-ran the iter-8 configuration. Result: **96.1 % of inserted intr vehicles teleport at least once** (14,559 teleports against 15,148 inserted); satnav 84.0 % (13,407 / 15,958). Of the 28,800 loaded vehicles, only ~half are *ever inserted* — the rest queue forever at jammed origins. Every teleport injects a phantom edge transition into `vehroutes.*.xml`, which the pipeline reads as a real $(x_t \to x_{t+1})$ Markov step. The 0.714 iter-8 AUC was the framework correctly extracting signal, but the signal included teleport patterns and finisher-selection bias. Demand sweep at `-p` ∈ {0.5, 1.0, 2.0, 4.0, 8.0} identified `-p 2.0` as the cleanest operating point where teleports drop to 11.6 % (intr) / 2.4 % (satnav) while still producing real congestion — and crucially the satnav/intr finisher ordering *reverses* from iter 8 (6,533 > 5,744 now; was 7,280 < 8,799), confirming sat-nav helps where it can rather than diverging from gridlock. Honest detector at small bbox, `-p 2.0`: empirical 0.612, `fitted_f` 0.599 — framework still closes 97 % of the gap to the ceiling, but the ceiling itself drops dramatically.
+
+> **Iter 10 — bigger bbox at the same demand collapses the signal.** Hypothesis: maybe the small network just doesn't give sat-nav enough alternatives. Doubled each bbox side (`11.4075,48.7525,11.4575,48.7825`, ≈ 3.7 km × 3.3 km, 4× area). After `netconvert`: $n = 2405$, mean out-degree 2.49, edge-count $E = 5987$ — roughly 3.5× the small network. At the same `-p 2.0`: **zero teleports in both regimes**, identical finisher counts (7,031 intr vs 7,033 satnav — within rounding). With 3.5× the capacity for the same vehicle count, there is no congestion → sat-nav has nothing to route around. Detectors collapse: empirical AUC 0.430, `fitted_f` 0.530 — both within sampling noise of chance. The regime signal lives only where congestion is mild-but-real; growing the bbox without matching the demand kills it. Demand sweep on the bigger bbox is in progress.
+
+### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 
 `sumo_validation/sumo_phase3_fig.png`. Final numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class, 4 h simulated time:
 
@@ -392,6 +396,50 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 The toy's headline detector, `fitted_fg`, did **not** validate cleanly on SUMO. The cause is structural: empirical $g$ at $\lvert X_o\rvert^2 = 29{,}241$ cells is sample-starved, the floor-padded cells distort the inverter when weighted heavily, and mixing $f$ and $g$ losses at intermediate $\gamma$ can produce sign inversions. More data narrows the gap (it climbed 0.438 → 0.561 with 4× data) but doesn't close it because `fitted_f` benefits from the same data and converges faster. The deeper reason: 171 station counts are easy to estimate well; 29 k pair-wise hitting rates are not. This isn't a fixable bug in the simulator's observation quality — it's an honest consequence of using the partial-observation $g$-estimator the framework is *designed* to consume.
 
 > **Note on the paper's own use of $g$.** Reading Morimura et al. (2013) carefully: the paper *defines* $g$ as an empirical, count-based quantity ("the number of vehicles that went through $x$ and $x'$ in this order divided by $f(x)$"), not as an analytical object. The synthetic experiment (§6.1) "samples" both $f$ and $g$ from the synthesized chain, but at $n = 100$ and $\lvert X_o\rvert \leq 90$, the $\lvert X_o\rvert^2$ pairs to estimate are few enough that $g$ stays dense. Crucially, the paper's **real-world** experiment (§6.2, Nairobi traffic, 1{,}497 links, 52 observation points) explicitly *drops* $g$: *"we did not use the hitting rate $g(x, x')$ here because of its unavailability"*. The paper's only real-world demonstration is f-only. Our SUMO validation parallels that: $g$ is the most data-hungry component of the framework, and it falls off first when going from toy scale to deployment scale.
+
+### Revised current state (post-audit)
+
+The iter-8 headline `fitted_f` = 0.714 **does not stand as a clean Morimura validation**. It was the framework correctly extracting signal from a mix of (driving patterns + teleport artifacts + finisher-selection bias). The cleanest validation point currently available is small bbox, `-p 2.0`:
+
+| Detector | AUC | Note |
+|---|---|---|
+| empirical (full-obs ceiling) | 0.612 | 1-step Markov ceiling on clean-demand SUMO data |
+| **`fitted_f`** | **0.599** | f-only Morimura; **97 % of the gap from chance to ceiling** |
+
+The framework recovers 97 % of available 1-step Markov information at clean demand — slightly *better* than iter 8's contaminated 96 %, which says the inverter is fine. What dropped is the *ceiling itself*: from 0.747 to 0.612. The available regime signal at small-bbox-clean-demand is only 0.10 above chance. Whether that is the genuine ceiling of this validation or an artifact of the small network not giving sat-nav enough alternatives is the open question being resolved by the bigger-bbox demand sweep in progress.
+
+#### Demand sweep — finding the clean operating regime
+
+Per-`-p` teleport stats from `<statistic-output>` (small bbox, `-e 14400`, all other parameters fixed):
+
+| `-p` | regime | loaded | inserted | finished | teleports | tele/inserted |
+|---|---|---|---|---|---|---|
+| 0.5 | intr   | 28,800 | 15,148 | 8,799 | 14,559 | 96.1 % |
+| 0.5 | satnav | 28,800 | 15,958 | 7,280 | 13,407 | 84.0 % |
+| 1.0 | intr   | 14,400 | 10,833 | 6,263 | 8,371  | 77.3 % |
+| 1.0 | satnav | 14,400 | 12,549 | 6,450 | 4,022  | 32.1 % |
+| **2.0** | **intr**   | **7,200**  | **6,993**  | **5,744** | **810**    | **11.6 %** |
+| **2.0** | **satnav** | **7,200**  | **7,139**  | **6,533** | **168**    | **2.4 %**  |
+| 4.0 | intr   | 3,600  | 3,600  | 3,538 | 0      | 0 %    |
+| 4.0 | satnav | 3,600  | 3,600  | 3,539 | 0      | 0 %    |
+| 8.0 | intr   | 1,800  | 1,800  | 1,771 | 0      | 0 %    |
+| 8.0 | satnav | 1,800  | 1,800  | 1,770 | 0      | 0 %    |
+
+Three structural reads:
+
+1. At `-p 0.5` the satnav-intr finisher ordering is *reversed* (7,280 < 8,799). Sat-nav can't help on a saturated network where every alternative is equally jammed; the iter-8 signal was the *divergence in teleport patterns* between two fully-gridlocked sims, not "drivers responding to congestion."
+2. At `-p 2.0` the ordering corrects (6,533 > 5,744). Sat-nav reduces jam-teleports by roughly 5× (810 → 168) and delivers more trips. This is the physically correct rerouting signal.
+3. At `-p ≥ 4.0` there is no congestion and no signal. Demand has to be at least near capacity for the regimes to differ.
+
+#### Audit findings beyond the teleport issue
+
+Five secondary issues in `sumo_to_phase3.py` / `morimura.py` uncovered while auditing the pipeline. Listed in priority order:
+
+1. **`empirical_g` floor is *actively* misleading the optimizer**, not just generic noise. Each floored cell (`g[ki, kj] = 1e-3`, ~80 % of cells at 4 h data) contributes ~21 to the hitting-rate loss `L_h` plus a gradient pushing fitted `h_j(i) → 0`. At 4 h scale, ~23,000 floored cells outweigh the ~6,000 cells with real information by ~4000-to-1 in total loss. The Bayesian-shrinkage estimator on the future-work list directly addresses this mechanism; the iter-6/7 saddle-point behaviour is consistent with — but mechanistically more specific than — "noisy `g`".
+2. **`X_o` is sampled from `(f_intr > 0) & (f_satnav > 0)`**, which filters out exactly the highest-signal edges — those sat-nav fully avoids (`f_satnav = 0`) or fully discovers (`f_intr = 0`). Flooring `f ≥ 1` instead of filtering would let them in.
+3. **`gamma_fg = 0.5` contradicts its own code comment** in `sumo_to_phase3.py` ("put most weight back on `f`" implies $\gamma \approx 0.9$, not $0.5$). The range $\gamma \in (0.5, 1)$ was never tested; iter 7's signal-inversion at $\gamma = 0.5$ may have been the worst place in the sweep, not representative.
+4. **The branching-only diagnostic is tautological** for any chain whose forced-transition rows have `PT(y|x) = 1` (true for softmax-fit and Laplace-smoothed alike). The identical `0.747 = 0.747` and `0.714 = 0.714` in the iter-8 table was the giveaway. Adds no information for this pipeline; either remove or replace with a per-step LR contribution histogram.
+5. **Inverter convergence and SUMO RNG state aren't surfaced.** `fit_chain` discards the `scipy.optimize.OptimizeResult`; the `.sumocfg` files rely on SUMO's default seed 23 instead of pinning explicitly. Both should be made explicit so reproducibility doesn't depend on internal defaults.
 
 ### Diagnostic tools added (`sumo_to_phase3.py`)
 
@@ -436,10 +484,13 @@ The four `.sumocfg`/`.add.xml` files in the directory pin all run-time options.
 ### Open threads (Phase 4-specific)
 
 - **Origin–destination confound.** Still unaddressed and now visible. SUMO vehicles have OD pairs; the LR score is OD-blind. A vehicle headed to an unusual destination looks "anomalous" under any pure-MC score regardless of rerouting use. Possible fixes carried over from Phase 3 open threads: restrict evaluation to fixed OD pairs, or extend to joint $(\text{state},\text{destination})$ chains. Worth checking whether the residual gap from 0.721 to 1.0 is intrinsic-vs-sat-nav chain overlap or OD heterogeneity.
-- **Demand sweep.** `-p 0.5` was chosen by trial-and-error (iters 3, 5). A proper sweep over demand × rerouting-fraction — the SUMO analog of Phase 2's $\alpha \times \rho_c$ — would establish the operating regime where the detector is strongest.
+- **Demand sweep.** Small-bbox sweep done in iter 9 (`-p 2.0` settled as the clean operating point; 11.6 % intr / 2.4 % satnav teleport rate). Bigger-bbox sweep in progress to find the matching operating point on the larger network. A 2D sweep over demand × adoption fraction — the SUMO analog of Phase 2's $\alpha \times \rho_c$ — remains outstanding once mixed adoption is wired in.
 - **Mixed sat-nav adoption.** Currently 0 % vs. 100 %. The realistic case is mixed adoption (some drivers on sat-nav, others not, as in Phase 2). Requires a vehicle-type-stratified `routes.xml` with `device.rerouting` enabled per vType.
-- **Multiple city extracts.** Single Ingolstadt bbox so far. Validating across multiple OSM extracts (different topologies, different demand patterns) would generalise the result.
-- **Hitting-rate noise — partly answered.** Phase 3's open thread about $g$ being "too clean" is now empirically pinned down: `empirical_g` from partial observations scales badly with $\lvert X_o\rvert^2$, and `fitted_fg` does not recover the empirical ceiling at realistic scales. Two ways to push on this further within the partial-observation premise: (a) much more data (linear in compute, slow), or (b) a smarter $g$ estimator with Bayesian shrinkage instead of a flat floor (~30 lines of code, would mostly help the in-between cells that are partially observed). Going outside the partial-observation premise — e.g. computing $g$ analytically from `PT_emp` — would be cheating relative to the framework's setting and was discarded.
+- **Multiple city extracts.** Single Ingolstadt bbox so far (small and 2×-doubled variants). Validating across multiple OSM extracts (different topologies, different demand patterns) would generalise the result.
+- **Hitting-rate noise — mechanism nailed down.** The iter-9 audit reframed this: it is not generic noise but a specific failure mode. The flat $10^{-3}$ floor on partially-observed cells injects a constant loss term and a gradient pushing fitted `h_j(i)` toward zero, swamping the signal from real cells by ~4000-to-1 in `L_h` (at 4 h scale). (a) more data attenuates it linearly; (b) Bayesian shrinkage on `g` directly addresses the failure mechanism and remains the natural next step. Going outside the partial-observation premise — e.g. computing $g$ analytically from `PT_emp` — would be cheating relative to the framework's setting and was discarded.
+- **Observation-set filter (audit-discovered).** `X_o` is currently sampled from `(f_intr > 0) & (f_satnav > 0)`, which excludes the highest-signal edges (sat-nav fully avoids or fully discovers). Flooring `f` at 1 instead of filtering would let them in; the magnitude of the lost signal is untested.
+- **$\gamma$ unmapped on $(0.5, 1)$ for `fitted_fg` (audit-discovered).** Only $\gamma \in \{0.1, 0.5, 1.0\}$ tried. The code comment in `sumo_to_phase3.py` suggests $\gamma \approx 0.9$ is the intended operating point; iter 7's signal-inversion at $\gamma = 0.5$ may have been the worst point in the curve, not representative.
+- **Code hygiene from audit.** Surface `scipy.optimize.OptimizeResult` from `fit_chain` so L-BFGS convergence is visible. Pin SUMO `--seed` in the `.sumocfg` files. Replace (tautological) branching-only diagnostic with a per-step LR contribution histogram. None of these are load-bearing; all are easy wins.
 
 ---
 

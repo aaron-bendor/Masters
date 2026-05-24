@@ -11,5 +11,6 @@
     <output>
         <vehroute-output value="vehroutes.intr.xml"/>
         <vehroute-output.exit-times value="true"/>
+        <statistic-output value="stats.intr.xml"/>
     </output>
 </configuration>

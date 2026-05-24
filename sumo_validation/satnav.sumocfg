@@ -17,5 +17,6 @@
     <output>
         <vehroute-output value="vehroutes.satnav.xml"/>
         <vehroute-output.exit-times value="true"/>
+        <statistic-output value="stats.satnav.xml"/>
     </output>
 </configuration>
