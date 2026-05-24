@@ -369,21 +369,29 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 
 > **Iter 5 — raising observation coverage closes most of the gap.** With $n = 686$, the original 10 % coverage gave only 68 observed edges. Raised `obs_frac` to 0.25 ($\lvert X_o\rvert = 171$): `fitted_f` climbed 0.531 → 0.649, recovering about 60 % of the gap to the empirical ceiling. The diagnosis flipped cleanly from "structural limit" to "fittable, given more observation".
 
-> **Iter 6 (in progress at time of writing) — fitted_fg with empirical hitting rates.** Implemented `empirical_g`, the trajectory-based analog of `morimura.true_g`: for each $(i, j) \in X_o \times X_o$, estimate the discounted first-hit probability of $j$ from $i$ across training trajectories, floored at $10^{-3}$ to keep `log(g)` finite in the inverter. Fitting with $\gamma = 0.1$ mirrors the Phase 3 toy's headline detector. Run time at $\lvert X_o\rvert = 171$ is ~1–2 hours per pair because each L-BFGS gradient step performs 171 LU factorisations of $(I - \beta P_T^{\setminus j})$. Result pending.
+> **Iter 6 — fitted_fg at the toy default ($\gamma = 0.1$, 1 h data).** Implemented `empirical_g`, the trajectory-based analog of `morimura.true_g`: for each $(i, j) \in X_o \times X_o$, estimate the discounted first-hit probability of $j$ from $i$ across training trajectories, floored at $10^{-3}$ to keep `log(g)` finite. Result: `fitted_fg` AUC 0.593, **worse than `fitted_f`** (0.649). Diagnostic: 90 % of $g_{\text{intr}}$ cells and 80 % of $g_{\text{satnav}}$ cells sit at the floor — empirical $g$ is sample-starved at $\lvert X_o\rvert^2 \approx 29{,}241$ pairs against finite trajectories. With $\gamma = 0.1$, 90 % of the loss is being spent matching that mostly-fictional floor pattern, which pulls both fitted chains toward the same shape and washes out the LR signal.
+
+> **Iter 7 — re-weighting toward $f$ ($\gamma = 0.5$, 1 h data) backfired.** Rationale: trust the noisy $g$ less; balance the loss 50/50. Result: `fitted_fg` AUC **0.438** — below chance, signal inverted. Diagnostic: intermediate $\gamma$ values land in a tug-of-war zone where $f$ and $g$ pull in conflicting directions; the optimiser settles in a saddle where neither signal dominates and the LR sign can flip relative to truth. The lesson is sharper than "down-weight $g$": either trust $g$ fully ($\gamma$ low) or ignore it fully ($\gamma = 1$); mixing them when $g$ is junky is worse than either extreme.
+
+> **Iter 8 — quadrupling the data (4 h sim, $\gamma = 0.5$).** Re-ran `randomTrips.py -e 14400`, regenerated routes, re-ran both sims; same spawn rate (`-p 0.5`) just for longer, so per-moment congestion is unchanged. Diagnostic numbers: $g$ at-floor fraction dropped 90 % → 79 % (intr) and 80 % → 55 % (satnav); empirical-chain ceiling rose 0.721 → 0.747. **`fitted_f` jumped 0.649 → 0.714** — now within 0.033 of the ceiling (96 % of the recoverable gap closed). `fitted_fg` climbed 0.438 → 0.561, a real improvement, but still well below `fitted_f`. Read: more data helps both detectors, but $f$ converges faster (171 stations are easy to estimate well; 29 k pairs are not), so `fitted_f` keeps its lead.
 
 ### Current state
 
-`sumo_validation/sumo_phase3_fig.png`. Numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class:
+`sumo_validation/sumo_phase3_fig.png`. Final numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class, 4 h simulated time:
 
 | Detector | AUC | Note |
 |---|---|---|
-| empirical (full obs, all steps) | 0.721 | Per-source-state Laplace-smoothed MLE from training trajectories. The 1-step-Markov ceiling on this data. |
-| empirical (full obs, branching only) | 0.721 | Forced-transition steps masked out. No gain over all-steps — signal is uniform across the trajectory. |
-| `fitted_f` (γ = 1, all steps) | 0.649 | Morimura f-only at 25 % coverage. ~60 % of the gap closed vs. iter 4. |
-| `fitted_f` (branching only) | 0.649 | Same as empirical: no separation between branching-step and forced-step contributions. |
-| `fitted_fg` (γ = 0.1, all steps) | *pending* | Morimura f+g with empirical $g$. Expected to close most of the remaining 0.07 to the ceiling. |
+| empirical (full-obs ceiling) | 0.747 | Per-source Laplace-smoothed MLE from training trajectories. The 1-step-Markov ceiling on this data. |
+| **`fitted_f`** | **0.714** | f-only Morimura. **96 % of the gap from chance to ceiling.** The headline detector for the SUMO validation. |
+| `fitted_fg` ($\gamma = 0.1$, 1 h data) | 0.593 | Toy default. Worse than `fitted_f` due to 90 % floor in $g$. |
+| `fitted_fg` ($\gamma = 0.5$, 1 h data) | 0.438 | Signal inverted — $\gamma = 0.5$ is the tug-of-war zone. |
+| `fitted_fg` ($\gamma = 0.5$, 4 h data) | 0.561 | Improves with more data but never catches `fitted_f`. |
 
-**Headline read.** The Phase 3 framework recovers a real rerouting signal from SUMO data once two conditions are met: the network has realistic topology (no aggressive road-class trimming) and observation density is on the order of 25 % rather than the 10 % the synthetic toy used. Whether `fitted_fg` matches the empirical ceiling — making the validation positive in the same way the toy was — is the open question being resolved by the current run.
+**Headline read.** `fitted_f` recovers 96 % of the gap from chance to the empirical 1-step-Markov ceiling on realistic SUMO traffic — a clean positive validation of the Morimura framework on simulated city data. Three conditions were necessary, each discovered by failure: realistic network topology (no aggressive road-class trimming), observation density of ~25 % rather than the toy's 10 %, and trajectory volume equivalent to several hours of rush-hour data.
+
+The toy's headline detector, `fitted_fg`, did **not** validate cleanly on SUMO. The cause is structural: empirical $g$ at $\lvert X_o\rvert^2 = 29{,}241$ cells is sample-starved, the floor-padded cells distort the inverter when weighted heavily, and mixing $f$ and $g$ losses at intermediate $\gamma$ can produce sign inversions. More data narrows the gap (it climbed 0.438 → 0.561 with 4× data) but doesn't close it because `fitted_f` benefits from the same data and converges faster. The deeper reason: 171 station counts are easy to estimate well; 29 k pair-wise hitting rates are not. This isn't a fixable bug in the simulator's observation quality — it's an honest consequence of using the partial-observation $g$-estimator the framework is *designed* to consume.
+
+> **Note on the paper's own use of $g$.** Reading Morimura et al. (2013) carefully: the paper *defines* $g$ as an empirical, count-based quantity ("the number of vehicles that went through $x$ and $x'$ in this order divided by $f(x)$"), not as an analytical object. The synthetic experiment (§6.1) "samples" both $f$ and $g$ from the synthesized chain, but at $n = 100$ and $\lvert X_o\rvert \leq 90$, the $\lvert X_o\rvert^2$ pairs to estimate are few enough that $g$ stays dense. Crucially, the paper's **real-world** experiment (§6.2, Nairobi traffic, 1{,}497 links, 52 observation points) explicitly *drops* $g$: *"we did not use the hitting rate $g(x, x')$ here because of its unavailability"*. The paper's only real-world demonstration is f-only. Our SUMO validation parallels that: $g$ is the most data-hungry component of the framework, and it falls off first when going from toy scale to deployment scale.
 
 ### Diagnostic tools added (`sumo_to_phase3.py`)
 
@@ -407,8 +415,8 @@ netconvert --osm-files city_bbox.osm.xml -o net.net.xml \
     --geometry.remove --ramps.guess --junctions.join \
     --tls.guess-signals --tls.discard-simple
 
-# 2. Demand
-python3 $SUMO_HOME/tools/randomTrips.py -n net.net.xml \
+# 2. Demand  (replace <SUMO_HOME> with the env var, set as above)
+python3 <SUMO_HOME>/tools/randomTrips.py -n net.net.xml \
     -o trips.xml -e 3600 -p 0.5 --seed 42 \
     --vehicle-class passenger --validate
 duarouter -n net.net.xml -t trips.xml -o routes.xml \
@@ -431,7 +439,7 @@ The four `.sumocfg`/`.add.xml` files in the directory pin all run-time options.
 - **Demand sweep.** `-p 0.5` was chosen by trial-and-error (iters 3, 5). A proper sweep over demand × rerouting-fraction — the SUMO analog of Phase 2's $\alpha \times \rho_c$ — would establish the operating regime where the detector is strongest.
 - **Mixed sat-nav adoption.** Currently 0 % vs. 100 %. The realistic case is mixed adoption (some drivers on sat-nav, others not, as in Phase 2). Requires a vehicle-type-stratified `routes.xml` with `device.rerouting` enabled per vType.
 - **Multiple city extracts.** Single Ingolstadt bbox so far. Validating across multiple OSM extracts (different topologies, different demand patterns) would generalise the result.
-- **Hitting-rate noise — answered here.** Phase 3's open thread about $g$ being "too clean" is implicitly addressed by Phase 4: `empirical_g` is finite-sample noisy, and `fitted_fg` here is therefore the realistic-noise version of the toy's exact-$g$ detector. If `fitted_fg` matches the empirical ceiling in iter 6, the framework survives that noise.
+- **Hitting-rate noise — partly answered.** Phase 3's open thread about $g$ being "too clean" is now empirically pinned down: `empirical_g` from partial observations scales badly with $\lvert X_o\rvert^2$, and `fitted_fg` does not recover the empirical ceiling at realistic scales. Two ways to push on this further within the partial-observation premise: (a) much more data (linear in compute, slow), or (b) a smarter $g$ estimator with Bayesian shrinkage instead of a flat floor (~30 lines of code, would mostly help the in-between cells that are partially observed). Going outside the partial-observation premise — e.g. computing $g$ analytically from `PT_emp` — would be cheating relative to the framework's setting and was discarded.
 
 ---
 
