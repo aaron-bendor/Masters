@@ -112,10 +112,19 @@ def hitting_pack(PT, beta, j):
 # ===============================================================
 
 class Inverter:
-    """Fit theta = [nu^loc, omega^loc] to match observed f and g on X_o.
-    gamma in [0, 1] balances stationary-prob and hitting-prob losses."""
+    """Fit theta = [nu^loc, omega^loc, omega^glo1, omega^glo2] to match
+    observed f and g on X_o. gamma in [0, 1] balances stationary-prob and
+    hitting-prob losses.
 
-    def __init__(self, adj_out, beta, gamma=0.1, lam=1e-3):
+    Globals are optional: pass `phi_T` (shape n x d_T) for destination-state
+    features (paper's phi_T(x') in Eq. 17), and `psi` (shape E x d_psi) for
+    directed-edge features (paper's psi(x, x') in Eq. 17). Either or both
+    may be omitted (paper p. 7: "If a simpler model is preferred, either of
+    them would be omitted."); with phi_T=None and psi=None the behaviour
+    reduces exactly to the local-only configuration."""
+
+    def __init__(self, adj_out, beta, gamma=0.1, lam=1e-3,
+                 phi_T=None, psi=None):
         self.n = len(adj_out)
         self.adj_out = adj_out
         self.beta = beta
@@ -124,18 +133,52 @@ class Inverter:
         self.edges = [(x, y) for x, ys in enumerate(adj_out) for y in ys]
         self.E = len(self.edges)
         self.edge_idx = {e: i for i, e in enumerate(self.edges)}
-        self.d = self.n + self.E
+        self._src = np.array([x for (x, y) in self.edges], dtype=int)
+        self._dst = np.array([y for (x, y) in self.edges], dtype=int)
+        # Global feature matrices
+        self.phi_T = (np.asarray(phi_T, dtype=float)
+                      if phi_T is not None else np.zeros((self.n, 0)))
+        self.psi   = (np.asarray(psi,   dtype=float)
+                      if psi   is not None else np.zeros((self.E, 0)))
+        assert self.phi_T.shape[0] == self.n, \
+            f"phi_T first dim must be n={self.n}, got {self.phi_T.shape}"
+        assert self.psi.shape[0]   == self.E, \
+            f"psi first dim must be E={self.E}, got {self.psi.shape}"
+        self.d_T   = int(self.phi_T.shape[1])
+        self.d_psi = int(self.psi.shape[1])
+        # Pre-index phi_T at the destination of each edge for fast forward
+        self._phi_T_dst = (self.phi_T[self._dst] if self.d_T > 0
+                           else np.zeros((self.E, 0)))
+        self.d = self.n + self.E + self.d_T + self.d_psi
+
+    def _split_theta(self, theta):
+        n, E, dT = self.n, self.E, self.d_T
+        nu      = theta[:n]
+        om_loc  = theta[n : n + E]
+        om_glo1 = theta[n + E : n + E + dT]
+        om_glo2 = theta[n + E + dT : self.d]
+        return nu, om_loc, om_glo1, om_glo2
 
     def forward(self, theta):
-        nu = theta[: self.n]
-        om = theta[self.n:]
+        nu, om_loc, om_glo1, om_glo2 = self._split_theta(theta)
         pI = softmax(nu)
-        PT = build_pT(self.adj_out, om, self.edge_idx)
+        # Score per edge: omega^loc + phi_T(dst).om_glo1 + psi.om_glo2
+        s = om_loc.copy()
+        if self.d_T > 0:
+            s = s + self._phi_T_dst @ om_glo1
+        if self.d_psi > 0:
+            s = s + self.psi @ om_glo2
+        # Build PT by per-origin softmax over outgoing edges
+        PT = np.zeros((self.n, self.n))
+        for x, nbrs in enumerate(self.adj_out):
+            idx = [self.edge_idx[(x, y)] for y in nbrs]
+            PT[x, nbrs] = softmax(s[idx])
         return pI, PT
 
     # ----- Jacobian of log pi wrt theta  (Eq. 12) -----
     def grad_log_pi(self, pI, PT, pi):
         n, d, b = self.n, self.d, self.beta
+        E, dT, dpsi = self.E, self.d_T, self.d_psi
         P = b * PT + (1.0 - b) * pI[None, :]
         # Q = I - P^T + pi 1^T  (always invertible by Prop. 1)
         Q = np.eye(n) - P.T + np.outer(pi, np.ones(n))
@@ -149,14 +192,39 @@ class Inverter:
             block = b * pi[a] * (np.diag(pa) - np.outer(pa, pa))
             cols = [n + self.edge_idx[(a, c)] for c in nbrs]
             V[np.ix_(nbrs, cols)] = block
+        # omega^glo1 block: globals on phi_T(x') (destination feature)
+        # V_glo1[y, k] = beta * [tilde_pi[y] phi_T[y,k] - (P_T^T (pi . bar_phi_T))[y,k]]
+        # where tilde_pi = P_T^T pi, bar_phi_T = P_T phi_T
+        if dT > 0:
+            bar_phi_T = PT @ self.phi_T               # (n, d_T)
+            tilde_pi  = PT.T @ pi                     # (n,)
+            V_glo1 = b * (tilde_pi[:, None] * self.phi_T
+                          - PT.T @ (pi[:, None] * bar_phi_T))
+            V[:, n + E : n + E + dT] = V_glo1
+        # omega^glo2 block: globals on psi(x, x') (edge feature)
+        # V_glo2[y, k] = beta * [sum_{e: dst(e)=y} pi[src(e)] P_T[src,dst] psi_e[k]
+        #                        - (P_T^T (pi . bar_psi))[y, k]]
+        # bar_psi[x, k] = sum_{e: src(e)=x} P_T[src,dst] psi_e[k]
+        if dpsi > 0:
+            P_T_e = PT[self._src, self._dst]          # (E,)
+            weighted_psi = P_T_e[:, None] * self.psi  # (E, d_psi)
+            bar_psi = np.zeros((n, dpsi))
+            np.add.at(bar_psi, self._src, weighted_psi)
+            u = (pi[self._src] * P_T_e)[:, None] * self.psi  # (E, d_psi)
+            V_first = np.zeros((n, dpsi))
+            np.add.at(V_first, self._dst, u)
+            V_glo2 = b * (V_first - PT.T @ (pi[:, None] * bar_psi))
+            V[:, n + E + dT :] = V_glo2
         MV = sla.solve(Q, V)
         return MV / pi[:, None]
 
     # ----- Jacobian of log h_theta(j) wrt theta  (Eq. 15) -----
     def grad_log_h(self, PT, h_j, lu, piv, j):
         n, d, b = self.n, self.d, self.beta
+        E, dT, dpsi = self.E, self.d_T, self.d_psi
         V = np.zeros((n, d))
-        # only omega^loc contributes (initial-prob params don't enter P_T)
+        # nu params don't enter P_T -> their columns stay zero.
+        # omega^loc block (existing)
         for a, nbrs in enumerate(self.adj_out):
             if a == j:
                 continue
@@ -165,6 +233,31 @@ class Inverter:
             scalars = pa * (h_a - pa @ h_a)
             cols = [n + self.edge_idx[(a, c)] for c in nbrs]
             V[a, cols] = scalars
+        # omega^glo1 block: for a != j,
+        # V[a, k] = sum_y P_T(y|a) phi_T(y,k) h(y) - bar_phi_T(a,k) (P_T h)(a)
+        # row j stays zero (absorbed). No beta inside V; applied at return.
+        if dT > 0:
+            Mh = PT @ (h_j[:, None] * self.phi_T)     # (n, d_T)
+            bar_phi_T = PT @ self.phi_T               # (n, d_T)
+            r = PT @ h_j                              # (n,)
+            V_glo1 = Mh - bar_phi_T * r[:, None]
+            V_glo1[j, :] = 0
+            V[:, n + E : n + E + dT] = V_glo1
+        # omega^glo2 block: for a != j,
+        # V[a, k] = sum_{e: src(e)=a} P_T[src,dst] psi_e[k] h[dst]
+        #          - bar_psi(a, k) (P_T h)(a)
+        if dpsi > 0:
+            P_T_e = PT[self._src, self._dst]          # (E,)
+            weighted_psi = P_T_e[:, None] * self.psi  # (E, d_psi)
+            bar_psi = np.zeros((n, dpsi))
+            np.add.at(bar_psi, self._src, weighted_psi)
+            u = (P_T_e * h_j[self._dst])[:, None] * self.psi  # (E, d_psi)
+            V_first_h = np.zeros((n, dpsi))
+            np.add.at(V_first_h, self._src, u)
+            r = PT @ h_j                              # (n,)
+            V_glo2 = V_first_h - bar_psi * r[:, None]
+            V_glo2[j, :] = 0
+            V[:, n + E + dT :] = V_glo2
         MV = sla.lu_solve((lu, piv), V)
         return b * MV / h_j[:, None]
 

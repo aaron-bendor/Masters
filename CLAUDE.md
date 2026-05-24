@@ -32,10 +32,10 @@ Self-contained reproduction of §6.1 of the paper. The pieces that the other scr
 
 - **`make_truth`** — builds a synthetic ground-truth chain: random strongly-connected graph (`random_graph`), softmax-parametric `pI` and `pT`, then mixed 70/30 with Dirichlet(0.3) noise to push truth slightly outside the parametric family.
 - **`stationary(P)`** — solves `π^T P = π^T` by replacing the last balance equation with the normalisation constraint.
-- **`Inverter`** — fits `theta = [nu_loc, omega_loc]` by minimising the regularised objective (Eq. 7). Implements analytic gradients of `log π` (Eq. 12, `grad_log_pi`) and `log h_θ(j)` (Eq. 15, `grad_log_h`), then hands `loss_grad` to `scipy.optimize.minimize(method="L-BFGS-B")`. `gamma=1.0` is stationary-only (f-only fit); `gamma<1.0` mixes in the hitting-rate loss.
+- **`Inverter`** — fits `theta = [nu_loc, omega_loc, (omega_glo1, omega_glo2)]` by minimising the regularised objective (Eq. 7). Implements analytic gradients of `log π` (Eq. 12, `grad_log_pi`) and `log h_θ(j)` (Eq. 15, `grad_log_h`), then hands `loss_grad` to `scipy.optimize.minimize(method="L-BFGS-B")`. `gamma=1.0` is stationary-only (f-only fit); `gamma<1.0` mixes in the hitting-rate loss. Globals are optional: pass `phi_T` (n × d_T) and/or `psi` (E × d_psi) to enable the paper's Eqs. 17–18 ω-global terms; default `None` reproduces the local-only behaviour exactly. Gradients FD-verified to ~5e-9 relative error in both local-only and globals modes.
 - **`true_g`** — exact hitting-rate matrix on `X_o × X_o` used to give the inverter clean `g` observations in the synthetic experiments.
 
-Local-only parameters (no global features); `beta` held at the true value during inversion to dodge a known identifiability issue when only stationary stats are observed.
+`beta` is held at the true value during inversion to dodge a known identifiability issue when only stationary stats are observed. The local-only configuration is the Phase-1 default (matches the paper's synthetic experiment §6.1); ω-globals are used by Phase 4 on SUMO data per the paper's real-world precedent (§6.2 Nairobi).
 
 ### `congestion_filter.py` — Phase 2 (snapshot detection + filtered refit)
 

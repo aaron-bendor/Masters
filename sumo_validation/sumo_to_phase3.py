@@ -113,6 +113,101 @@ def _largest_scc(adj_dict):
 
 
 # ===============================================================
+#  Global features from net.net.xml  (paper Eqs. 17-18)
+# ===============================================================
+
+_ROAD_CLASSES = ("motorway", "primary", "tertiary", "residential", "service", "other")
+
+
+def _road_class(sumo_edge):
+    """Map SUMO/OSM road type to a coarser class."""
+    t = sumo_edge.getType() or ""
+    if t.startswith("highway."):
+        t = t[len("highway."):]
+    if t in ("motorway", "motorway_link", "trunk", "trunk_link"):
+        return "motorway"
+    if t in ("primary", "primary_link", "secondary", "secondary_link"):
+        return "primary"
+    if t in ("tertiary", "tertiary_link"):
+        return "tertiary"
+    if t in ("residential", "living_street"):
+        return "residential"
+    if t in ("service", "unclassified", "road"):
+        return "service"
+    return "other"
+
+
+def _headings(shape):
+    """Unit headings at the start and end of an edge polyline."""
+    if len(shape) < 2:
+        v = np.array([1.0, 0.0])
+        return v, v
+    p0, p1 = np.array(shape[0]), np.array(shape[1])
+    h0 = p1 - p0
+    n = np.linalg.norm(h0)
+    h0 = h0 / n if n > 0 else np.array([1.0, 0.0])
+    pm, pn = np.array(shape[-2]), np.array(shape[-1])
+    h1 = pn - pm
+    n = np.linalg.norm(h1)
+    h1 = h1 / n if n > 0 else np.array([1.0, 0.0])
+    return h0, h1
+
+
+def extract_features(net_path, edges, adj_out):
+    """Build (phi_T, psi) feature matrices matching the paper's Eqs. 17-18.
+
+    phi_T[i, :]  (per-destination state i): one-hot road class (6 dims) +
+        standardised log speed limit (1) + standardised log lane count (1)
+        => shape (n, 8).
+
+    psi[e, :]    (per-directed-edge e = (x, y) in adj_out's order): turn-angle
+        cosine between edge x's end-heading and edge y's start-heading (1),
+        plus standardised log speed-limit difference log s(y) - log s(x) (1)
+        => shape (E, 2).
+
+    Continuous features are zero-mean unit-variance. Returns (phi_T, psi)."""
+    net = sumolib.net.readNet(net_path)
+    n = len(edges)
+    sumo_edges = [net.getEdge(eid) for eid in edges]
+
+    road_oh = np.zeros((n, len(_ROAD_CLASSES)))
+    raw_log_speed = np.zeros(n)
+    raw_log_lanes = np.zeros(n)
+    head = []
+    for i, se in enumerate(sumo_edges):
+        road_oh[i, _ROAD_CLASSES.index(_road_class(se))] = 1.0
+        raw_log_speed[i] = np.log(max(1.0, se.getSpeed()))
+        raw_log_lanes[i] = np.log(max(1, se.getLaneNumber()))
+        head.append(_headings(se.getShape()))
+
+    def _std(x):
+        m, s = float(x.mean()), float(x.std())
+        return (x - m) / (s + 1e-9)
+
+    phi_T = np.column_stack([
+        road_oh,
+        _std(raw_log_speed)[:, None],
+        _std(raw_log_lanes)[:, None],
+    ])
+
+    edge_list = [(x, y) for x, ys in enumerate(adj_out) for y in ys]
+    E = len(edge_list)
+    raw_turn_cos = np.zeros(E)
+    raw_log_speed_ratio = np.zeros(E)
+    for i, (x, y) in enumerate(edge_list):
+        _, hx_end = head[x]
+        hy_start, _ = head[y]
+        raw_turn_cos[i] = float(np.clip(np.dot(hx_end, hy_start), -1.0, 1.0))
+        raw_log_speed_ratio[i] = raw_log_speed[y] - raw_log_speed[x]
+    psi = np.column_stack([
+        _std(raw_turn_cos)[:, None],
+        _std(raw_log_speed_ratio)[:, None],
+    ])
+
+    return phi_T, psi
+
+
+# ===============================================================
 #  Edge counts (f) from edgedata.*.xml
 # ===============================================================
 
