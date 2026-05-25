@@ -1,0 +1,22 @@
+<configuration>
+    <input>
+        <net-file value="net.small.net.xml"/>
+        <route-files value="routes.small.p2.0.xml"/>
+        <additional-files value="edgedata.satnav.small.add.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="14400"/>
+    </time>
+    <processing>
+        <device.rerouting.probability value="1.0"/>
+        <device.rerouting.period value="60"/>
+        <device.rerouting.adaptation-interval value="30"/>
+        <device.rerouting.adaptation-weight value="0.5"/>
+    </processing>
+    <output>
+        <vehroute-output value="vehroutes.satnav.small.p2.0.xml"/>
+        <vehroute-output.exit-times value="true"/>
+        <statistic-output value="stats.satnav.small.p2.0.xml"/>
+    </output>
+</configuration>

@@ -1,0 +1,16 @@
+<configuration>
+    <input>
+        <net-file value="net.small.net.xml"/>
+        <route-files value="routes.small.p2.0.xml"/>
+        <additional-files value="edgedata.intr.small.add.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="14400"/>
+    </time>
+    <output>
+        <vehroute-output value="vehroutes.intr.small.p2.0.xml"/>
+        <vehroute-output.exit-times value="true"/>
+        <statistic-output value="stats.intr.small.p2.0.xml"/>
+    </output>
+</configuration>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-05-25T12:30:34.851738+00:00 by Eclipse SUMO sumo 1.26.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="net.small.net.xml"/>
+        <route-files value="routes.small.p2.0.xml"/>
+        <additional-files value="edgedata.intr.small.add.xml"/>
+    </input>
+
+    <output>
+        <vehroute-output value="vehroutes.intr.small.p2.0.xml"/>
+        <vehroute-output.exit-times value="true"/>
+        <statistic-output value="stats.intr.small.p2.0.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="14400"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+    </report>
+
+    <random_number>
+        <seed value="23"/>
+    </random_number>
+
+</sumoConfiguration>
+-->
+
+<statistics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/statistic_file.xsd">
+    <performance clockBegin="1779708634.86" clockEnd="1779708647.69" clockDuration="12.83" traciDuration="26.24" realTimeFactor="1122.19" vehicleUpdatesPerSecond="658591.72" personUpdatesPerSecond="0.00" begin="0.00" end="14400.00" duration="14400.00"/>
+    <vehicles loaded="7200" inserted="6948" running="1704" waiting="252"/>
+    <teleports total="1226" jam="593" yield="555" wrongLane="78"/>
+    <safety collisions="0" emergencyStops="0" emergencyBraking="1"/>
+    <persons loaded="0" running="0" jammed="0"/>
+    <personTeleports total="0" abortWait="0" wrongDest="0"/>
+</statistics>
