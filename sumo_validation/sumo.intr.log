@@ -1,0 +1,9 @@
+pj_obj_create: Cannot find proj.db
+pj_obj_create: Cannot find proj.db
+pj_obj_create: Cannot find proj.db
+Warning: Teleporting vehicle '5480'; waited too long (yield), lane='23009002#0_0', time=6310.00.
+Warning: Vehicle '5480' ends teleporting on edge '24978651#0', time=6310.00.
+Warning: Teleporting vehicle '9631'; waited too long (yield), lane='-1199679352#2_0', time=10089.00.
+Warning: Vehicle '9631' ends teleporting on edge '164051410#0', time=10089.00.
+Warning: Teleporting vehicle '10082'; waited too long (yield), lane='-1199679352#2_0', time=10499.00.
+Warning: Vehicle '10082' ends teleporting on edge '164051410#0', time=10541.00.

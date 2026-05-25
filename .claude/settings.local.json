@@ -19,7 +19,9 @@
       "Bash(brew update *)",
       "Bash(brew upgrade *)",
       "Read(//Users/aaronbendor/.claude/**)",
-      "Bash(grep -o '\\\\$' /Users/aaronbendor/DESENG/Masters/research_logbook.md)"
+      "Bash(grep -o '\\\\$' /Users/aaronbendor/DESENG/Masters/research_logbook.md)",
+      "Bash(/Users/aaronbendor/DESENG/Masters/.venv/bin/python -)",
+      "Bash(git push *)"
     ]
   }
 }

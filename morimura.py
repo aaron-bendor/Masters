@@ -419,7 +419,7 @@ def predict_f(pi_hat, X_o, f_o):
     if s <= 0:
         s = 1e-15
     return float(np.sum(f_o)) * pi_hat / s
-
+why
 
 def run(n=50, mean_out_degree=3, beta=0.9, K=1000.0,
         obs_fracs=(0.05, 0.10, 0.20, 0.35, 0.50, 0.70, 0.90),
