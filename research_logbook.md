@@ -444,6 +444,32 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 >
 > **Corrected picture.** On small bbox at clean demand, `fitted_f` averages 0.575 ± 0.022 across SUMO instances; iter 9's 0.599 / 88 % gap closure was a point estimate inside the natural variance band. The validation is **defensible** but should be quoted with ≥ ±0.03 uncertainty, not as a single decimal. Iter 14's findings (2) and (4) — "fitter does worse on small bbox", "T=40 inverts" — are still consistent with this iter-15 picture but with smaller magnitude than iter 14 framed: at `maxiter = 1500` the small-bbox fitter recovers ~80 % of the AUC gap on average, not 22 %. Bigger-bbox numbers (iter 11–13) have not been multi-seeded and presumably carry similar (possibly larger) variance — the headline `fitted_f ≈ 0.6` on bigger bbox should also be banded before being quoted in writing.
 
+> **Iter 16 — bigger-bbox multi-seed sweep mirrors iter 15's protocol on `net.net.xml`.** Goal: put error bars on the iter-11/12/13 bigger-bbox numbers that were single-seed. Setup: 5 fresh SUMO simulations at `-p 0.5` with `randomTrips` seeds ∈ {23, 7, 42, 101, 2024}; X_o seed fixed at 13; T=20; `maxiter = 1500`. Helper scripts: `sumo_validation/run_seed_big.sh`, `sumo_validation/score_seed_big.py`. Wallclock: ~3 h SUMO + ~1.5 h fits.
+>
+> | SUMO seed | empirical | `fitted_f` | AUC gap closed |
+> |---|---|---|---|
+> | 23 | 0.659 | 0.554 | 34 % |
+> | 7 | 0.646 | 0.544 | 30 % |
+> | 42 | 0.685 | 0.612 | 61 % |
+> | 101 | 0.631 | 0.581 | 62 % |
+> | 2024 | 0.638 | 0.585 | 62 % |
+> | **mean ± std** | **0.652 ± 0.019** | **0.575 ± 0.024** | **50 % ± 14 pp** |
+>
+> **Two findings:**
+>
+> **(1) Same `fitted_f` mean as small bbox — `0.575` on both networks.** Differs in the empirical ceiling (small 0.598 vs bigger 0.652) → bigger bbox carries more available signal but `fitted_f` doesn't follow, so gap closure drops from ~80 % to ~50 %. This makes the iter-13 "the data has more signal on bigger network but the fitter can't access it" story quantitatively precise: the fitter caps near `fitted_f ≈ 0.575` *regardless of network*, and what changes is the ceiling above it. **Iter 11's 0.565 / 39 % and iter 13's 0.599 / 60 % both sit inside this band** — they weren't measuring different phenomena, they were single-instance draws from the same distribution.
+>
+> **(2) Gap closure looks bimodal — but with only 5 seeds, treat as suggestive rather than confirmed.** Seeds 23 and 7 cluster at 30–34 %; seeds 42, 101, 2024 cluster at 61–62 %. With `n = 5` this could be either (a) a genuinely bimodal landscape where the L-BFGS fit lands in one of two basins depending on the SUMO instance, or (b) a wide unimodal distribution that happened to sample its two ends. The basin hypothesis is consistent with iter 15's small-bbox L-BFGS multi-modality finding (where same SUMO + different maxiter landed in different basins with 0.06 AUC difference). It would also reconcile iter 11 and iter 13 cleanly — iter 11's 0.565 looks like a "bad basin" draw, iter 13's 0.599 like a "good basin" draw. **But none of this is proven from `n = 5`.** Worth de-risking with: (a) extending to 10–20 seeds, (b) multi-start L-BFGS on a fixed SUMO instance to see if the "bad basin" can be escaped from a different init. If the bimodality survives more seeds, it undermines iter 11's "loss flat from maxiter 300 → 2000" finding (which may have been a within-basin property), and strengthens the case for Levenberg-Marquardt / natural-gradient as the right optimisation fix (see the L-BFGS scoping note below).
+>
+> **Reconciling iter 11–13's single-seed numbers with iter 16's distribution.** All three sit inside the iter-16 band:
+> - iter 11 (no globals, `maxiter` ∈ {300, 2000}): `fitted_f = 0.565`, gap 39 % — in or near the "low" cluster
+> - iter 12 (with ω-globals): `fitted_f = 0.573–0.579`, gap 44–48 % — in between (globals push the fit slightly off whatever basin the local-only fit landed in)
+> - iter 13 (T-scaling, no globals): `fitted_f = 0.599` at T=20, gap 60 % — in the "high" cluster
+>
+> The iter-12 ω-globals contribution (~+0.01 AUC) is dwarfed by the basin-selection uncertainty (±0.05 AUC). The feature work was real but the iter-12 finding "globals add a modest ~5–9 pp gap closure" is no longer cleanly attributable — it could equally be "globals nudged the optimiser into a slightly different basin." Worth re-running iter 12 multi-seeded before quoting that delta in writing.
+>
+> **Open optimiser scoping note (separate task, no code).** The L-BFGS multi-modality issue surfaced in iter 15 (small bbox) and tentatively in iter 16 (bigger bbox) is the exact pathology the paper §4.1 designed natural gradient to mitigate. Our Phase-1 deviations table (line 81) justified the switch from natural gradient to L-BFGS-B as "robust off-the-shelf, not chasing per-iteration speed" — but that framing missed the paper's actual reason. A scoping analysis compared candidate fixes: trivial (raise `λ`), low-effort (multi-start L-BFGS + validation selection), medium (Levenberg-Marquardt via `scipy.optimize.least_squares` — directly tailored to our log-residual loss structure), high (full natural gradient per paper Eq. 11). Recommendation: try (medium) Levenberg-Marquardt first — it's the smallest change that addresses the manifold-geometry concern the paper raises, and `J^T J` for our objective is the FIM of the *observation* likelihood (Gaussian-log-noise model from §3.2.1/3.2.2), so it's effectively a natural gradient for what we actually observe. Don't build yet — pending bigger-bbox sweep completion and project-direction decision.
+
 ### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 
 `sumo_validation/sumo_phase3_fig.png`. Final numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class, 4 h simulated time:
@@ -462,23 +488,29 @@ The toy's headline detector, `fitted_fg`, did **not** validate cleanly on SUMO. 
 
 > **Note on the paper's own use of $g$.** Reading Morimura et al. (2013) carefully: the paper *defines* $g$ as an empirical, count-based quantity ("the number of vehicles that went through $x$ and $x'$ in this order divided by $f(x)$"), not as an analytical object. The synthetic experiment (§6.1) "samples" both $f$ and $g$ from the synthesized chain, but at $n = 100$ and $\lvert X_o\rvert \leq 90$, the $\lvert X_o\rvert^2$ pairs to estimate are few enough that $g$ stays dense. Crucially, the paper's **real-world** experiment (§6.2, Nairobi traffic, 1{,}497 links, 52 observation points) explicitly *drops* $g$: *"we did not use the hitting rate $g(x, x')$ here because of its unavailability"*. The paper's only real-world demonstration is f-only. Our SUMO validation parallels that: $g$ is the most data-hungry component of the framework, and it falls off first when going from toy scale to deployment scale.
 
-### Revised current state (post-iter-15)
+### Revised current state (post-iter-16)
 
-The iter-8 headline `fitted_f` = 0.714 **does not stand as a clean Morimura validation** — it was the framework correctly extracting signal from a mix of (driving patterns + teleport artifacts + finisher-selection bias). After iter 9 + iter 15 (the multi-SUMO-seed sweep that walked back iter 14's over-retraction), the **iter-9 row stands as a defensible validation**, but with substantially wider uncertainty bands than the original "0.599" suggested.
+The iter-8 headline `fitted_f` = 0.714 **does not stand as a clean Morimura validation** — it was the framework correctly extracting signal from a mix of (driving patterns + teleport artifacts + finisher-selection bias). After iter 9 + iter 15/16 (multi-SUMO-seed sweeps on both networks), we have **properly-banded numbers on both bboxes**. The iter-9 row stands as a defensible validation. Bigger-bbox numbers reconcile iter 11–13's single-seed values inside a wide distribution that *may* be bimodal (n=5 — see iter 16).
 
-| Setup | n | T | empirical | `fitted_f` (mean ± std) | `fitted_f` w/ globals | AUC gap closed | Read |
-|---|---|---|---|---|---|---|---|
-| Small bbox `-p 2.0`  | 686  | 20 | 0.60 ± 0.04 (5 SUMO seeds) | **0.575 ± 0.022** (5 SUMO seeds, X_o fixed) | (untested) | **~80 % ± 15 pp** | ✅ Clean validation, properly banded |
-| Bigger bbox `-p 0.5` | 2,405 | 20 | 0.66 | 0.58 ± 0.02 (X_o variance only) | 0.58 | 39–48 % | Globals add ~0.01; not yet multi-SUMO-seeded |
-| Bigger bbox `-p 0.5` | 2,405 | **40** | **0.809** | **0.615** (single seed) | (untested) | 37 % | Empirical reveals much more signal; fitter caps near 0.6 |
+| Setup | n | T | empirical (mean ± std) | `fitted_f` (mean ± std, 5 SUMO seeds, X_o fixed) | AUC gap closed | Read |
+|---|---|---|---|---|---|---|
+| Small bbox `-p 2.0`  | 686   | 20 | 0.598 ± 0.035 | **0.575 ± 0.022** | **~80 % ± 15 pp** | ✅ Clean validation, properly banded (iter 15) |
+| Bigger bbox `-p 0.5` | 2,405 | 20 | 0.652 ± 0.019 | **0.575 ± 0.024** | **~50 % ± 14 pp** | ✅ Reconciles iter 11–13; bimodal pattern possible — see iter 16 (iter 16) |
+| Bigger bbox `-p 0.5` | 2,405 | **40** | **0.809** | **0.615** (single seed; T-sweep not multi-seeded) | 37 % | Iter 13 T-scaling: empirical reveals much more signal than `fitted_f` accesses |
 
-**Combined read (post-iter-15).** On small bbox at clean demand, the inverter recovers ~80 % of the recoverable 1-step Markov AUC gap on average, across SUMO randomness. **Iter 9's 0.599 / 88 % gap closure was a typical point estimate from this distribution, not an outlier.** What changed between iter 9 and iter 15 is not the validation result but the uncertainty quantification: we now know the natural variance across SUMO simulation seeds (std ~0.022 on `fitted_f`, ~0.035 on empirical), and we know L-BFGS can land in different basins with similar training loss but different test AUC (a 0.06 AUC swing observed between maxiter=1500 and maxiter=5000 on the same SUMO data).
+**Combined read (post-iter-16).** The local-only softmax-parametric fitter caps near **`fitted_f ≈ 0.575`** *regardless of network size* — same mean on small and bigger bbox to three decimals. What differs is the empirical 1-step Markov ceiling above it: small bbox has less available signal (`empirical ≈ 0.60`), bigger bbox has more (`empirical ≈ 0.65` at T=20, `0.81` at T=40). So **gap closure depends almost entirely on how much signal the data contains**, not on how well the fitter accesses it: ~80 % on small bbox, ~50 % on bigger bbox at T=20, dropping to ~37 % at T=40.
 
-On bigger bbox, the misspecification ceiling story (iter 11–13) still holds: empirical scales freely to 0.81 at T=40 while `fitted_f` plateaus near 0.6, leaving ~0.2 AUC of available signal inaccessible to the local + ω-global softmax family. **These bigger-bbox numbers are single-seed and not banded** — they presumably carry SUMO-seed variance comparable to the small bbox (≈ ±0.02) on top of X_o variance, and should also be multi-seeded before going into a thesis.
+The strong-form validation headline "Morimura recovers most of the 1-step Markov signal on realistic SUMO traffic" only holds for the small-bbox setup. On larger / longer-trajectory settings the data has signal the local + ω-global softmax cannot access, and richer model classes (2-step Markov, OD-conditional) become necessary.
 
-**Optimisation stability remains a real concern.** Iter 15 demonstrated that more L-BFGS iterations is not always better at small-bbox scale — the longer fit can find a lower-training-loss basin that generalises worse. Same SUMO instance, X_o seed=13: `fitted_f = 0.579` at `maxiter = 1500`, `0.522` at `maxiter = 5000`. Either pick the iterate with lowest *validation* loss, use multi-start initialisation, or raise the Tikhonov `lam` to suppress non-convexity. None of this is a blocker on the iter-15 numbers (which used `maxiter = 1500`), but the bigger-bbox iter-11/12/13 numbers used `maxiter = 300` / `2000` / etc. without checking validation-loss curves — worth revisiting if those numbers will be quoted in writing.
+**Tentative iter-16 bimodality (n=5, not confirmed).** Bigger-bbox gap closure splits into a "low" cluster (30–34 %, 2 seeds) and a "high" cluster (61–62 %, 3 seeds) with nothing in between. If real, this indicates L-BFGS landing in one of two basins depending on SUMO instance — consistent with iter 15's small-bbox basin issue, and would reconcile iter 11 (low basin) with iter 13 (high basin). But n=5 is too few to confirm; could equally well be a wide unimodal distribution sampled at its tails. Confirming requires ~10–20 more SUMO seeds and/or multi-start L-BFGS on a fixed seed.
 
-Closing the remaining ~0.2 AUC of available signal on the bigger network still requires a fundamentally richer model class — 2-step Markov, OD-conditional, or non-parametric / graph-neural alternatives. That research direction is independent of the optimisation stability work.
+**Optimisation stability is a known issue regardless of bimodality confirmation.** Iter 15 directly demonstrated L-BFGS basin-switching on small bbox: same SUMO + same X_o, `maxiter = 1500 → fitted_f = 0.579`, `maxiter = 5000 → 0.522`. The paper §4.1 designed natural gradient specifically to avoid this — our Phase-1 deviations table (line 81) justified the switch to L-BFGS as "robust off-the-shelf" but missed the paper's actual motivation. Scoping analysis (this session, no code yet) recommends **Levenberg-Marquardt** as the smallest fix that addresses the manifold-geometry concern: it's the natural gradient for the *observation* likelihood (Gaussian-log-noise model from §3.2), already supported in scipy, and reuses our existing analytic gradients.
+
+**Open future-work items, prioritised:**
+1. Implement Levenberg-Marquardt path; FD-verify the residual Jacobian; re-run iter 15 + iter 16 protocols. **If LM gives substantially tighter `fitted_f` distributions, the iter-16 bimodality concern dissolves.**
+2. If LM doesn't suffice, implement full natural gradient per paper Eq. 11.
+3. Re-run iter 12 (ω-globals) multi-seeded — the iter-12 "globals add 5–9 pp" finding is currently confounded with basin selection.
+4. 2-step Markov model class — orthogonal to the optimisation work, addresses the model-class misspecification that the empirical T=40 ceiling at 0.81 reveals.
 
 #### Demand sweep — finding the clean operating regime
 
