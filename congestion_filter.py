@@ -76,7 +76,7 @@ def generate_two_regime(n, mean_out_degree, beta, alpha, K,
                         T, p_congested, rho_c,
                         mix=0.7, dir_alpha=0.3, rng=None):
     rng = rng or np.random.default_rng()
-    adj, pI, PT_intr, _, pi_intr = make_truth(
+    adj, pI, PT_intr, _, pi_intr, _, _ = make_truth(
         n, mean_out_degree, beta, mix, dir_alpha, rng,
     )
     cong = cong_vector(pi_intr)

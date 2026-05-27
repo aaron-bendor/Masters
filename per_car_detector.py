@@ -173,7 +173,7 @@ def run_trial(n=50, mean_out_degree=3, beta=0.9, alpha=1.5,
     ROC at each T in T_values. Test trajectories are sampled at the max T
     and truncated for shorter T, so curves across T are paired."""
     rng = np.random.default_rng(seed)
-    adj, pI, PT_intr, _, pi_intr = make_truth(
+    adj, pI, PT_intr, _, pi_intr, _, _ = make_truth(
         n, mean_out_degree, beta, mix=0.7, dir_alpha=0.3, rng=rng,
     )
     PT_satnav, pi_satnav, fp_iter, fp_delta = satnav_pT(

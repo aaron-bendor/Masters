@@ -2,3 +2,10 @@
 # Oversized SUMO sweep artefacts (exceeds GitHub's 100MB hard limit).
 # Local-only; regeneratable from routes.xml + the SUMO seed if needed.
 sumo_validation/vehroutes.satnav.bigbox.p0.25.xml
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local Claude Code worktree directory
+.claude/worktrees/

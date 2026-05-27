@@ -18,9 +18,7 @@ Each Bash tool call gets a fresh shell, so `source .venv/bin/activate` does not 
 .venv/bin/python per_car_detector.py
 ```
 
-Each script's `__main__` runs both a single-config demo and a parameter sweep and writes one or two PNGs next to the source (e.g. `morimura_fig.png`, `congestion_filter_sweep.png`). Runs are slow — minutes for the sweeps — because each cell refits the inverter several times across trials.
-
-`test_sum_list.py` / `sum_list.py` are scratch files unrelated to the research; pytest is not installed.
+Each script's `__main__` runs both a single-config demo and a parameter sweep and writes one or two PNGs next to the source (e.g. `morimura_fig.png`, `congestion_filter_sweep.png`). Runs are slow — minutes for the sweeps — because each cell refits the inverter several times across trials. Phase-1 sweep at the iter-18 paper-faithful config (n=100, globals, λ CV, 10 trials) is ~22 minutes.
 
 ## Architecture
 
@@ -30,7 +28,7 @@ Three scripts arranged as a strict dependency chain. Anything that changes the u
 
 Self-contained reproduction of §6.1 of the paper. The pieces that the other scripts re-use:
 
-- **`make_truth`** — builds a synthetic ground-truth chain: random strongly-connected graph (`random_graph`), softmax-parametric `pI` and `pT`, then mixed 70/30 with Dirichlet(0.3) noise to push truth slightly outside the parametric family.
+- **`make_truth`** — builds a synthetic ground-truth chain: random strongly-connected graph (`random_graph`), softmax-parametric `pI` and `pT`, then mixed 70/30 with Dirichlet(0.3) noise to push truth slightly outside the parametric family. Optional `d_T, d_psi` parameters add random N(0,1) global features in the truth, matching paper §6.1's recipe; returns `(adj_out, pI, PT, P, pi, phi_T, psi)` (7-tuple). Pass `phi_T, psi` to `Inverter` for matching-capacity recovery.
 - **`stationary(P)`** — solves `π^T P = π^T` by replacing the last balance equation with the normalisation constraint.
 - **`Inverter`** — fits `theta = [nu_loc, omega_loc, (omega_glo1, omega_glo2)]` by minimising the regularised objective (Eq. 7). Implements analytic gradients of `log π` (Eq. 12, `grad_log_pi`) and `log h_θ(j)` (Eq. 15, `grad_log_h`), then hands `loss_grad` to `scipy.optimize.minimize(method="L-BFGS-B")`. `gamma=1.0` is stationary-only (f-only fit); `gamma<1.0` mixes in the hitting-rate loss. Globals are optional: pass `phi_T` (n × d_T) and/or `psi` (E × d_psi) to enable the paper's Eqs. 17–18 ω-global terms; default `None` reproduces the local-only behaviour exactly. Gradients FD-verified to ~5e-9 relative error in both local-only and globals modes.
 - **`true_g`** — exact hitting-rate matrix on `X_o × X_o` used to give the inverter clean `g` observations in the synthetic experiments.

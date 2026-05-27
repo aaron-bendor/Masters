@@ -21,7 +21,29 @@
       "Read(//Users/aaronbendor/.claude/**)",
       "Bash(grep -o '\\\\$' /Users/aaronbendor/DESENG/Masters/research_logbook.md)",
       "Bash(/Users/aaronbendor/DESENG/Masters/.venv/bin/python -)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(time ../.venv/bin/python score_seed_big.py --seed 42)",
+      "Bash(../.venv/bin/python sweep_lam_big.py)",
+      "Bash(tee /tmp/lam_sweep_output.log)",
+      "Bash(/Users/aaronbendor/DESENG/Masters/.venv/bin/python score_seed_big_multistart.py --seed 42 --x_o_seed 13 --T 20 --maxiter 1500 --K 10)",
+      "Bash(tee /tmp/multistart_output.log)",
+      "Bash(cp /Users/aaronbendor/DESENG/Masters/.claude/worktrees/agent-a5a78b430fbdf4f5e/sumo_validation/lm_fit.py /Users/aaronbendor/DESENG/Masters/sumo_validation/lm_fit.py)",
+      "Bash(cp /Users/aaronbendor/DESENG/Masters/.claude/worktrees/agent-a5a78b430fbdf4f5e/sumo_validation/score_seed_big_lm.py /Users/aaronbendor/DESENG/Masters/sumo_validation/score_seed_big_lm.py)",
+      "Bash(cp /Users/aaronbendor/DESENG/Masters/.claude/worktrees/agent-aa38b60b476f93d09/sumo_validation/score_seed_big_multistart.py /Users/aaronbendor/DESENG/Masters/sumo_validation/score_seed_big_multistart.py)",
+      "Bash(cp /Users/aaronbendor/DESENG/Masters/.claude/worktrees/agent-af6c88b5b1e57a2bd/sumo_validation/score_seed_big_fg.py /Users/aaronbendor/DESENG/Masters/sumo_validation/score_seed_big_fg.py)",
+      "Bash(/Users/aaronbendor/DESENG/Masters/.venv/bin/python --version)",
+      "Bash(/Users/aaronbendor/DESENG/Masters/.venv/bin/python -c \"import numpy, scipy; print\\('numpy', numpy.__version__, 'scipy', scipy.__version__\\)\")",
+      "Bash(tee -a /tmp/baseline.log)",
+      "Bash(echo \"EXIT $?\")",
+      "Bash(tee -a /tmp/lm.log)",
+      "Bash(../.venv/bin/python contrast_correlation.py --seed 23)",
+      "Bash(kill 60013)",
+      "Bash(../.venv/bin/python -u contrast_correlation.py --seed 23 --maxiter 300)",
+      "Bash(../.venv/bin/python -u contrast_correlation.py --seed 7 --maxiter 300)",
+      "Bash(../.venv/bin/python -u contrast_correlation.py --seed 42 --maxiter 300)",
+      "Bash(../.venv/bin/python -u contrast_correlation.py --seed 101 --maxiter 300)",
+      "Bash(../.venv/bin/python -u contrast_correlation.py --seed 2024 --maxiter 300)",
+      "Bash(awk '{print $2, $3\"%CPU\", $4\"%MEM\", $10, $13}')"
     ]
   }
 }

@@ -363,21 +363,55 @@ def nwkr_with_cv(adj_out, X_o, f_obs, bandwidths=None):
 #  Synthetic data
 # ===============================================================
 
-def make_truth(n, mean_out_degree, beta, mix, dir_alpha, rng):
-    """Build a 'true' Markov chain: clean softmax model, then mixed with
-    Dirichlet noise on both pI and each row of pT."""
+def make_truth(n, mean_out_degree, beta, mix, dir_alpha, rng,
+               d_T=0, d_psi=0):
+    """Build a 'true' Markov chain: softmax-parametric model with optional
+    global features, then mixed with Dirichlet noise on both pI and each
+    row of pT.
+
+    Paper §6.1 protocol: "every element of nu, omega, phi_I(x), phi_T(x),
+    psi_T(x, x') was drawn independently from N(0, 1^2)." Setting both
+    d_T and d_psi to 0 reduces to the local-only variant (still a valid
+    paper configuration per the "either of them would be omitted" remark
+    on p. 7). With d_T, d_psi > 0 the truth is the paper's §6.2-style
+    configuration (transition globals only).
+
+    Returns (adj_out, pI, PT, P, pi, phi_T, psi) where phi_T (n, d_T) and
+    psi (E, d_psi) are the feature matrices used in the truth — pass these
+    to Inverter to use the same parametric family for recovery."""
     adj_out = random_graph(n, mean_out_degree, rng)
     edges = [(x, y) for x, ys in enumerate(adj_out) for y in ys]
     edge_idx = {e: i for i, e in enumerate(edges)}
+    E = len(edges)
+    dst = np.array([y for (_, y) in edges], dtype=int)
 
+    # Features (drawn iid N(0, 1))
+    phi_T = (rng.normal(size=(n, d_T)) if d_T > 0
+             else np.zeros((n, 0), dtype=float))
+    psi = (rng.normal(size=(E, d_psi)) if d_psi > 0
+           else np.zeros((E, 0), dtype=float))
+
+    # Initial prob (local only — Inverter doesn't take phi_I)
     nu_loc = rng.normal(size=n)
     pI_clean = softmax(nu_loc)
     sigma = rng.dirichlet(dir_alpha * np.ones(n))
     pI = mix * pI_clean + (1.0 - mix) * sigma
     pI = pI / pI.sum()
 
-    om_loc = rng.normal(size=len(edges))
-    PT_clean = build_pT(adj_out, om_loc, edge_idx)
+    # Transition probs: per-edge score om_loc + phi_T(dst).om_glo1 + psi.om_glo2
+    om_loc = rng.normal(size=E)
+    om_glo1 = rng.normal(size=d_T) if d_T > 0 else np.zeros(0)
+    om_glo2 = rng.normal(size=d_psi) if d_psi > 0 else np.zeros(0)
+    s = om_loc.copy()
+    if d_T > 0:
+        s = s + phi_T[dst] @ om_glo1
+    if d_psi > 0:
+        s = s + psi @ om_glo2
+    PT_clean = np.zeros((n, n))
+    for x, nbrs in enumerate(adj_out):
+        idx = [edge_idx[(x, y)] for y in nbrs]
+        PT_clean[x, nbrs] = softmax(s[idx])
+
     PT = np.zeros_like(PT_clean)
     for x, nbrs in enumerate(adj_out):
         tau = rng.dirichlet(dir_alpha * np.ones(len(nbrs)))
@@ -386,7 +420,7 @@ def make_truth(n, mean_out_degree, beta, mix, dir_alpha, rng):
 
     P = beta * PT + (1.0 - beta) * pI[None, :]
     pi = stationary(P)
-    return adj_out, pI, PT, P, pi
+    return adj_out, pI, PT, P, pi, phi_T, psi
 
 
 def true_g(PT, beta, X_o):
@@ -411,64 +445,120 @@ def rmae(f_true, f_pred, X_o):
 
 
 def predict_f(pi_hat, X_o, f_o):
-    """Rescale stationary estimate to f's units. The paper writes
-    c_hat = mean(f) and f_hat = c_hat * pi_hat, but that only gives the
-    right magnitude if pi_hat sums to |X_o| over X_o. Equivalent
-    scale-free form: f_hat(x) = (sum f_o) * pi_hat(x) / sum(pi_hat[X_o])."""
+    """Convert recovered stationary probability to count units.
+
+    The paper writes c_hat = mean(f over X_o) and f_hat(x) = c_hat * pi_hat(x).
+    Taken literally that under-scales by a factor of |X|/|X_o|, because our
+    `stationary()` returns a probability summing to 1 over all states, so
+    pi_hat(x) ~ 1/n while f(x) ~ K/n. The scale-free reading that gives
+    sensible magnitudes — and the one we use — is:
+       f_hat(x) = (sum f_o) * pi_hat(x) / sum(pi_hat[X_o])
+    which normalises pi_hat so its sum over X_o matches the empirical sum
+    of f over X_o. Reduces to the paper's formula when sum(pi_hat[X_o]) = 1."""
     s = float(np.sum(pi_hat[X_o]))
     if s <= 0:
         s = 1e-15
     return float(np.sum(f_o)) * pi_hat / s
 
 
-def run(n=50, mean_out_degree=3, beta=0.9, K=1000.0,
-        obs_fracs=(0.05, 0.10, 0.20, 0.35, 0.50, 0.70, 0.90),
-        n_trials=3, seed=42):
-    """Sweep |X_o|, average RMAE across n_trials random instances."""
+def fit_with_cv(adj, beta, X_o, f_obs, g_obs=None, gamma=0.1,
+                phi_T=None, psi=None, lam_grid=None, val_frac=0.25,
+                maxiter=200, rng=None):
+    """Pick lambda by one train/val split on X_o (paper §6.1: 'lambda was
+    determined with a cross-validation'), then refit on full X_o.
+
+    Returns (pi_hat, best_lam, val_err_best)."""
+    rng = np.random.default_rng() if rng is None else rng
+    if lam_grid is None:
+        lam_grid = [1e-4, 1e-3, 1e-2, 1e-1]
+    X_o = np.asarray(X_o)
+    f_obs = np.asarray(f_obs, dtype=float)
+    n_o = len(X_o)
+    n_val = max(1, int(round(val_frac * n_o)))
+    perm = rng.permutation(n_o)
+    val_local = np.sort(perm[:n_val])
+    tr_local = np.sort(perm[n_val:])
+    X_train, X_val = X_o[tr_local], X_o[val_local]
+    f_train, f_val = f_obs[tr_local], f_obs[val_local]
+    g_train = (g_obs[np.ix_(tr_local, tr_local)] if g_obs is not None else None)
+
+    best_lam, best_err = lam_grid[0], np.inf
+    for lam in lam_grid:
+        inv = Inverter(adj, beta, gamma=gamma, lam=lam,
+                       phi_T=phi_T, psi=psi)
+        theta, _ = inv.fit(X_train, f_train, g_train, maxiter=maxiter)
+        pI_h, PT_h = inv.forward(theta)
+        pi_h = stationary(beta * PT_h + (1 - beta) * pI_h[None, :])
+        # Same scaling as predict_f, applied with train-only info.
+        s_train = float(np.sum(pi_h[X_train]))
+        scale = float(np.sum(f_train)) / (s_train if s_train > 0 else 1e-15)
+        f_pred_val = scale * pi_h[X_val]
+        err = float(np.mean(np.abs(f_pred_val - f_val)
+                            / np.maximum(f_val, 1.0)))
+        if err < best_err:
+            best_err, best_lam = err, lam
+    inv = Inverter(adj, beta, gamma=gamma, lam=best_lam,
+                   phi_T=phi_T, psi=psi)
+    theta, _ = inv.fit(X_o, f_obs, g_obs, maxiter=maxiter)
+    pI_h, PT_h = inv.forward(theta)
+    pi_h = stationary(beta * PT_h + (1 - beta) * pI_h[None, :])
+    return pi_h, best_lam, best_err
+
+
+def run(n=100, mean_out_degree=3, beta=0.9, K=1000.0,
+        sizes=(5, 10, 20, 35, 50, 70, 90),
+        d_T=5, d_psi=5,
+        n_trials=10, seed=42):
+    """Reproduce paper Fig. 2A. n=100 with paper's |X_o| sweep, transition
+    globals on (d_T=d_psi=5), lambda picked by CV per (size, trial, method)."""
     rng = np.random.default_rng(seed)
-    sizes = [max(2, int(round(f * n))) for f in obs_fracs]
     methods = ("proposed", "proposed_no_g", "nwkr")
     results = {m: np.full((len(sizes), n_trials), np.nan) for m in methods}
+    lams = {m: np.full((len(sizes), n_trials), np.nan) for m in methods[:2]}
     print(f"|X|={n}  out_deg={mean_out_degree}  beta={beta}  "
-          f"sizes={sizes}  n_trials={n_trials}")
+          f"d_T={d_T} d_psi={d_psi}  "
+          f"sizes={list(sizes)}  n_trials={n_trials}")
 
     for s_i, n_obs in enumerate(sizes):
         for t in range(n_trials):
             sub = np.random.default_rng(rng.integers(2**31))
-            adj, pI, PT, P, pi = make_truth(
+            adj, pI, PT, P, pi, phi_T, psi = make_truth(
                 n, mean_out_degree, beta,
                 mix=0.7, dir_alpha=0.3, rng=sub,
+                d_T=d_T, d_psi=d_psi,
             )
             f_full = K * pi
             X_o = np.sort(sub.choice(n, size=n_obs, replace=False))
             f_o = f_full[X_o]
             g_o = true_g(PT, beta, X_o)
 
-            # (a) proposed - uses both f and g
-            inv = Inverter(adj, beta, gamma=0.1, lam=1e-3)
-            theta_a, _ = inv.fit(X_o, f_o, g_o, maxiter=200)
-            pI_a, PT_a = inv.forward(theta_a)
-            pi_a = stationary(beta * PT_a + (1 - beta) * pI_a[None, :])
+            # (a) proposed - uses both f and g, paper's gamma=0.1
+            pi_a, lam_a, _ = fit_with_cv(
+                adj, beta, X_o, f_o, g_o, gamma=0.1,
+                phi_T=phi_T, psi=psi, rng=sub,
+            )
             results["proposed"][s_i, t] = rmae(
                 f_full, predict_f(pi_a, X_o, f_o), X_o)
+            lams["proposed"][s_i, t] = lam_a
 
-            # (b) proposed (no g)
-            inv2 = Inverter(adj, beta, gamma=1.0, lam=1e-3)
-            theta_b, _ = inv2.fit(X_o, f_o, None, maxiter=200)
-            pI_b, PT_b = inv2.forward(theta_b)
-            pi_b = stationary(beta * PT_b + (1 - beta) * pI_b[None, :])
+            # (b) proposed (no g) - gamma=1.0
+            pi_b, lam_b, _ = fit_with_cv(
+                adj, beta, X_o, f_o, g_obs=None, gamma=1.0,
+                phi_T=phi_T, psi=psi, rng=sub,
+            )
             results["proposed_no_g"][s_i, t] = rmae(
                 f_full, predict_f(pi_b, X_o, f_o), X_o)
+            lams["proposed_no_g"][s_i, t] = lam_b
 
             # (c) NWKR baseline
             f_nwkr, bw = nwkr_with_cv(adj, X_o, f_o)
             results["nwkr"][s_i, t] = rmae(f_full, f_nwkr, X_o)
 
             print(f"  size={n_obs:3d}  trial={t}  "
-                  f"proposed={results['proposed'][s_i, t]:.3f}  "
-                  f"no_g={results['proposed_no_g'][s_i, t]:.3f}  "
-                  f"nwkr={results['nwkr'][s_i, t]:.3f}  (bw={bw:.2f})")
-    return sizes, results
+                  f"proposed={results['proposed'][s_i, t]:.3f} (lam={lam_a:.0e})  "
+                  f"no_g={results['proposed_no_g'][s_i, t]:.3f} (lam={lam_b:.0e})  "
+                  f"nwkr={results['nwkr'][s_i, t]:.3f} (bw={bw:.2f})")
+    return list(sizes), results, lams
 
 
 def plot(sizes, results, out_path="morimura_fig.png"):
@@ -498,10 +588,11 @@ def plot(sizes, results, out_path="morimura_fig.png"):
 
 if __name__ == "__main__":
     t0 = time.time()
-    sizes, results = run(
-        n=50, mean_out_degree=3, beta=0.9,
-        obs_fracs=(0.05, 0.10, 0.20, 0.35, 0.50, 0.70, 0.90),
-        n_trials=3, seed=42,
+    sizes, results, lams = run(
+        n=100, mean_out_degree=3, beta=0.9,
+        sizes=(5, 10, 20, 35, 50, 70, 90),
+        d_T=5, d_psi=5,
+        n_trials=10, seed=42,
     )
     plot(sizes, results)
     print(f"total time: {time.time() - t0:.1f}s")

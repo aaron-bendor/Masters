@@ -75,23 +75,34 @@ balance equation and the hitting-prob recursion.
 
 ### Choices and deviations from the paper
 
+Updated 2026-05-27 after iter 18 audit. The table below describes the *current* configuration; for the pre-iter-18 simplifications and what changed, see iter 18.
+
 | Choice | Reason |
 |--------|--------|
-| Local-only parameters (no global features $\phi_I, \phi_T, \psi$). | The paper allows either local or global; local-only keeps the parameter space transparent for the synthetic test. |
-| L-BFGS-B optimiser, not the natural-gradient descent of §4.1. | Both consume the same loss/gradient; L-BFGS-B is robust off-the-shelf and we're not chasing per-iteration speed. |
+| Truth and recovery both use $\phi_T$ ($d_T = 5$) and $\psi$ ($d_\psi = 5$) global features drawn iid $\mathcal N(0, 1)$, per paper §6.1. $\phi_I$ (initial-prob globals) omitted — matches paper §6.2 Nairobi configuration, justified by paper p. 7: "If a simpler model is preferred, either of them would be omitted." | Required to be a faithful reproduction; before iter 18 we ran a local-only simplification that produced a misleadingly easier benchmark. |
+| Tikhonov $\lambda$ cross-validated per (size, trial, method) over $\{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}\}$ on a 75/25 split of $X_o$. | Paper §6.1: "$\lambda$ was determined with a cross-validation." Before iter 18 $\lambda$ was hard-coded at $10^{-3}$. |
+| L-BFGS-B optimiser, not the natural-gradient descent of §4.1. | Both consume the same loss/gradient; L-BFGS-B is robust off-the-shelf and we're not chasing per-iteration speed. Note: Phase-4 iter 15 showed this matters at scale (basin issues). |
 | $\beta$ held at its true value during the inverse fit. | Avoids a known identifiability issue when the only signal is stationary statistics. |
-| $n = 50$ instead of paper's 100. | Trades a small loss in absolute RMAE for a shorter sweep; structure of the curves is the same. |
-| Prediction rescaling: $\hat f(x) = (\sum_{X_o} f) \cdot \hat\pi(x) / (\sum_{X_o} \hat\pi)$. | The paper writes $\hat c \hat\pi$ with $\hat c = \overline{f}_{X_o}$; this only matches the $f$ scale if $\hat\pi$ averages to 1 over $X_o$, which it doesn't. The given form is the equivalent scale-free version. |
+| $n = 100$ with $|X_o| \in \{5, 10, 20, 35, 50, 70, 90\}$, 10 trials per size. | Matches paper Fig. 2A exactly. Before iter 18 we used $n=50$ with fractional sweep and 3 trials. |
+| Prediction rescaling: $\hat f(x) = (\sum_{X_o} f) \cdot \hat\pi(x) / (\sum_{X_o} \hat\pi)$. | The paper writes $\hat c \hat\pi$ with $\hat c = \overline{f}_{X_o}$; taken *literally* this under-scales by $|X|/|X_o|$ because `stationary()` returns a probability summing to 1 over all states (so $\hat\pi(x) \sim 1/n$ while $f(x) \sim K/n$). The given scale-free form gives sensible magnitudes; reduces to the paper's formula when $\sum_{X_o} \hat\pi = 1$. Verified empirically in iter 18: applying the literal formula collapses every RMAE to ≈ 1.0. |
 
 ### Result
 
-`morimura_fig.png`: three RMAE-vs-$|X_o|$ curves matching the qualitative pattern of Fig. 2A:
+`morimura_fig.png` (re-generated iter 18, $n=100$, 10 trials, full §6.1 protocol). RMAE means at the seven $|X_o|$ values, ±1 std:
 
-- Proposed (uses both $f$ and $g$) is best, dropping to RMAE ≈ 0.07 at $|X_o|=45$.
-- Proposed (no $g$) is intermediate, plateaus around 0.25–0.30.
-- NWKR baseline is worst, with high variance.
+| $|X_o|$ | Proposed (with $g$) | Proposed (no $g$) | NWKR | Paper Fig. 2A (eyeball) |
+|---|---|---|---|---|
+| 5  | 0.97 ± 0.28 | 1.08 ± 0.45 | 2.31 | proposed ~0.7 |
+| 10 | 0.49 ± 0.13 | 0.69 ± 0.20 | 1.59 | proposed ~0.5 |
+| 20 | 0.37 ± 0.07 | 0.75 ± 0.40 | 1.73 | proposed ~0.4 |
+| 35 | 0.26 ± 0.06 | 0.44 ± 0.07 | 1.38 | proposed ~0.3 |
+| 50 | 0.21 ± 0.07 | 0.46 ± 0.13 | 1.67 | proposed ~0.2 |
+| 70 | 0.19 ± 0.07 | 0.41 ± 0.13 | 1.42 | proposed ~0.15 |
+| 90 | 0.14 ± 0.05 | 0.30 ± 0.13 | 1.27 | proposed ~0.1 |
 
-Total runtime: ≈ 20 s on this laptop.
+**Headline reproduction claim.** "Proposed (with $g$)" — the paper's headline curve — tracks Fig. 2A within ~0.05 RMAE for $|X_o|$ from 10 to 90. The curve *shape* and *ordering* of methods both match the paper. At $|X_o| = 5$ our RMAE is higher than the paper's; suspected cause is our 75/25 CV split degenerating with $|X_o| = 5$ (val set has 1 obs). NWKR doesn't drop as steeply with $|X_o|$ as the paper's version — comparator-implementation gap, not the headline claim.
+
+Total runtime: ≈ 22 min on this laptop (was ≈ 20 s at the iter-17 local-only / no-CV configuration).
 
 ---
 
@@ -470,6 +481,48 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 >
 > **Open optimiser scoping note (separate task, no code).** The L-BFGS multi-modality issue surfaced in iter 15 (small bbox) and tentatively in iter 16 (bigger bbox) is the exact pathology the paper §4.1 designed natural gradient to mitigate. Our Phase-1 deviations table (line 81) justified the switch from natural gradient to L-BFGS-B as "robust off-the-shelf, not chasing per-iteration speed" — but that framing missed the paper's actual reason. A scoping analysis compared candidate fixes: trivial (raise `λ`), low-effort (multi-start L-BFGS + validation selection), medium (Levenberg-Marquardt via `scipy.optimize.least_squares` — directly tailored to our log-residual loss structure), high (full natural gradient per paper Eq. 11). Recommendation: try (medium) Levenberg-Marquardt first — it's the smallest change that addresses the manifold-geometry concern the paper raises, and `J^T J` for our objective is the FIM of the *observation* likelihood (Gaussian-log-noise model from §3.2.1/3.2.2), so it's effectively a natural gradient for what we actually observe. Don't build yet — pending bigger-bbox sweep completion and project-direction decision.
 
+> **Iter 17 — Tier-1 optimisation-sweep attempt, aborted partway (2026-05-27).** Planned five experiments at single seed 42 (bigger bbox, T=20, X_o seed 13): (a) L-BFGS-B baseline, (b) Levenberg-Marquardt via `scipy.optimize.least_squares(method='trf')` with analytic residual + Jacobian (FD-verified `rel_err = 4e-8`), (c) multi-start L-BFGS K=5, (d) Tikhonov $\lambda$ sweep ∈ {1e-4, 1e-3, 1e-2, 1e-1}, (e) f+g with Beta-Binomial empirical-Bayes shrinkage on $g$. Only (a) and (b) ran.
+>
+> **(a) Baseline reproduced cleanly.** seed=42, `maxiter=1500`: `empirical = 0.685`, `fitted_f = 0.612`, gap closed 60.6 %. Wall 39.5 min for two fits (intr + satnav). Sits in the iter-16 "high basin" cluster (seeds 42/101/2024 at 61–62 %) as expected.
+>
+> **(b) LM (trf) was abandoned as impractical at the chosen tolerances.** d = 8392 parameters; dense Jacobian (n_o + d) × d ≈ 9000 × 8400 ≈ 600 MB; the Python process held ~5 GB RSS. At `ftol = xtol = 1e-9, gtol = 1e-7`, one outer iteration took ~100 s wall, cost reduction ~0.75× per iter from initial 9.0e5; L-BFGS-B's stopping cost (833 at the maxiter cap) is three orders of magnitude lower. Extrapolation: 80–150 outer iters per fit → 2–4 h per fit → 4–8 h for both. Two runs killed; second run reached only iter 3 (cost 6.08e5) in 5 min before kill.
+>
+> **The runbook's "30–60 min for LM" estimate was wrong by an order of magnitude.** Root cause is a design problem in our application of `least_squares`, not a hard floor: dense Jacobian materialisation on d ≈ 8400 + tight tolerances. A production LM on this scale would exploit Jacobian sparsity (most $\theta$ entries touch only a small subgraph of links) and use looser tolerances. **Future LM attempts must loosen tolerances** (`ftol = xtol = 1e-7, gtol = 1e-5`) or use `max_nfev` caps. Sparsifying the Jacobian is the bigger structural fix and is not currently done.
+>
+> **Methodological problem with the Tier-1 design itself.** Tier-1's detection threshold is "any lever moves `fitted_f` by > 2 pp above baseline." But iter-16's single-seed std on `fitted_f` is **±2.4 pp** (5 SUMO seeds, bigger bbox). The threshold is *inside* the noise band for any single-seed measurement. To trust a 2 pp Tier-1 effect would require ≥ 5 seeds per experiment × 5 experiments = 25 fits ≈ 16 h at current 40 min/fit. **A single-seed Tier-1 cannot reach a defensible conclusion either way** — null findings would be noise-limited, positive findings would not be replicable. This wasn't apparent until the LM scaling problem surfaced and forced a re-think.
+>
+> **Bigger picture: optimisation tweaks aren't the bottleneck.** The combined post-iter-16 read already concluded gap closure is "entirely determined by how much signal the data contains, not by how well the fitter accesses it." Iter 13's T=40 empirical ceiling at 0.81 says the data has structure the local + ω-global 1-step softmax cannot express, full stop — no $\lambda$, $K$-restart, or optimiser swap reaches above the 1-step Markov empirical ceiling (≈ 0.685 at T=20). **The cheap decisive experiment is the empirical 2-step PT diagnostic** the future-work list has flagged since iter 16: no fitting, just count `(x_{t-1}, x_t) → x_{t+1}` triples on the same trajectories, score the test set, see whether AUC rises above 0.685. Minutes of compute. If it does rise, the case for the parametric 2-step Morimura inverter is made empirically before code is written; if it doesn't, optimiser tweaks become the only remaining lever and the iter-17 sweep is worth resuming with multi-seed precision.
+>
+> **Decision (this session):** abandon iter 17 mid-way; reframe Tier 1 as needing multi-seed precision before any single-lever conclusion is trustworthy; pivot to the 2-step empirical diagnostic as the next concrete experiment. Setup left intact for future resumption: worktree scripts (`lm_fit.py`, `score_seed_big_lm.py`, `score_seed_big_multistart.py`, `score_seed_big_fg.py`) copied into `sumo_validation/`; `sweep_lam_big.py` edited to 4 lambdas; `score_seed_big_lm.py` patched to `verbose=2`. Logs at `/tmp/baseline.log`, `/tmp/lm.log`, `/tmp/lm.attempt1-verbose0.log`.
+
+> **Iter 18 — contrast-correlation diagnostic and a Phase-1 reproduction audit (2026-05-27).** Two threads ran this session, in order.
+>
+> **(A) Contrast-correlation diagnostic on the 5-seed bigger-bbox sweep.** Question: when iter 16 reported gap-closed varying 31 → 65 % across seeds, was the basin choice driving real changes in the *contrast* the LR detector consumes, or only changes in the aggregate signed bias? Built `sumo_validation/contrast_correlation.py`: replicates the score_seed_big fit at `maxiter=300`, then for each branching state $x$ in $X_o$ computes $\Delta_{\text{fit}}(x) = \hat P_T^{\text{sat}}(x,\cdot) - \hat P_T^{\text{intr}}(x,\cdot)$ and the same from `empirical_chain`, and reports stacked Pearson, stacked cosine, per-row cosine statistics. Results across all 5 SUMO seeds:
+>
+> | Seed | auc_emp | auc_fit | gap_closed | $X_o$ Pearson | per-row cos median | rows pointing right |
+> |---|---|---|---|---|---|---|
+> | 23   | 0.659 | 0.549 | 31.0 % | +0.197 | +0.088 | 54.0 % |
+> | 7    | 0.646 | 0.550 | 34.1 % | +0.159 | +0.150 | 54.6 % |
+> | 2024 | 0.638 | 0.573 | 53.1 % | +0.118 | +0.255 | 55.3 % |
+> | 42   | 0.685 | 0.607 | 58.0 % | +0.212 | +0.248 | 58.9 % |
+> | 101  | 0.631 | 0.586 | 65.4 % | +0.172 | +0.109 | 53.3 % |
+>
+> **Finding: per-row contrast correlation is universally weak (Pearson 0.12–0.21) and barely varies across seeds, even as gap_closed swings 2×.** Only ~55 % of branching states (close to chance) have the fitted contrast pointing the right direction. The 0.58 ± 0.03 AUC the framework reports is not coming from a globally-faithful per-row contrast — it's coming from a small per-step signed bias (~0.05 nats/step) that compounds over ~20 transitions per trajectory to ±1 nat, enough for AUC ~0.6. The detector is doing real work but on aggregate signal, not pointwise contrast. This is also why the iter-15 "lower training loss → worse AUC" phenomenon makes sense mechanistically: a longer fit can drive the small systematic bias out while leaving the per-row noise alone.
+>
+> **Two things this diagnostic does NOT capture, called out for honest framing.** (i) **Visit-frequency weighting**: the correlation is unweighted across all branching states, but real trajectories visit some edges 100× more than others — if the fit is right at the busy edges and wrong at the rare ones, AUC works while the unweighted Pearson stays low. (ii) **Empirical-reference noise**: at branching states visited by ≤ 3 training trajectories, `empirical_chain` is mostly Laplace-floor artifact, so part of the Pearson gap is the *reference* being noisy, not the *fit* being wrong. A visit-frequency-weighted contrast correlation is the obvious next refinement.
+>
+> **Practical implication for thesis framing.** The Phase-4 headline `fitted_f ≈ 0.575 ± 0.024` AUC is **defensible as a detection result** but cannot be framed as "we recovered the regime-specific chains." The chains are correct only in a thin aggregate-bias sense; per-row contrast direction is barely above chance. AUC + gap-closed remain the right reporting variables; row-level chain accuracy is not.
+>
+> **(B) Phase-1 reproduction audit and re-tightening.** Triggered by user concern: "if we can't reproduce Morimura faithfully, everything downstream is suspect." Audited `morimura.py` against the paper §6.1 line-by-line. Identified **5 material deviations from the paper**: (1) no global features in either truth or recovery (paper explicitly draws $\nu, \omega, \phi_I, \phi_T, \psi$ all iid $\mathcal N(0,1)$); (2) hard-coded $\lambda = 10^{-3}$ rather than CV; (3) $n = 50$ vs paper's 100; (4) 3 trials vs unspecified (visibly $\geq 10$ in Fig. 2A error bars); (5) my own initial mis-reading of the RMAE prediction formula as "literal $\hat c \hat\pi$" rather than the scale-free form the existing code had — the literal formula collapses every RMAE to ≈ 1 because `stationary()` returns a probability summing to 1 over $n$ states, while $\hat c = \overline f \sim K/n$, so $\hat c \hat\pi \sim K/n^2$ — off by a factor of $n$.
+>
+> **Fixed (1)–(4); (5) was a false alarm that briefly destroyed the result and was reverted.** Implemented in `morimura.py`: `make_truth` now optionally draws `phi_T, psi` (and returns them in the result tuple — callers in `congestion_filter.py`, `per_car_detector.py`, `sumo_validation/lm_fit.py` patched to unpack the new signature). Added `fit_with_cv` that picks $\lambda \in \{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}\}$ on a 75/25 split of $X_o$. `run()` defaults updated to $n=100$, paper's exact $|X_o|$ sweep, 10 trials, $d_T = d_\psi = 5$.
+>
+> **Reproduction quality after the fixes.** "Proposed (with $g$)" tracks paper Fig. 2A within ~0.05 RMAE for $|X_o|$ from 10 to 90 (numbers in updated Phase-1 result table, line ~96). At $|X_o| = 5$ our number is ~0.97 vs paper's ~0.7 — suspected CV-split degeneration. NWKR doesn't drop as fast as the paper's, but that's the comparator. The headline curve reproduces.
+>
+> **Honest comparison artefact: `morimura_compare.py` + `morimura_compare_fig.png`.** Overlay of first-commit config (local-only, fixed $\lambda$, $n=100$, 5 trials) vs current config (globals + CV + same 5 trials). The first-commit numbers are **uniformly lower** than the current config (e.g. 0.40 vs 0.81 at $|X_o|=5$; 0.09 vs 0.16 at $|X_o|=90$) — but on a **structurally simpler problem** because the truth has no global features driving structured per-edge variation. The first-commit RMAEs at large $|X_o|$ actually beat the paper's numbers — that's evidence that the first-commit benchmark was easier than paper §6.1, not that the simpler method was better. The "improvement" from making the config paper-faithful is a degradation in raw RMAE that we accept in exchange for a defensible reproduction claim.
+>
+> **Decision (this session).** Phase-1 reproduction is now considered locked in at the paper-faithful config. The current `morimura.py` is the operational reference. Phase-4 work (contrast diagnostic, 2-step empirical PT, optimiser sweeps) is unaffected — the upstream framework is sound; the limitations live in the model class at SUMO scale, not in our Phase-1 implementation.
+
 ### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 
 `sumo_validation/sumo_phase3_fig.png`. Final numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class, 4 h simulated time:
@@ -506,11 +559,12 @@ The strong-form validation headline "Morimura recovers most of the 1-step Markov
 
 **Optimisation stability is a known issue regardless of bimodality confirmation.** Iter 15 directly demonstrated L-BFGS basin-switching on small bbox: same SUMO + same X_o, `maxiter = 1500 → fitted_f = 0.579`, `maxiter = 5000 → 0.522`. The paper §4.1 designed natural gradient specifically to avoid this — our Phase-1 deviations table (line 81) justified the switch to L-BFGS as "robust off-the-shelf" but missed the paper's actual motivation. Scoping analysis (this session, no code yet) recommends **Levenberg-Marquardt** as the smallest fix that addresses the manifold-geometry concern: it's the natural gradient for the *observation* likelihood (Gaussian-log-noise model from §3.2), already supported in scipy, and reuses our existing analytic gradients.
 
-**Open future-work items, prioritised:**
-1. Implement Levenberg-Marquardt path; FD-verify the residual Jacobian; re-run iter 15 + iter 16 protocols. **If LM gives substantially tighter `fitted_f` distributions, the iter-16 bimodality concern dissolves.**
-2. If LM doesn't suffice, implement full natural gradient per paper Eq. 11.
-3. Re-run iter 12 (ω-globals) multi-seeded — the iter-12 "globals add 5–9 pp" finding is currently confounded with basin selection.
-4. 2-step Markov model class — orthogonal to the optimisation work, addresses the model-class misspecification that the empirical T=40 ceiling at 0.81 reveals.
+**Open future-work items, prioritised (revised after iter 17):**
+1. **Empirical 2-step PT diagnostic.** Cheap (no fitting); decides whether the model-class question is even live before more optimiser work is done. Iter-13's T=40 empirical 0.81 ceiling already implies signal the 1-step softmax can't access, but the 2-step *empirical* test makes that explicit by checking whether `AUC > 0.685` is reachable inside the 1-step-empirical → 2-step-empirical gap.
+2. If (1) shows substantial 2-step signal: extend Morimura inverter to 2-step parametric (Tier 2). Larger code change but motivated by data.
+3. If (1) shows no 2-step signal: optimiser tweaks become the only remaining lever. Re-attempt iter 17 with multi-seed precision (≥ 5 SUMO seeds per lever, ~16 h compute) and looser LM tolerances (`ftol = xtol = 1e-7, gtol = 1e-5`) or sparse Jacobian.
+4. Re-run iter 12 (ω-globals) multi-seeded — the iter-12 "globals add 5–9 pp" finding is currently confounded with basin selection. Independent of (1)/(2)/(3).
+5. Implementing full natural gradient per paper Eq. 11 is now a tier-3 priority, behind both the model-class diagnostic and a multi-seed optimiser sweep.
 
 #### Demand sweep — finding the clean operating regime
 
