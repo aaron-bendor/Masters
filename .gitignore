@@ -3,6 +3,10 @@
 # Local-only; regeneratable from routes.xml + the SUMO seed if needed.
 sumo_validation/vehroutes.satnav.bigbox.p0.25.xml
 
+# Oversized Xuancheng AVI trip files (each 150-226MB, exceeds GitHub's 100MB limit).
+# Source: Ma et al. 2026, Figshare deposit 29925824.
+real_data/Data/data/Xuancheng/data_2023_04_*_type_filtered.json
+
 # Python cache
 __pycache__/
 *.pyc

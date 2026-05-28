@@ -1,0 +1,76 @@
+=== T=20 ===
+=== contrast-correlation diagnostic (big bbox, seed=42) ===
+  n=2405  |X_o|=601  beta=0.972  T=20  N_test=300  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1
+  fitting chains ...
+    L-BFGS: success=False, nit=1500, final_loss=836.4, d=8402 (n=2405, E=5987, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=529.4, d=8402 (n=2405, E=5987, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+  AUC reference: empirical=0.685  fitted_f=0.644  gap_closed= 77.5%
+
+  branching states total: 1760 / 2405
+  branching states in X_o: 451 / 601
+
+  [X_o branching]  (451 branching states, 1352 legal-edge entries)
+    stacked Pearson   = +0.317
+    stacked cosine    = +0.317
+    per-row cosine    mean = +0.165  median = +0.528
+    rows with cosine > 0:  58.6%  (50% = chance)
+
+  [all branching]  (1760 branching states, 5342 legal-edge entries)
+    stacked Pearson   = +0.215
+    stacked cosine    = +0.215
+    per-row cosine    mean = +0.102  median = +0.435
+    rows with cosine > 0:  55.4%  (50% = chance)
+
+RESULT  seed=42  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1  auc_emp=0.685  auc_fit=0.644  gap_closed=77.5%
+=== T=30 ===
+=== contrast-correlation diagnostic (big bbox, seed=42) ===
+  n=2405  |X_o|=601  beta=0.972  T=30  N_test=300  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1
+  fitting chains ...
+    L-BFGS: success=False, nit=1500, final_loss=836.4, d=8402 (n=2405, E=5987, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=529.4, d=8402 (n=2405, E=5987, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+  AUC reference: empirical=0.763  fitted_f=0.677  gap_closed= 67.4%
+
+  branching states total: 1760 / 2405
+  branching states in X_o: 451 / 601
+
+  [X_o branching]  (451 branching states, 1352 legal-edge entries)
+    stacked Pearson   = +0.316
+    stacked cosine    = +0.316
+    per-row cosine    mean = +0.161  median = +0.521
+    rows with cosine > 0:  58.8%  (50% = chance)
+
+  [all branching]  (1760 branching states, 5342 legal-edge entries)
+    stacked Pearson   = +0.220
+    stacked cosine    = +0.220
+    per-row cosine    mean = +0.108  median = +0.443
+    rows with cosine > 0:  55.8%  (50% = chance)
+
+RESULT  seed=42  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1  auc_emp=0.763  auc_fit=0.677  gap_closed=67.4%
+=== T=40 ===
+=== contrast-correlation diagnostic (SUMO big bbox, seed=42) ===
+  dataset=sumo  n=2405  |X_o|=601  beta=0.972  T=40  N_test=300  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1  regimes=intr/satnav
+  fitting chains ...
+    L-BFGS: success=False, nit=1500, final_loss=836.4, d=8402 (n=2405, E=5987, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=529.4, d=8402 (n=2405, E=5987, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+  AUC reference: empirical=0.801  fitted_f=0.708  gap_closed= 69.0%
+
+  branching states total: 1760 / 2405
+  branching states in X_o: 451 / 601
+
+  [X_o branching]  (451 branching states, 1352 legal-edge entries)
+    stacked Pearson   = +0.311
+    stacked cosine    = +0.311
+    per-row cosine    mean = +0.149  median = +0.481
+    rows with cosine > 0:  57.9%  (50% = chance)
+
+  [all branching]  (1760 branching states, 5342 legal-edge entries)
+    stacked Pearson   = +0.216
+    stacked cosine    = +0.216
+    per-row cosine    mean = +0.105  median = +0.438
+    rows with cosine > 0:  55.5%  (50% = chance)
+
+RESULT  dataset=sumo  seed_or_day=42  regimes=intr/satnav  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1  auc_emp=0.801  auc_fit=0.708  gap_closed=69.0%
+=== DONE ===

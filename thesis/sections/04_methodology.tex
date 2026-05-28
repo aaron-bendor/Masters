@@ -1,0 +1,203 @@
+\section{Methodology}\label{sec:methodology}
+
+This section presents the inverse Markov-chain framework and the three
+extensions developed in this work. \cref{sec:morimura-formulation}
+restates the framework in our notation. \cref{sec:features}--\ref{sec:od-rebal}
+present the extensions in turn.
+
+\subsection{Parametric chain and observation model}
+\label{sec:morimura-formulation}
+
+The state space $\mathcal{X}$ is the set of directed road edges in the
+largest strongly-connected component of the network. For each state
+$x \in \mathcal{X}$, the next-state distribution is the softmax of
+\cref{eq:softmax} over the legal successors $\mathrm{adj}(x)$, with the
+score
+\begin{equation}
+s(x, x') \;=\; \omega^{\mathrm{loc}}_{(x,x')}
+\;+\;
+\underbrace{\phi_T(x')^\top \omega^{\mathrm{glo}_1}}_{\text{destination-feature term}}
+\;+\;
+\underbrace{\psi(x, x')^\top \omega^{\mathrm{glo}_2}}_{\text{edge-feature term}}.
+\label{eq:score}
+\end{equation}
+Without the global terms ($d_T = d_\psi = 0$) the model has one
+parameter per directed edge; with global terms it adds $d_T + d_\psi$
+\emph{shared} parameters that apply across all edges of compatible type.
+The initial distribution $\pI$ is similarly parametrised by per-state
+weights $\nu \in \mathbb{R}^n$ via $\pI(x) \propto \exp(\nu_x)$.
+
+We define the absorbing-corrected stationary mixture
+\begin{equation}
+P \;=\; \beta\,\Pchain \;+\; (1-\beta)\,\bm{1}\pI^{\!\top},
+\qquad
+\pi^{\!\top} P = \pi^{\!\top}, \quad \bm{1}^{\!\top}\pi = 1,
+\label{eq:stationary}
+\end{equation}
+which models the long-run occupancy of a chain that occasionally restarts
+from $\pI$ with probability $1-\beta$ per step. The hitting-rate matrix
+$H(\Pchain) \in [0,1]^{|\Xo|\times|\Xo|}$ has entries equal to the
+$\beta$-discounted first-passage probability between observation states,
+obtained as $H_{ij} = [(I - \beta\Pchain^{(\setminus j)})^{-1}]_{ix_j}$
+where $\Pchain^{(\setminus j)}$ zeroes row $j$ to encode absorption.
+The Morimura observation model says we observe noisy $\fobs(x)$ for
+$x \in \Xo$ and noisy $\gobs(x, x')$ for $(x, x') \in \Xo \times \Xo$,
+and we wish to match the model's $\pi$ and $H$ to these observations.
+
+\subsection{Regularised loss and analytic gradients}
+\label{sec:loss-gradients}
+
+Following \cite{morimura2013} Eqs.~7--9, the loss is the sum of a
+stationary-match term, a hitting-rate-match term, and a Tikhonov ridge:
+\begin{align}
+L(\theta) &= \gamma\,L_d(\theta) + (1-\gamma)\,L_h(\theta) + \lambda\,R(\theta), \\
+L_d(\theta) &= \tfrac{1}{2}\sum_{i, j \in \Xo}\bigl(\log\tfrac{\pi_i}{\pi_j} - \log\tfrac{f_i}{f_j}\bigr)^2, \\
+L_h(\theta) &= \tfrac{1}{2}\sum_{i, j \in \Xo}\bigl(\log H_{ij} - \log g_{ij}\bigr)^2, \\
+R(\theta) &= \tfrac{1}{2}\|\theta\|^2.
+\end{align}
+Both data terms are log-ratio losses, which is what makes them
+optimisable without normalising constants on the observations
+\cite{morimura2013}: any multiplicative scale on $\fobs$ or $\gobs$
+cancels in the difference. The gradients are derived using the
+identity for the derivative of $\log\pi$ under a softmax-parametric
+chain (paper Eq.~12) and the derivative of $\log H_{ij}$ under an
+absorbing-chain solve (Eq.~15). The paper's local-only gradients
+$\partial L / \partial \nu$ and $\partial L / \partial \omega^{\mathrm{loc}}$
+are reproduced unchanged here; we derive the omega-global
+gradients (paper Eqs.~17--18 \emph{state} the parametric extension but
+do not derive the gradients) by writing the chain-rule contribution of
+$\omega^{\mathrm{glo}_1}$ and $\omega^{\mathrm{glo}_2}$ through the
+score \eqref{eq:score} and chaining through $\nabla_\theta \log \pi$ and
+$\nabla_\theta \log H$.
+
+We verify the analytic gradients by centred finite differences
+(\code{fd\_check\_features.py}) at random parameter draws across
+all four blocks ($\nu$, $\omega^{\mathrm{loc}}$, $\omega^{\mathrm{glo}_1}$,
+$\omega^{\mathrm{glo}_2}$). The check uses a noise-aware tolerance
+($\code{rtol}=10^{-3}$ relative \emph{or} $\code{atol}=5 \times 10^{-2}$
+absolute, an \code{np.allclose}-style criterion) to handle the
+machine-precision FD round-off floor that dominates near-zero gradient
+components. The bigger-bbox SUMO graph passes at machine precision
+($\sim 10^{-8}$ relative error) on the clearly non-zero components.
+
+\subsection{Extension 1: real edge features from the network topology}
+\label{sec:features}
+
+The Morimura framework treats $\phi_T$ and $\psi$ as user-supplied global
+features. In simulated $\S 6.1$ both are drawn iid
+$\mathcal{N}(0,1)$ in their setup; in their real-world Nairobi case
+they use network attributes (road class, segment length, number of
+lanes) extracted from the underlying OSM data.
+
+We follow the latter convention. From the SUMO network's
+\code{.net.xml}, we extract the following per-edge attributes and assemble
+them into $\phi_T$ and $\psi$:
+\begin{itemize}
+\item \textbf{Destination-state features $\phi_T(x') \in \mathbb{R}^{8}$.}
+For each destination edge $x'$: a $6$-dimensional one-hot road-class
+indicator (motorway / primary / tertiary / residential / service / other),
+plus the standardised log of the speed limit and the standardised log of
+the lane count.
+\item \textbf{Directed-edge features $\psi(x, x') \in \mathbb{R}^{2}$.}
+For each directed edge $(x, x')$: the cosine of the turn angle at the
+intersection (computed from the polyline geometries of $x$ and $x'$),
+and the standardised log ratio of the destination speed limit to the
+source speed limit. Both components are standardised to zero mean and
+unit variance across the edge set.
+\end{itemize}
+With these definitions $d_T + d_\psi = 10$, so feature inclusion adds
+just $10$ \emph{shared} parameters across the entire chain. The
+expectation is that this acts as a strong regularising prior: edges of
+the same road class share a common preference component, even if their
+local $\omega^{\mathrm{loc}}_{(x, x')}$ weights are estimated noisily.
+
+\subsection{Extension 2: empirical 2-step Markov diagnostic}
+\label{sec:2step-diag}
+
+The $1$-step softmax chain in \eqref{eq:softmax} embeds the standard
+Markov assumption that the next edge depends only on the current edge.
+A natural concern is that this assumption is empirically violated:
+real drivers' next-edge choice may depend on \emph{both} the current
+edge and the previous edge (e.g.\ avoiding a U-turn, preserving heading,
+continuing on a high-priority arterial). If so, no fitting effort under
+the $1$-step model class can close the gap to the data ceiling.
+
+We test this by constructing an empirical $2$-step detector with no
+fitting. From the training trajectories of each regime we count
+$(x_{t-1}, x_t, x_{t+1})$ triples and form the conditional probability
+$\widehat{p}_{2}(x_{t+1} \mid x_t, x_{t-1})$ as the Laplace-smoothed
+empirical ratio. The detector then scores a test trajectory $\tau$ as
+\[
+\Lam_{2}(\tau) \;=\; \sum_{t}\bigl[\log\widehat{p}_{2}^{(B)}(\tau_{t+1}\mid\tau_t,\tau_{t-1}) - \log\widehat{p}_{2}^{(A)}(\tau_{t+1}\mid\tau_t,\tau_{t-1})\bigr],
+\]
+falling back to the $1$-step empirical conditional on the first step or
+any unseen $(x_{t-1}, x_t)$ context. The AUC of $\Lam_{2}$ vs.\ the
+$1$-step empirical $\Lam_{1}$ tells us whether higher-order memory
+exists in the data. Crucially, the $2$-step detector is built from the
+same trajectories and uses the same training/test split, so any
+AUC difference is attributable to memory order alone.
+
+\subsection{Extension 3: OD-rebalancing for real-world regime contrast}
+\label{sec:od-rebal}
+
+In controlled simulation, the intrinsic and sat-navigation regimes
+share the same OD pairs by construction (\cref{sec:sumo}): the only
+difference is the routing rule. In real-world AVI data this control is
+not available: rush-hour drivers and off-peak drivers are
+\emph{different populations} with different origin/destination
+distributions, and any chain difference between them reflects both
+their different OD mix and their different routing-given-OD choices. The
+former is uninteresting (commuters vs.\ discretionary trips have
+different origins by definition); the latter is what our framework is
+designed to detect.
+
+To control for OD mix we introduce an OD-rebalancing step in the
+real-world loader. The procedure is:
+\begin{enumerate}
+\item Cluster the network's junctions into $K$ spatial zones via
+$k$-means on their $(x, y)$ coordinates (standardised). Each edge is
+labelled by its from-zone and its to-zone.
+\item For each trip, compute its origin zone (from-zone of the first
+edge in its trajectory) and its destination zone (to-zone of the last
+edge).
+\item Bin all regime-A trips and all regime-B trips by $(\text{zone}_o, \text{zone}_d)$.
+\item For each shared OD cell, take $\min(n^A_{od}, n^B_{od})$ trips
+from each regime (sampled without replacement). The matched pools
+have identical marginal $(\text{zone}_o, \text{zone}_d)$ distribution.
+\end{enumerate}
+Any chain contrast measured on the rebalanced pools is then
+attributable to the within-OD routing-choice difference, not to an
+OD-mix shift. The granularity $K$ is a tuning parameter: smaller $K$
+gives tighter sample sizes per cell but coarser matching; larger $K$
+gives finer matching but smaller per-cell counts. We use $K=8$ as a
+default (yields $\le 64$ OD cells, of which $\sim 55$ are typically
+shared with sufficient counts).
+
+\subsection{The detector and per-row diagnostic}
+\label{sec:detector}
+
+Once two chains $\Pchain^{(A)}, \Pchain^{(B)}$ are fitted, the
+per-trajectory log-likelihood-ratio detector scores
+\[
+\Lam(\tau) \;=\; \sum_{t=0}^{T-1}\bigl[\log\pT^{(B)}(\tau_{t+1}\mid\tau_t) - \log\pT^{(A)}(\tau_{t+1}\mid\tau_t)\bigr],
+\]
+and the AUC of $\Lam$ against the labelled test trajectories
+($N$ per regime, $T$-edge windows) summarises detection performance.
+Following the iter-18 finding that AUC alone can reflect aggregate
+chain-drift rather than per-row chain accuracy, we additionally report
+a \emph{contrast-correlation} diagnostic at branching states (states
+with out-degree $> 1$): for each such state $x$, we compute
+\[
+\Delta_{\mathrm{fit}}(x, \cdot) = \pT^{(B)}_{\mathrm{fit}}(x, \cdot) - \pT^{(A)}_{\mathrm{fit}}(x, \cdot),
+\qquad
+\Delta_{\mathrm{emp}}(x, \cdot) = \pT^{(B)}_{\mathrm{emp}}(x, \cdot) - \pT^{(A)}_{\mathrm{emp}}(x, \cdot),
+\]
+where the empirical chain $\Pchain_{\mathrm{emp}}$ is the
+full-observation Laplace-smoothed transition matrix from the trajectories.
+We report the stacked Pearson correlation of $\Delta_{\mathrm{fit}}$
+against $\Delta_{\mathrm{emp}}$ over all branching-state legal-edge entries,
+plus the per-state cosine similarity distribution (median, mean, and
+fraction of states with positive cosine). A high AUC with low Pearson
+indicates aggregate-bias-driven detection; a high AUC \emph{and} a
+non-trivial Pearson together support the stronger ``chain recovery''
+claim.

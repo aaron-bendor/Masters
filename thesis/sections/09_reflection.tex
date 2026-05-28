@@ -1,0 +1,132 @@
+\section{Project Management and Reflection}\label{sec:reflection}
+
+This section addresses the \emph{Project Management} and \emph{Reflection}
+learning outcomes of the module assessment criteria
+\cite{markscheme}.
+
+\subsection{Project structure and milestone management}
+\label{sec:reflect-pm}
+
+The project was scoped at the outset as a three-tier validation
+pipeline (synthetic, simulated, real-world) extending a single source
+paper \cite{morimura2013}. This top-down decomposition served well as a
+stable organising structure: each tier had clear inputs, outputs, and
+acceptance criteria, and the natural sequencing (upstream
+validation locks before downstream tiers depend on it) gave a clean
+de-risking order.
+
+Internal milestone management was driven by a running
+\code{research\_logbook.md} file that holds twenty
+``iter-$N$'' entries spanning the full project. Each iter
+documents one experimental cycle: hypothesis, setup, result, honest
+read, and next action. Two practices that worked particularly well:
+\begin{itemize}
+\item \textbf{The auto-memory file as an \emph{epistemic} index.}
+A separate file (\code{MEMORY.md} with links to per-finding markdown
+records) was used for ``things I now believe and the evidence for them''
+as opposed to ``things I did and when''. Concretely, the file
+records statements such as ``empirical $g$ on SUMO is sparse to the
+point of being uninformative for the optimiser'' with a pointer to the
+specific iter that established it. This separation made it possible to
+quickly distinguish ``a working assumption that was right when I made
+it but might now be stale'' from ``a finding I have evidence for''.
+\item \textbf{Audit-before-extend.} A guiding rule, learned from
+iter-9's retraction of an earlier headline number, was to audit
+the upstream implementation before extending it. Two specific audits
+saved time: (i) the gradient finite-difference check at $\sim 10^{-9}$
+relative error confirmed the analytic gradient derivation before any
+sweep was run on features, avoiding the trap of attributing fit
+behaviour to a buggy derivative; (ii) the iter-18 contrast-correlation
+diagnostic established that AUC alone is an unreliable signal of
+chain quality, which materially altered how the Phase~4 result was
+framed.
+\end{itemize}
+
+Two practices that did not work as well are worth recording explicitly:
+\begin{itemize}
+\item \textbf{Underestimating the compute scaling of the $f+g$ loss.}
+The first $f+g$ sweep at SUMO scale was projected at $\sim 1$ hour and
+killed at $9.5$ hours. The retry at smaller $|X_o|$ and
+$\code{maxiter}$ was projected at $\sim 30$ minutes and killed at
+$3$~hours. Two iterations were burned before the structural
+diagnosis (the hitting-rate gradient is $O(|X_o| \cdot n^3)$ and the
+$84\%$-floor loss landscape is degenerate at this scale) was reached.
+In future I would profile a single iteration before committing to a
+sweep at unfamiliar configuration.
+\item \textbf{Late identification of the OD-mix confound.} The Tier-3
+rush-vs-off-peak proxy was scoped before the methodological cost of
+the OD-mix confound was clearly understood. The OD-rebalancing
+extension --- the methodologically correct fix --- was added in the
+final week, and as of writing the matched-pool experiment is still
+in flight. Earlier scoping would have caught this; the lesson is that
+``proxy weakness'' should be a structured pre-experiment audit item,
+not an ad-hoc discussion item.
+\end{itemize}
+
+\subsection{Benchmarking against the example dissertations}
+\label{sec:reflect-bench}
+
+I read three example MEng Design Engineering dissertations from
+previous years to calibrate quality expectations. The benchmarks I
+took from each:
+\begin{itemize}
+\item \textbf{Aditya Munot, ``Optimal Transport for Complex Sharing
+Economies with QoS Guarantees''}: the notation table at section~1
+that gives readers a clean reference for the math. I adopted this
+convention in \cref{sec:notation}. The clean separation of theoretical
+framework, scenario application, and benchmarking-against-state-of-the-art
+also informed how I structured the validation tiers.
+\item \textbf{Nora Luo, [thesis title placeholder]}: the discipline
+of foregrounding limitations in the discussion rather than burying
+them, and of writing the conclusion as a quantified claim
+($X = Y$ \% within tolerance $Z$) rather than a narrative. I have
+followed this style in \cref{sec:discussion} where every claim is
+backed by a number.
+\item \textbf{Antanas Zilinskas, [thesis title placeholder]}: the
+use of figure-paired tables (e.g.\ a small numerical summary alongside
+a curve) rather than relying on either alone. I have not yet adopted
+this fully but the figure scaffolding is in place for the eventual
+revision.
+\end{itemize}
+
+By the assessment criteria of \cite{markscheme}, the strengths I would
+foreground are: contextual investigation (a critical engagement with
+three real-world AVI datasets, only one of which is actually usable
+for per-trajectory work, and an explicit positioning against the
+source paper and rerouting-detection prior art); validation
+(three independent validation tiers, each with its own honest caveats
+and a quantified ceiling); and reflection (this section, and the
+honest framing of the $f+g$ infeasibility and the multistart
+question as future-work items rather than swept under the rug).
+The weaknesses are: single-seed Tier-2 and Tier-3 numbers, and the
+absence of multistart confirmation on \code{features=real}.
+
+\subsection{Personal skill development}
+\label{sec:reflect-skills}
+
+The technical skills I leaned on heavily and improved in: deriving and
+finite-difference-verifying analytic gradients (Eqs.~12, 15, 17--18 of
+the source paper); writing software with a clean separation between
+the inverter's mathematical core (in \code{morimura.py}, kept faithful
+to the paper) and the application-specific loaders that surround it
+(\code{sumo\_to\_phase3.py}, \code{real\_data/load\_xuancheng.py});
+and writing a logbook that records both the successful and the
+unsuccessful experimental cycles in enough detail that I could
+critique my own past decisions a month later.
+
+The non-technical skill I would name as the one that most shaped the
+project's outcome is \emph{honest framing of negative results}. The
+project did not produce the headline ``real-world detector with a
+high AUC and clean chain recovery'' that the SUMO Tier-2 result would
+have predicted. Instead it produced: a controlled-validation result
+($\sim 0.71$ AUC, $69\%$ gap closure on labelled SUMO), an
+empirically-verified data ceiling (the $2$-step refutation closes a
+tempting line of work), and an honest real-world result
+($\sim 0.53$ AUC on a behavioural proxy without ground-truth labels)
+that quantifies the gap between simulated and deployed
+detectability. Each of these is publishable, in part because they
+were framed honestly --- but the temptation in week~30 of the project
+to switch the real-world contrast to a stronger but methodologically
+incorrect proxy (holiday-vs-normal) had to be resisted. Resisting that
+temptation in real time, against the prospect of a higher headline
+number, is the skill I most want to carry forward.

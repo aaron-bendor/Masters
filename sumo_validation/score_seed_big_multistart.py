@@ -21,6 +21,7 @@ os.chdir(HERE)
 
 from sumo_to_phase3 import (
     build_adj, read_edge_counts, read_trajectories, empirical_chain,
+    extract_features,
 )
 from per_car_detector import _scores_for_chains, log_lik
 from congestion_filter import roc
@@ -32,10 +33,11 @@ from morimura import Inverter, stationary
 # ---------------------------------------------------------------
 
 def fit_chain_with_init(adj, beta, X_o, f_obs, x0,
-                        gamma=1.0, lam=1e-3, maxiter=1500):
+                        gamma=1.0, lam=1e-3, maxiter=1500,
+                        phi_T=None, psi=None):
     """Single Inverter fit from a specific x0. Mirrors per_car_detector.fit_chain
     but exposes x0 and silences printing. Returns (pI_h, PT_h, pi_h, res, d)."""
-    inv = Inverter(adj, beta, gamma=gamma, lam=lam, phi_T=None, psi=None)
+    inv = Inverter(adj, beta, gamma=gamma, lam=lam, phi_T=phi_T, psi=psi)
     theta, res = inv.fit(X_o, f_obs, g_obs=None, x0=x0, maxiter=maxiter)
     pI_h, PT_h = inv.forward(theta)
     pi_h = stationary(beta * PT_h + (1.0 - beta) * pI_h[None, :])
@@ -49,7 +51,8 @@ def val_loglik(trajs, PT, eps=1e-15):
 
 def multi_start_fit(adj, beta, X_o, f_obs, train_trajs, val_frac=0.2,
                     K=10, base_seed=0, scale=1.0, maxiter=1500,
-                    gamma=1.0, lam=1e-3, label=""):
+                    gamma=1.0, lam=1e-3, label="",
+                    phi_T=None, psi=None):
     """K independent Inverter fits, each from a different random theta_0.
     Selects the fit with the highest validation log-likelihood on a
     held-out val_frac slice of train_trajs.
@@ -64,7 +67,7 @@ def multi_start_fit(adj, beta, X_o, f_obs, train_trajs, val_frac=0.2,
 
     # Probe d via a zero-init Inverter (no fit)
     inv_probe = Inverter(adj, beta, gamma=gamma, lam=lam,
-                         phi_T=None, psi=None)
+                         phi_T=phi_T, psi=psi)
     d = inv_probe.d
 
     results = []
@@ -78,6 +81,7 @@ def multi_start_fit(adj, beta, X_o, f_obs, train_trajs, val_frac=0.2,
         pI_h, PT_h, pi_h, res, _ = fit_chain_with_init(
             adj, beta, X_o, f_obs, x0,
             gamma=gamma, lam=lam, maxiter=maxiter,
+            phi_T=phi_T, psi=psi,
         )
         elapsed = time.time() - t0
         vloglik = val_loglik(val_trajs, PT_h)
@@ -122,6 +126,9 @@ p.add_argument("--val_frac", type=float, default=0.2)
 p.add_argument("--init_scale", type=float, default=1.0,
                help="Std-dev of random normal init for theta_0")
 p.add_argument("--ms_base_seed", type=int, default=20260526)
+p.add_argument("--features", choices=("none", "real"), default="none",
+               help="'none' = local-only fit; "
+                    "'real' = enable omega-globals via SUMO edge attrs.")
 args = p.parse_args()
 
 S = args.seed
@@ -164,11 +171,19 @@ print(f"n={n}  |X_o|={len(X_o)}  beta={beta:.3f}  "
       f"#train_intr={len(train_intr)}  #train_satnav={len(train_satnav)}  "
       f"#test_per_class={n_t}")
 
+if args.features == "real":
+    phi_T, psi = extract_features("net.net.xml", edges, adj_out)
+    d_T, d_psi = phi_T.shape[1], psi.shape[1]
+else:
+    phi_T, psi = None, None
+    d_T, d_psi = 0, 0
+print(f"features={args.features}  d_T={d_T}  d_psi={d_psi}")
+
 # Probe d
 inv_probe = Inverter(adj_out, beta, gamma=1.0, lam=1e-3,
-                     phi_T=None, psi=None)
+                     phi_T=phi_T, psi=psi)
 d_full = inv_probe.d
-print(f"theta dimension d = n + E = {d_full}")
+print(f"theta dimension d = n + E + d_T + d_psi = {d_full}")
 
 # ---------------------------------------------------------------
 # 1) Baseline: single zero-init fit (identical to score_seed_big.py)
@@ -178,10 +193,12 @@ t0 = time.time()
 _, PT_intr_b, _, res_b_i, _ = fit_chain_with_init(
     adj_out, beta, X_o, f_intr[X_o],
     x0=np.zeros(d_full), maxiter=args.maxiter,
+    phi_T=phi_T, psi=psi,
 )
 _, PT_satnav_b, _, res_b_s, _ = fit_chain_with_init(
     adj_out, beta, X_o, f_satnav[X_o],
     x0=np.zeros(d_full), maxiter=args.maxiter,
+    phi_T=phi_T, psi=psi,
 )
 t_single = time.time() - t0
 print(f"  baseline intr   loss={res_b_i.fun:.4g} nit={res_b_i.nit}")
@@ -229,6 +246,7 @@ ms_intr = multi_start_fit(
     scale=args.init_scale,
     maxiter=args.maxiter,
     label="intr",
+    phi_T=phi_T, psi=psi,
 )
 t_ms_intr = time.time() - t0
 print(f"  multi-start intr wall-clock: {t_ms_intr:.1f}s "
@@ -243,6 +261,7 @@ ms_satnav = multi_start_fit(
     scale=args.init_scale,
     maxiter=args.maxiter,
     label="satnav",
+    phi_T=phi_T, psi=psi,
 )
 t_ms_satnav = time.time() - t0
 print(f"  multi-start satnav wall-clock: {t_ms_satnav:.1f}s "

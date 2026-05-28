@@ -1,0 +1,18 @@
+=== gamma_fg=0.1  features=none ===
+=== Loading seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1, features=none ===
+  features=none  d_T=0  d_psi=0
+  n=2405, mean traj len = 35.7, beta = 0.972
+  trajs: intr=18808, satnav=27531
+  test: 300/class at T=20; train: intr=18508, satnav=27231
+  |X_o| = 601 (25.0% of n)
+
+=== Variant 1: fitted_f (f-only, gamma=1.0) ===
+    L-BFGS: success=False, nit=1500, final_loss=833.2, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=523.9, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+=== Computing empirical g ===
+  g_intr  : zero-cell fraction = 88.3% (361201 cells), nonzero median = 1.0699, max = 1808.8285, rows with n_i=0: 0/601
+  g_satnav: zero-cell fraction = 80.4% (361201 cells), nonzero median = 1.8365, max = 3759.8061, rows with n_i=0: 0/601
+
+=== Variant 2: fitted_fg_floor (gamma=0.10, floor=1e-3) ===
+  at-floor fraction: intr 89.7%, satnav 84.3%

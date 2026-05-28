@@ -28,6 +28,7 @@ os.chdir(HERE)
 
 from sumo_to_phase3 import (
     build_adj, read_edge_counts, read_trajectories, empirical_chain,
+    extract_features,
 )
 from per_car_detector import fit_chain, _scores_for_chains
 from congestion_filter import roc
@@ -135,13 +136,22 @@ def shrink_g_beta_binomial(hit_sum, visit_count, alpha, beta_):
 #  Driver
 # ===============================================================
 
-def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
+def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1,
+         features="none", x_o_frac=0.25):
     S = seed
     print(f"=== Loading seed={S}, x_o_seed={x_o_seed}, T={T}, "
-          f"maxiter={maxiter}, gamma_fg={gamma_fg} ===")
+          f"maxiter={maxiter}, gamma_fg={gamma_fg}, features={features} ===")
 
     edges, adj_out, idx = build_adj("net.net.xml")
     n = len(edges)
+
+    if features == "real":
+        phi_T, psi = extract_features("net.net.xml", edges, adj_out)
+        d_T, d_psi = phi_T.shape[1], psi.shape[1]
+    else:
+        phi_T, psi = None, None
+        d_T, d_psi = 0, 0
+    print(f"  features={features}  d_T={d_T}  d_psi={d_psi}")
     f_intr = read_edge_counts(f"edgedata.intr.big.seed{S}.xml", idx)
     f_satnav = read_edge_counts(f"edgedata.satnav.big.seed{S}.xml", idx)
     trajs_intr, stats_i = read_trajectories(f"vehroutes.intr.big.seed{S}.xml", idx)
@@ -172,7 +182,7 @@ def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
 
     # X_o selection (same rule as score_seed_big.py).
     cands = np.where((f_intr > 0) & (f_satnav > 0))[0]
-    n_obs = min(max(20, int(0.25 * n)), len(cands))
+    n_obs = min(max(20, int(x_o_frac * n)), len(cands))
     rng_xo = np.random.default_rng(x_o_seed)
     X_o = np.sort(rng_xo.choice(cands, size=n_obs, replace=False))
     print(f"  |X_o| = {len(X_o)} ({100 * n_obs / n:.1f}% of n)")
@@ -180,9 +190,9 @@ def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
     # ---- 1. f-only baseline ----
     print("\n=== Variant 1: fitted_f (f-only, gamma=1.0) ===")
     _, PT_intr_f, _ = fit_chain(adj_out, beta, X_o, f_intr[X_o],
-                                maxiter=maxiter)
+                                maxiter=maxiter, phi_T=phi_T, psi=psi)
     _, PT_satnav_f, _ = fit_chain(adj_out, beta, X_o, f_satnav[X_o],
-                                  maxiter=maxiter)
+                                  maxiter=maxiter, phi_T=phi_T, psi=psi)
 
     # ---- 2. Empirical g + sparsity diagnostics ----
     print("\n=== Computing empirical g ===")
@@ -227,10 +237,10 @@ def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
 
     _, PT_intr_fg_floor, _ = fit_chain(
         adj_out, beta, X_o, f_intr[X_o], g_intr_floor,
-        gamma=gamma_fg, maxiter=maxiter)
+        gamma=gamma_fg, maxiter=maxiter, phi_T=phi_T, psi=psi)
     _, PT_satnav_fg_floor, _ = fit_chain(
         adj_out, beta, X_o, f_satnav[X_o], g_satnav_floor,
-        gamma=gamma_fg, maxiter=maxiter)
+        gamma=gamma_fg, maxiter=maxiter, phi_T=phi_T, psi=psi)
 
     # ---- 4. fitted_fg_shrink: empirical-Bayes Beta-Binomial ----
     print("\n=== Variant 3: fitted_fg_shrink (gamma={:.2f}, Beta-Binomial MoM) ===".format(gamma_fg))
@@ -258,10 +268,10 @@ def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
 
     _, PT_intr_fg_shrink, _ = fit_chain(
         adj_out, beta, X_o, f_intr[X_o], g_intr_shrink,
-        gamma=gamma_fg, maxiter=maxiter)
+        gamma=gamma_fg, maxiter=maxiter, phi_T=phi_T, psi=psi)
     _, PT_satnav_fg_shrink, _ = fit_chain(
         adj_out, beta, X_o, f_satnav[X_o], g_satnav_shrink,
-        gamma=gamma_fg, maxiter=maxiter)
+        gamma=gamma_fg, maxiter=maxiter, phi_T=phi_T, psi=psi)
 
     # ---- 5. Scoring ----
     print("\n=== Scoring ===")
@@ -295,7 +305,8 @@ def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
           f"gap_closed = {100*_gap(auc_fg_shrink):6.1f}%")
 
     print(f"\nRESULT_TABLE  seed={S}  T={T}  |X_o|={len(X_o)}  "
-          f"n={n}  beta={beta:.3f}  N_test={n_t}  gamma_fg={gamma_fg}")
+          f"n={n}  beta={beta:.3f}  N_test={n_t}  gamma_fg={gamma_fg}  "
+          f"features={features}  d_T={d_T}  d_psi={d_psi}")
     print(f"RESULT  f={auc_f:.3f}  fg_floor={auc_fg_floor:.3f}  "
           f"fg_shrink={auc_fg_shrink:.3f}  emp_ceiling={auc_emp:.3f}")
     print(f"BETA_PRIOR  intr  (alpha,beta) = ({a_i:.4f}, {b_i:.4f})  "
@@ -307,4 +318,22 @@ def main(seed=42, x_o_seed=13, T=20, maxiter=1500, gamma_fg=0.1):
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--x_o_seed", type=int, default=13)
+    p.add_argument("--T", type=int, default=20)
+    p.add_argument("--maxiter", type=int, default=1500)
+    p.add_argument("--gamma_fg", type=float, default=0.1,
+                   help="Mix weight on stationary loss; 0.1 = paper default "
+                        "(0.9 weight on hitting-rate signal).")
+    p.add_argument("--features", choices=("none", "real"), default="none",
+                   help="'none' = local-only fit; "
+                        "'real' = enable omega-globals via SUMO edge attrs.")
+    p.add_argument("--x_o_frac", type=float, default=0.25,
+                   help="Fraction of states to observe (default 0.25 = "
+                        "matches score_seed_big.py); lower this to speed up "
+                        "fg fits which cost O(|X_o| * n^3) per iteration.")
+    a = p.parse_args()
+    main(seed=a.seed, x_o_seed=a.x_o_seed, T=a.T, maxiter=a.maxiter,
+         gamma_fg=a.gamma_fg, features=a.features, x_o_frac=a.x_o_frac)

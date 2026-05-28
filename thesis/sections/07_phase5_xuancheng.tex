@@ -1,0 +1,231 @@
+\section{Tier 3: Real-World Validation on Xuancheng AVI Data}
+\label{sec:phase5-xuancheng}
+
+This tier ports the entire pipeline to a real-world urban AVI dataset
+from Xuancheng, China \cite{ma2026xuancheng}. The pipeline is unchanged
+from Tier~2; only the loader and the regime split differ. The
+methodological gap that distinguishes any real-world validation from
+the controlled Tier~2 comparison --- namely, the absence of a
+ground-truth sat-navigation adoption label --- is what we have to
+address explicitly here.
+
+\subsection{Dataset choice}\label{sec:phase5-dataset}
+
+Three candidate datasets were evaluated. The Padua AVI deposit
+\cite{cappi2026} releases only aggregated $10$-minute flow statistics
+and pairwise travel times over $40$ junctions; per-vehicle trajectories
+are stripped at the source pipeline for privacy and cannot be
+reconstructed downstream. The Wang \emph{et al.}\ Xuancheng deposit
+\cite{wang2023xuancheng} explicitly restricts raw trajectory access
+behind a supervised-interactive interface. The
+\citet{ma2026xuancheng} Xuancheng release, by contrast, publishes
+joinable entry/exit tables with anonymised vehicle identifiers from
+which complete per-vehicle trajectories can be reconstructed downstream;
+this is the dataset we use. \cref{tab:phase5-dataset-scale} summarises
+its scale.
+
+\begin{table}[H]
+\centering
+\caption{Xuancheng AVI dataset \cite{ma2026xuancheng} scale, with comparison
+to the SUMO bigger-bbox setup of Tier~2.}
+\label{tab:phase5-dataset-scale}
+\small
+\begin{tabular}{lcc}
+\toprule
+property & SUMO bigger-bbox (Tier 2) & Xuancheng (Tier 3) \\
+\midrule
+state space $n$ & $2{,}405$ edges & $1{,}733$ edges (SCC subset) \\
+trips per day & $\sim 28{,}000$ per regime & $\sim 327{,}000$ \\
+mean trajectory length & $35.7$ edges & $15.1$ edges (raw) \\
+total trips (full pool) & $\sim 56{,}000$ & $\sim 10.5$M (Apr 2023) \\
+ground-truth regime label & yes (\code{rerouting} flag) & \emph{no} (proxy required) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Verification: route legality and time-of-day distribution}
+\label{sec:phase5-verification}
+
+Two non-obvious data-quality issues affect how the loader processes
+trips, each of which was identified before any fitting was attempted:
+
+\paragraph{Route legality.} Of all consecutive edge pairs $(x_t,
+x_{t+1})$ across the trip routes, only $78.4\%$ satisfy the SUMO net's
+lane-connection definition $x_{t+1} \in \mathrm{adj}(x_t)$. The
+remaining $21.6\%$ split as $\sim 1.9\%$ junction-adjacent-but-disconnected
+(a definitional gap in the converted SUMO net) and $\sim 19.7\%$
+inter-junction ``teleports'' attributable to the source pipeline's
+Dijkstra-repair step that fills in missing AVI passages on
+CityFlow's connectivity graph rather than the SUMO net's. The loader
+handles this by \emph{splitting trips at illegal boundaries} into
+legal-only sub-trajectories rather than dropping the trip wholesale:
+a $15$-edge raw trip with one illegal jump becomes two sub-trajectories.
+Mean sub-trajectory length is $8.2$ edges, which caps the practical
+test-window $T$ at $\le 10$.
+
+\paragraph{Time-of-day distribution.} Across all $30$ daily files, the
+trip \code{startTime} field is seconds-since-midnight in $[0, 86400]$
+with a clear AM-rush + PM-rush + midday-off-peak structure. We use this
+to construct a rush-vs-off-peak regime split with windows
+$\text{rush} = [25{,}200, 32{,}400] \cup [61{,}200, 68{,}400]$
+(7--9~AM and 5--7~PM) and
+$\text{offpeak} = [36{,}000, 57{,}600]$ (10~AM--4~PM); trips outside
+either window are discarded. Three anomalous days are flagged for
+exclusion or special handling: Apr~5 (Tomb-Sweeping holiday, $264$k
+trips, demand outlier), Apr~28--29 (Labour Day eve, $\sim 425$k trips),
+Apr~10 (\code{startTime} max~$\approx 165$k, suggesting a multi-day
+concatenation), and Apr~8/9 (identical trip counts of $324{,}441$ in both
+files, almost certainly a duplicate).
+
+\subsection{The fundamental real-world gap: no ground-truth sat-nav label}
+\label{sec:phase5-proxy}
+
+Tier~2 used \code{--device.rerouting.probability} as ground truth: every
+vehicle either does or does not use sat-navigation, and the regime split
+is exact by construction. No real-world AVI dataset publishes this
+label. The closest behavioural proxy available in Xuancheng is the
+rush-vs-off-peak time-of-day contrast: if external rerouting influence
+is triggered by congestion, then rush-hour trips should differ from
+off-peak trips in routing choices, and the inverse-MC detector should
+detect that difference.
+
+This proxy is weaker than the SUMO contrast in two ways. First, rush
+and off-peak trips have \emph{different populations} (commuters vs.\
+discretionary trips), so any chain difference reflects both the
+routing-choice effect (which we want) and the OD-mix effect (which
+we do not). Second, the actual sat-navigation adoption rate in
+Xuancheng is presumably much lower than the $100\%$ used in SUMO, so
+even the routing-choice signal is diluted by the unguided fraction.
+
+We address the OD-mix confound directly via the OD-rebalancing
+extension of \cref{sec:od-rebal}. We cannot address the lower-adoption
+dilution from observation alone; what we can do is report the resulting
+real-world AUC honestly as a lower bound on the method's sensitivity
+in deployment.
+
+\subsection{Results}\label{sec:phase5-results}
+
+We report three configurations on the rush-vs-off-peak contrast:
+single-day, $5$-day pooled, and $5$-day pooled with $K=8$ OD-rebalancing.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{fig04_phase5_xuancheng.png}
+\caption{Tier~3 Xuancheng rush-vs-off-peak detection AUC across three
+configurations. The empirical $1$-step Markov ceiling (grey) is
+$0.556$ on a single day, lifts to $0.573$ when $5$ weekdays are pooled,
+and \emph{crashes} to $0.518$ once the pools are OD-matched at $K=8$
+spatial zones. The $0.055$ AUC drop attributable to the OD-rebalancing
+identifies approximately $75\,\%$ of the un-matched detection signal
+as origin-destination-mix between commuter and discretionary trip
+populations, not routing-choice differences. Fitted detectors
+(blue bars) follow the ceiling in all three configurations.}
+\label{fig:phase5-headline}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Xuancheng rush-vs-off-peak detector AUC and chain-recovery
+metrics on \texttt{[all branching]} states, three configurations
+(\cref{fig:phase5-headline}).}
+\label{tab:phase5-headline}
+\small
+\begin{tabular}{lcccc}
+\toprule
+configuration & $\AUC_{\mathrm{emp}}$ & $\AUC_{\mathrm{fit}}$ \footnotesize{(none/real)} & Pearson \footnotesize{(none/real)} & median cos \footnotesize{(none/real)} \\
+\midrule
+day=Apr~17, T=10 & $0.556$ & $0.498 / 0.508$ & $+0.139 / +0.048$ & $+0.341 / +0.146$ \\
+pool Apr~17--21, T=10 & $0.573$ & $0.524 / 0.536$ & $+0.096 / +0.072$ & $+0.267 / +0.167$ \\
+pool + OD-match $K=8$ & $\mathbf{0.518}$ & $0.476 / 0.530$ & $+0.104 / +0.077$ & $+0.332 / +0.263$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The critical row is the third. The OD-rebalancing step matches $517{,}477$
+trips per regime across $55$ shared $(\text{zone}_o, \text{zone}_d)$
+cells (only $1$ OD cell out of $56$ was rush-only or off-peak-only,
+discarded), removing the OD-mix confound. The empirical ceiling
+\emph{crashes} from $0.573$ to $0.518$ --- i.e.\ only $0.018$ above
+chance. This is the methodologically central number of the real-world
+tier: approximately $75\%$ of the rush-vs-off-peak detection
+signal visible in the un-matched pool is attributable to the OD-mix
+\emph{not} to routing differences. After controlling for it, the
+within-OD routing contrast is essentially absent at the $1$-step
+Markov level in this dataset.
+
+A secondary observation: in the OD-matched row, $\AUC_{\mathrm{fit}}$
+under \code{features=real} ($0.530$) numerically exceeds
+$\AUC_{\mathrm{emp}}$ ($0.518$). Under correct chain recovery this is
+impossible, since the full-observation empirical chains should upper-bound
+any partial-observation fit. The most plausible explanation is the
+same L-BFGS basin-selection pathology that hit the un-matched pool
+(rush-fit loss spikes from $4.058$ at \code{features=none} to $1397$ at
+\code{features=real}, a $\sim 340\times$ ratio); the resulting fitted
+chains drift in directions that happen to produce a slightly better
+aggregate-bias signal than the empirical chains, but not because they
+are more chain-accurate. The per-row Pearson on \texttt{[all branching]}
+of $+0.077$ (real) vs $+0.104$ (none) under OD-matching corroborates
+this: features make chain recovery slightly \emph{worse}, not better,
+on real data with this loss landscape.
+
+\subsection{Honest reading}\label{sec:phase5-reading}
+
+Three findings are worth foregrounding from \cref{tab:phase5-headline}.
+
+\paragraph{The OD-mix dominates the un-matched signal.} The empirical
+ceiling falls from $0.573$ (un-matched pool) to $0.518$ (matched
+pool); $0.055$ AUC of the un-matched signal --- approximately $75\%$
+of the above-chance ceiling at $0.073$ --- is the OD-mix confound. The
+remaining $0.018$ AUC above chance is the genuine routing-given-OD
+contrast at the $1$-step Markov level. This is the central
+methodological point of the real-world tier: \emph{without} OD-matching,
+a method appears to detect ``rush-hour routing differences''; \emph{with}
+OD-matching, it correctly attributes most of that apparent signal to
+the trivially expected fact that commuters and discretionary travellers
+have different origin-destination distributions.
+
+\paragraph{The within-OD routing contrast is below detectability.}
+At the OD-matched ceiling of $0.518$ ($0.018$ above chance), the
+fitted detectors at $0.476$/$0.530$ are not meaningfully distinguishable
+from chance under any plausible single-seed noise band. Per-row
+Pearson on \texttt{[all branching]} is $\le 0.104$ in every Xuancheng
+configuration, against $+0.215$ on SUMO under labelled comparison.
+Whatever real congestion-induced rerouting exists in Xuancheng at
+April 2023 sat-navigation adoption rates is below the $1$-step Markov
+behavioural-proxy detection threshold of this framework.
+
+\paragraph{The features=real basin failure repeats post-matching.} Both
+the un-matched pool (\cref{sec:phase5-results}) and the OD-matched pool
+show the same pattern: the rush-fit \code{features=real} loss is
+$\sim 350\times$ the \code{features=none} loss
+($1397$ vs.\ $4.058$ here). The $\AUC_{\mathrm{fit}} > \AUC_{\mathrm{emp}}$
+behaviour in the matched row is consistent with this being a
+basin-selection artefact rather than a chain-recovery improvement. A
+multistart $K \ge 5$ run is the obvious diagnostic; it is flagged as
+immediate future work and not run here.
+
+\subsection{Bottom line for Tier 3}\label{sec:phase5-bottom}
+
+The pipeline runs cleanly on real-world data. The framework's
+gradient implementation, FD-check, regime-split machinery, and contrast
+diagnostics all port to the Xuancheng dataset without modification, and
+the OD-rebalancing extension cleanly attributes the un-matched pool's
+apparent signal to its sources. The headline finding is that
+\textbf{approximately three-quarters of the un-matched rush-vs-off-peak
+detection signal in Xuancheng is OD-mix, not routing}; the remaining
+routing-given-OD contrast is only $0.018$ AUC above chance and is below
+the detectability threshold of a $1$-step Markov framework applied to
+this behavioural proxy. This is a methodologically strong negative
+result for behavioural-proxy validation of sat-navigation detection
+on real-world AVI data, and it explicitly characterises the gap between
+the controlled-simulation regime (Tier~2, $0.708$ AUC on labelled
+SUMO contrast) and the real-world regime under realistic
+sat-navigation adoption rates.
+
+The result also identifies the methodological lever any future
+real-world validation of this framework needs: \emph{ground-truth
+sat-navigation adoption labels}, even partial, on the underlying trip
+records. With them, the proxy-weakness problem disappears and the
+controlled-comparison machinery of Tier~2 transfers directly. Without
+them, behavioural proxies appear systematically to over-estimate the
+real-world detection signal once OD-mix is controlled for.

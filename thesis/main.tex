@@ -1,0 +1,129 @@
+% Master's thesis — Aaron Bendor — Imperial College London
+% Design Engineering Master's Project (MEng)
+% Build: pdflatex -> bibtex -> pdflatex -> pdflatex
+% (VS Code LaTeX Workshop uses this recipe automatically.)
+
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Page geometry & typography ---------------------------------
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{setspace}
+\setstretch{1.1}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+
+% ----------------- Math & symbols ---------------------------------------------
+\usepackage{amsmath,amssymb,amsthm,bm}
+\usepackage{mathtools}
+
+% ----------------- Tables, figures, lists -------------------------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\setlist{nosep}
+
+% ----------------- Code & verbatim --------------------------------------------
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{kw}{HTML}{2255AA}
+\definecolor{cm}{HTML}{6E6E6E}
+\definecolor{st}{HTML}{007733}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{kw}\bfseries,
+  commentstyle=\color{cm}\itshape,
+  stringstyle=\color{st},
+  breaklines=true, frame=single, numbers=none,
+  showstringspaces=false,
+}
+
+% ----------------- Cross-refs & hyperlinks ------------------------------------
+\usepackage[hidelinks,colorlinks=false]{hyperref}
+\usepackage{cleveref}
+
+% ----------------- Bibliography -----------------------------------------------
+% IEEEtran numeric style (matches the example thesis convention).
+\usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{IEEEtran}
+
+% ----------------- Section spacing --------------------------------------------
+\titlespacing*{\section}{0pt}{2ex}{1ex}
+\titlespacing*{\subsection}{0pt}{1.5ex}{0.6ex}
+\titlespacing*{\subsubsection}{0pt}{1.2ex}{0.4ex}
+
+% ----------------- Custom macros ----------------------------------------------
+\newcommand{\Xo}{X_{\!o}}      % observed-state subset
+\newcommand{\pT}{p_{\!T}}      % transition kernel
+\newcommand{\pI}{p_{\!I}}      % initial / teleport distribution
+\newcommand{\Pchain}{P_{\!T}}  % matrix form
+\newcommand{\fobs}{f}          % observed stationary count
+\newcommand{\gobs}{g}          % observed hitting-rate matrix
+\newcommand{\Lam}{\Lambda}     % log-likelihood-ratio score
+\newcommand{\RMAE}{\mathrm{RMAE}}
+\newcommand{\AUC}{\mathrm{AUC}}
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% ----------------- Title block ------------------------------------------------
+\title{\bfseries
+  Detection of Externally-Influenced Routing\\
+  via Inverse Markov-Chain Methods
+}
+\author{
+  Aaron Bendor\\
+  \texttt{aaron.bendor22@imperial.ac.uk}
+  \and
+  Imperial College London\\
+  MEng Design Engineering --- Master's Project
+}
+\date{\today}
+
+% ==============================================================================
+\begin{document}
+% ==============================================================================
+
+\maketitle
+\thispagestyle{empty}
+
+\input{sections/00_abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\input{sections/01_notation}
+
+\input{sections/02_introduction}
+
+\input{sections/03_background}
+
+\input{sections/04_methodology}
+
+\input{sections/05_phase1_synthetic}
+
+\input{sections/06_phase4_sumo}
+
+\input{sections/07_phase5_xuancheng}
+
+\input{sections/08_discussion}
+
+\input{sections/09_reflection}
+
+% ----------------- References -------------------------------------------------
+\newpage
+\bibliography{references}
+
+% ----------------- Appendices -------------------------------------------------
+\appendix
+\input{sections/A_appendix}
+
+\end{document}

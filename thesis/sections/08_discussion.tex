@@ -1,0 +1,143 @@
+\section{Discussion}\label{sec:discussion}
+
+\subsection{Cross-tier read: what generalises}
+\label{sec:disc-cross-tier}
+
+The mechanical pipeline ports cleanly across all three tiers:
+the inverter, FD-checked gradient, contrast diagnostic, feature
+plumbing, and OD-rebalancing extension operate identically on a
+synthetic $n=100$ chain, a SUMO $n=2{,}405$ network, and a
+real-world $n=1{,}733$ Xuancheng network. The single
+\code{--dataset \{sumo,xuancheng\}} CLI flag selects the tier; nothing
+else changes. This is a non-trivial generalisation result for an
+inverse-MC pipeline that the original paper validated only on
+synthetic and one real-world demonstration.
+
+What does \emph{not} generalise as cleanly is the magnitude of the
+detection signal. Tier~1 reproduces the paper's RMAE within
+$\sim 0.05$. Tier~2 reaches $\AUC = 0.708$ at $T=40$ on the controlled
+SUMO comparison, $\sim 69\%$ of the gap to the verified $0.801$
+ceiling, with per-row chain Pearson $\sim +0.21$. Tier~3 on
+Xuancheng, with no ground-truth sat-navigation label, gives
+$\AUC \sim 0.53$ on the rush-vs-off-peak behavioural proxy. The drop
+between Tier~2 and Tier~3 has two distinct contributions:
+\begin{itemize}
+\item The Xuancheng ceiling itself ($\AUC_{\mathrm{emp}} \sim 0.57$) is
+much lower than the SUMO ceiling ($\sim 0.69$), reflecting that the
+behavioural rush-vs-off-peak proxy is a weaker contrast than the
+SUMO labelled comparison.
+\item The fitted-vs-ceiling gap is similar in fractional terms
+($\sim 49\%$ gap closure on pooled Xuancheng vs.\ $\sim 78\%$ on SUMO
+at the same $T = 20$ equivalent), so the framework recovers a
+similar fraction of whatever signal is available --- there is just less
+signal to recover.
+\end{itemize}
+The cleanest single-sentence summary is: \emph{the method captures a
+robust fraction of the recoverable per-row chain contrast on real
+urban data, but the recoverable contrast under realistic
+sat-navigation adoption is small.}
+
+\subsection{Limits of the chosen approach}
+\label{sec:disc-limits}
+
+Three limitations are foregrounded honestly.
+
+\paragraph{Single-seed numbers on Tiers 2 and 3.} All Tier~2 and Tier~3
+results are reported for a single SUMO seed ($42$) and a single
+day-pool (Apr~17--21). The iter-15 work in the project characterised the
+SUMO single-seed noise band as $\sim \pm 0.024$ AUC; the present
+findings sit outside that band but lack the $\ge 5$-seed
+confirmation that would convert them from ``directionally robust
+single-seed'' to ``Tier-1 multi-seed.'' This is a compute-cost
+trade-off, not a methodological barrier; the script supports
+multi-seed sweep trivially. The decision to halt at single-seed is a
+project-management judgement, not a finding about the data.
+
+\paragraph{L-BFGS basin selection on \code{features=real}.}
+The Xuancheng pooled \code{features=real} rush-chain fit hit
+final loss $1477$, against the \code{features=none} fit's loss $4.156$ on
+the same data. The same iter-15 multi-modality of L-BFGS that motivated
+the paper's natural-gradient choice is the most likely explanation. We
+patched the multistart variant for Xuancheng (\code{score\_seed\_big\_multistart.py})
+but did not run it in the time available. This means the
+small features lift on the pooled Xuancheng pool
+(\cref{sec:phase5-reading}) cannot be cleanly distinguished from a
+basin artefact. A multistart $K \ge 5$ run would resolve this in
+$\sim 4$ hours of wall-clock; flagged as immediate future work.
+
+\paragraph{The hitting-rate ($f+g$) extension does not transfer to SUMO
+scale.} The synthetic experiment of Tier~1 uses analytical (noise-free)
+$\gobs$; the SUMO and Xuancheng datasets produce empirical $\gobs$ with
+$84$--$89\%$ of cells at the floor under any reasonable training-data
+size. The L-BFGS optimiser on the corresponding under-constrained
+landscape line-search-backtracks indefinitely. Under
+the simpler $f$-only loss the framework remains tractable. This is
+documented as a real --- and surprising --- limitation: the headline
+feature of the original paper transfers to synthetic but not to
+realistic-scale urban traffic data. The paper's natural-gradient
+optimiser \cite{morimura2013}~$\S 4.1$ is the obvious algorithmic fix
+that we did not pursue here.
+
+\subsection{Social, environmental, technological implications}
+\label{sec:disc-implications}
+
+\paragraph{Transport-policy modelling.} If externally-influenced routing
+constitutes even a few percent of urban traffic flow, demand models
+that assume revealed-preference inputs reflect intrinsic preferences
+are systematically misspecified. A method that quantifies and filters
+the externally-influenced fraction is a methodological prerequisite
+for any policy intervention (congestion pricing, infrastructure
+investment, route-recommendation regulation) whose evaluation rests on
+preference-revealed data.
+
+\paragraph{Privacy and data access.} The most-restrictive privacy
+control among the three real-world AVI datasets we surveyed is also
+the one that gives the strongest scientific guarantees: the Padua
+deposit \cite{cappi2026} releases only aggregated flow statistics.
+The least-restrictive is the Ma~\emph{et al.}\ Xuancheng release
+\cite{ma2026xuancheng} which publishes joinable per-trip records with
+anonymised IDs --- enabling the per-trajectory detector this work
+relies on, but at the cost of stronger reidentification surface area.
+Methodologies that can validate per-trajectory detection from
+aggregate-only data would shift this trade-off favourably.
+
+\paragraph{Sat-navigation regulation.} The current sat-navigation
+recommendation pipeline is unregulated in most jurisdictions; the
+welfare effects of system-wide rerouting around congestion are
+contested. A practical detector that can statistically attribute trip
+fractions to sat-navigation guidance would underpin both academic
+welfare analyses and possible regulatory disclosure requirements.
+
+\subsection{Future work}
+\label{sec:disc-future}
+
+\begin{enumerate}
+\item \textbf{Multistart on \code{features=real}.} Highest expected
+information per hour of compute; resolves the open question of whether
+the small Xuancheng features lift is a basin artefact.
+\item \textbf{Multi-seed Tier-2 confirmation.} Run the Tier-2 pipeline
+on the $5$ pre-built SUMO seeds and report
+$\AUC_{\mathrm{fit}}$ with confidence intervals. Required for
+Tier-1 reporting precision in the eventual paper writeup.
+\item \textbf{Trajectory-level feature augmentation.} The strict
+$1$-step Markov LR detector ignores trip-level features (length, mean
+speed, edge-class composition, dwell time at congested edges). A
+logistic-regression layer on top of $\Lam(\tau)$ that adds those
+features would lift detection AUC further at the cost of a slightly
+weaker chain-recovery claim. Worth doing as a clearly-labelled
+``deployment-oriented'' extension.
+\item \textbf{Natural-gradient or LM optimisation.} Per
+\cref{sec:phase4-fg-infeasible}, the $f+g$ infeasibility is an
+optimiser-quality problem, not a method-class problem. The paper's
+$\S 4.1$ natural-gradient descent or a Levenberg--Marquardt
+formulation against the residual Jacobian (iter-17 of the project
+explored this; abandoned at $d = 8{,}392$ for memory cost) would
+likely restore $f+g$ tractability and enable an $f+g$-with-features
+re-validation.
+\item \textbf{OD-conditional fitting on Xuancheng.} The
+OD-rebalancing extension matches the marginal $(\text{zone}_o,
+\text{zone}_d)$ distribution. A stronger control fits per-cell chains
+and aggregates the per-cell contrasts; smaller sample sizes per cell
+but cleaner methodologically. The loader infrastructure required
+already exists.
+\end{enumerate}

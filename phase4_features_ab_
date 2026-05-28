@@ -1,0 +1,25 @@
+=== FD CHECK ===
+=== FD gradient check (real SUMO features) ===
+  n=2405  E=5987  d_T=8  d_psi=2  d=8402
+  |X_o|=601  gamma=1.0  (f-only, log_g=None)
+  L(theta0) = 787988.164979
+  expected FD round-off floor (abs): ~1.7e-04
+  pass criterion: rel_err < rtol=1e-03 when |grad| > atol=5e-02,
+                  else abs_err < atol (tiny-gradient regime)
+
+  block       i      analytic         FD           abs_err   rel_err   ok
+  nu            18  +5.426983e+01  +5.427958e+01  9.75e-03  1.80e-04    
+  nu           491  +1.713228e+02  +1.713242e+02  1.45e-03  8.46e-06    
+  nu           187  -4.382136e+01  -4.381640e+01  4.96e-03  1.13e-04    
+  om_loc      8056  -5.573655e+02  -5.573684e+02  2.98e-03  5.35e-06    
+  om_loc      5727  +1.659604e+02  +1.659665e+02  6.04e-03  3.64e-05    
+  om_loc      4930  -2.673047e+02  -2.673076e+02  2.83e-03  1.06e-05    
+  om_glo1     8397  -1.263986e-04  -1.164153e-04  9.98e-06  7.90e-02    
+  om_glo1     8399  -3.319886e+05  -3.319886e+05  4.77e-03  1.44e-08    
+  om_glo1     8394  -4.809383e+04  -4.809382e+04  4.40e-03  9.16e-08    
+  om_glo2     8401  -4.175571e+05  -4.175571e+05  7.96e-03  1.91e-08    
+  om_glo2     8400  -2.150839e+05  -2.150839e+05  1.22e-03  5.67e-09    
+
+  failing dims: 0
+  verdict: PASS
+=== seed=42  features=none ===

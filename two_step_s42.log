@@ -1,0 +1,22 @@
+=== 2-step empirical detector (seed=42, T=20) ===
+  n=2405  beta=0.972  T=20  N_test=300/class
+  train trajs: intr=18508  satnav=27231
+
+  building 1-step empirical chains (smoothing=1e-3) ...
+  counting (x_prev, x, y) triples ...
+    intr  :    463621 triples across    3528 (x_prev, x) pairs
+    satnav:   1071879 triples across   22443 (x_prev, x) pairs
+
+  scoring with 1-step empirical (ceiling reference) ...
+  scoring with 2-step empirical ...
+
+  1-step fallback rate on test transitions: 7.1%
+
+  AUC_1step (ceiling)  = 0.6853
+  AUC_2step            = 0.6661
+  delta (2step-1step)  = -0.0192
+why 
+  verdict: 2-step AUC < 1-step AUC -> overfitting / sparsity harms LR; not a useful direction
+
+RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.685  auc_2step=0.666  delta=-0.019  fallback_rate=0.071
+=== DONE ===

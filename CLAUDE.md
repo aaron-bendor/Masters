@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Master's research extending Morimura, Osogami & Idé (NeurIPS 2013), *Solving inverse problem of Markov chain with partial observations*, to detect and filter observations corrupted by external re-routing influence (sat-navs reacting to congestion) so the recovered chain reflects drivers' intrinsic preferences. The reference paper PDF is in the repo (`NIPS-2013-...-Paper.pdf`); `research_logbook.md` is the running narrative of decisions and results.
+Master's research extending Morimura, Osogami & Idé (NeurIPS 2013), *Solving inverse problem of Markov chain with partial observations*, to detect and filter observations corrupted by external re-routing influence (sat-navs reacting to congestion) so the recovered chain reflects drivers' intrinsic preferences. Reference PDFs live in `papers/` (Morimura is `papers/NIPS-2013-...-Paper.pdf`); `research_logbook.md` is the running narrative of decisions and results.
 
 ## Environment
 

@@ -11,8 +11,13 @@ reflects drivers' intrinsic preferences.
 
 | File | Purpose |
 |------|---------|
-| `NIPS-2013-...-Paper.pdf` | The reference paper (Morimura, Osogami, Idé 2013). |
-| `Identification_of_new_patterns_v3.pdf` | Gu, Crisostomi, Liu, Shorten (2018). Population-level junction-turning anomaly detection — the conceptual reference for Phase 3. |
+| `papers/NIPS-2013-...-Paper.pdf` | The reference paper (Morimura, Osogami, Idé 2013). |
+| `papers/Identification_of_new_patterns_v3.pdf` | Gu, Crisostomi, Liu, Shorten (2018). Population-level junction-turning anomaly detection — the conceptual reference for Phase 3. |
+| `papers/2605.18782v1.pdf` | Cappi et al. (2026). Padua AVI dataset (10-min aggregated). Considered for real-world validation; cannot run per-trajectory detector — only aggregated flow stats released. |
+| `papers/s41597-022-01850-0.pdf` | Wang et al. (2023). Xuancheng holographic trajectory reconstruction (Sci. Data). Per-trajectory raw access *restricted*; releases resampled flow data only. |
+| `papers/s41597-026-06892-2.pdf` | Ma et al. (2026). Xuancheng AVI dataset with **joinable entry/exit tables** allowing per-trajectory reconstruction. SUMO-format, ~1,760 segments, 1 month, ~350k trips/day. Primary candidate for real-world Phase 3/4 validation. Figshare DOI 29925824. |
+| `papers/LSG.pdf` | Background reference (line-segment grammar). |
+| `papers/Focused literature review for inverse Markov-chain route-choice inference.pdf` | Background literature review. |
 | `morimura.py` | Reproduction of the synthetic experiment in §6.1 of the paper. |
 | `congestion_filter.py` | Phase 2. Detect externally-influenced *snapshots* and use the detection to clean an intrinsic-chain fit. |
 | `per_car_detector.py` | Phase 3. Detect whether a *single car's* trajectory was sat-nav-influenced via a log-likelihood ratio. |
@@ -522,6 +527,145 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 > **Honest comparison artefact: `morimura_compare.py` + `morimura_compare_fig.png`.** Overlay of first-commit config (local-only, fixed $\lambda$, $n=100$, 5 trials) vs current config (globals + CV + same 5 trials). The first-commit numbers are **uniformly lower** than the current config (e.g. 0.40 vs 0.81 at $|X_o|=5$; 0.09 vs 0.16 at $|X_o|=90$) — but on a **structurally simpler problem** because the truth has no global features driving structured per-edge variation. The first-commit RMAEs at large $|X_o|$ actually beat the paper's numbers — that's evidence that the first-commit benchmark was easier than paper §6.1, not that the simpler method was better. The "improvement" from making the config paper-faithful is a degradation in raw RMAE that we accept in exchange for a defensible reproduction claim.
 >
 > **Decision (this session).** Phase-1 reproduction is now considered locked in at the paper-faithful config. The current `morimura.py` is the operational reference. Phase-4 work (contrast diagnostic, 2-step empirical PT, optimiser sweeps) is unaffected — the upstream framework is sound; the limitations live in the model class at SUMO scale, not in our Phase-1 implementation.
+
+> **Iter 19 — features as CLI lever, 2-step empirical refutation, T-sweep, and f+g infeasibility (2026-05-27 / 28).** Four threads ran across two sessions, all on bigger-bbox seed=42 at the iter-18 protocol (`|X_o| = 601`, `maxiter = 1500`, T = 20 unless varied).
+>
+> **(A) Wired `--features {none,real}` through every Phase-4 scorer.** The iter-12 ω-globals implementation existed in `Inverter` but the SUMO scorers (`score_seed_big.py`, `contrast_correlation.py`, `score_seed_big_fg.py`, `score_seed_big_multistart.py`) all called `fit_chain` with `phi_T=None, psi=None`. Patched all four with a `--features` CLI flag (default `none` to preserve historical numbers); when `real`, the loader calls `sumo_to_phase3.extract_features` and threads `phi_T (n×8), psi (E×2)` into the Inverter. Added `sumo_validation/fd_check_features.py` as the safety gate before any features-enabled sweep — FD-checks `Inverter.loss_grad` at a random theta and tolerates per-dim relative error `< 1e-3` OR absolute error `< 5e-2` (np.allclose-style; the absolute fallback handles tiny-gradient components like the rarely-visited "service" road-class one-hot where `|∂L/∂ω| ≈ 1e-4` sits at the FD round-off floor). Verdict on bigger-bbox seed=42: PASS, 0 failing dims.
+>
+> **(B) Single-seed seed=42 features result.** `contrast_correlation.py --features {none,real}` reproduces the historical `none` numbers exactly (`auc_fit=0.612`, gap_closed 60.6 %) and lifts every metric under `real`:
+>
+> | metric (`[all branching]`) | features=none | features=real | Δ |
+> |---|---|---|---|
+> | `fitted_f` AUC | 0.612 | **0.644** | **+0.032** |
+> | gap_closed | 60.6 % | **77.5 %** | **+16.9 pp** |
+> | stacked Pearson | +0.132 | **+0.215** | **+63 % rel** |
+> | per-row cosine median | +0.095 | **+0.435** | **4.6×** |
+> | rows with cosine > 0 | 53.5 % | 55.4 % | +1.9 pp |
+>
+> +0.032 AUC sits outside the iter-18 ±0.024 single-seed noise band and is the first feature-induced change in per-row chain quality (Pearson +63 % relative; the cosine *median* jumps 4.6×). The `rows > 0` fraction barely moves (53.5 → 55.4 %), so features sharpen *magnitude* in the right direction without flipping the sign on most still-wrong rows — consistent with the iter-18 conclusion that the bulk of misspecification is structural, not amplitude-shaped. Re-frames the iter-18 "AUC is aggregate-bias-driven" headline: with features, the bias correction is now backed by a real (if modest) per-row contrast correlation, not just aggregate signed drift.
+>
+> **(C) 2-step empirical refutation of higher-order memory.** Built `sumo_validation/two_step_empirical.py`: counts `(x_{t-1}, x_t) → x_{t+1}` triples on training trajectories, scores test trajectories under the 2-step empirical chain vs 1-step empirical, reports the delta. Result on seed=42:
+>
+> | detector | AUC |
+> |---|---|
+> | empirical 1-step (the ceiling we keep hitting) | **0.6853** |
+> | empirical 2-step | 0.6661 (delta = **−0.0192**) |
+> | fallback rate to 1-step | 7.1 % of test transitions |
+>
+> 2-step *underperforms* 1-step despite 93 % of test transitions actually using the 2-step model. This refutes the iter-13 / iter-16 hypothesis that the misspecification gap could be closed with a 2-step parametric inverter — the 1-step Markov ceiling at AUC ≈ 0.685 (T=20) **is the data ceiling** on this SUMO setup, full stop. Closes future-work item 1 from iter-17. The 2-step parametric extension (future-work 2) is no longer worth building on this dataset.
+>
+> **(D) T-sweep with `--features real`, seed=42.** Iter-13 found that empirical ceiling rises with T on small bbox; re-tested on bigger bbox at T ∈ {20, 30, 40}:
+>
+> | T | auc_emp | auc_fit | gap_closed | Pearson [all-br] | rows > 0 [all-br] |
+> |---|---|---|---|---|---|
+> | 20 | 0.685 | 0.644 | 77.5 % | +0.215 | 55.4 % |
+> | 30 | 0.763 | 0.677 | 67.4 % | +0.220 | 55.8 % |
+> | 40 | **0.801** | **0.708** | 69.0 % | +0.216 | 55.5 % |
+>
+> Two findings worth recording:
+> 1. **Iter-13's T-scaling holds on bigger bbox.** Empirical ceiling rises 0.685 → 0.763 → 0.801, matching iter-13's small-bbox prediction `≈ 0.81` at T=40.
+> 2. **The fit itself doesn't change with T — only the test-scoring window does.** Final losses are identical across all three T runs (`836.4` intr / `529.4` satnav), confirming the loss function is T-independent. T is purely a "more transitions per test trip → lower LR variance" lever, not a chain-quality lever. Pearson stays at ~+0.22 across T, so per-row chain recovery is fixed; what improves is the trajectory-level ranking signal. Wastes 2/3 of wall-clock by re-fitting; future T-sweeps should refit once and score at multiple T (minor patch deferred).
+>
+> **Practical thesis headline options now available:**
+> - **AUC framing:** `fitted_f = 0.708` at T=40 against verified ceiling `0.801` (single-seed).
+> - **Gap framing:** 77.5 % of the recoverable 1-step Markov contrast closed at T=20.
+> - **Chain-recovery framing:** per-row Pearson `+0.215`, cosine median `+0.435`, sign-correct on 55 % of branching states.
+> AUC framing is the strongest for absolute-number reporting; chain-recovery framing is the answer to "did we recover the chain itself?" — *partially*: the contrast direction is correlated with truth but flipped on ~45 % of rows, so "the recovered chain reflects reality" is over-claiming; "the recovered chain captures a statistically significant fraction of the per-row contrast" is the honest version.
+>
+> **(E) f+g extension — computationally infeasible at this scale, documented as a negative finding.** Tried `score_seed_big_fg.py` three times to test whether Beta-Binomial-shrunk `g` (variant `fg_shrink`) helps over `fitted_f` once features are on: (i) `|X_o|=601, maxiter=1500` — Variant 2 (`fg_floor`) stalled at 9.5 h with L-BFGS still iterating, killed; (ii) `|X_o|=120, maxiter=300` — Variant 2 stalled at 3 h, killed; (iii) `|X_o|=72, maxiter=100` — same pattern. Diagnosis: each `fg` iteration costs `O(|X_o| × n³)` via `hitting_pack`'s per-state LU decomposition, and the under-constrained landscape (`d = 8,402` parameters vs ~600 informative `g` cells with 84–89 % at the `1e-3` floor) makes L-BFGS line-search backtrack indefinitely. Sparsity is the real blocker, not the floor — `fg_shrink` was designed to handle the floor problem but still pays full compute cost regardless of cell informativeness. **Conclusion: `f+g` on SUMO bigger-bbox is infeasible without natural-gradient optimisation (paper §4.1) or a sparse-`g` formulation that skips the empty cells.** Both are out of thesis scope. The headline reverts to `fitted_f` + features.
+>
+> **Net iter-19 picture.** Features are the load-bearing Phase-4 lever (single-seed evidence). T-sweep lifts the ceiling and the detector together but doesn't change chain recovery. 2-step memory is empirically absent — no model-class extension to do. `f+g` is a closed thread on SUMO. Phase-4 has a complete defensible story (synthetic Phase-1 reproduction + simulated SUMO with features at AUC 0.708 against a 2-step-refuted 0.801 ceiling); the remaining single-seed → multi-seed tightening is the only outstanding Phase-4 work and is optional given the next tier (Xuancheng real-world, iter-20).
+
+> **Iter 20 — Xuancheng real-world validation: setup complete, experiments pending (2026-05-28).** Selecting between two candidate AVI deposits for the real-world validation tier (papers downloaded into `papers/`):
+> - **Padua, Cappi et al. 2026 (`papers/2605.18782v1.pdf`):** releases aggregated hourly flow + travel-time statistics only. Per-vehicle trajectories explicitly stripped for privacy (page 5: "buffer is flushed before the next window begins"). Phase-3 per-trajectory detector cannot run on the released data.
+> - **Xuancheng, Wang et al. 2023 (`papers/s41597-022-01850-0.pdf`):** also restricts raw trajectory access ("restricted to access the generated raw trajectories directly", page 6). Same wall as Padua.
+> - **Xuancheng, Ma et al. 2026 (`papers/s41597-026-06892-2.pdf`, Figshare 29925824):** releases joinable entry/exit tables with anonymised vehicle IDs. Trajectories are *reconstructible* by the user. Per-vehicle data is back in scope. Selected as the Phase-5 dataset.
+>
+> Data already downloaded to `real_data/` (5.7 GB):
+> - `xuancheng.net.xml` — SUMO native format, 1,744 edges, all non-internal and passenger-allowed. The SCC subset that the existing `build_adj` uses comes to 1,733 edges.
+> - 30 daily JSON files (April 2023), `data_2023_04_<DD>_type_filtered.json`, each ~180–235 MB containing ~327k trips with `(vehicle, interval, startTime, endTime, route)`. ~10.5 M trips total. Each trip's `route` is an ordered list of road IDs.
+>
+> **Verification (2026-05-28, no L-BFGS, just inspection):**
+> - **Route IDs match SUMO edge IDs 100 %** (1,034 / 1,034 unique IDs in the first 2,000 trips). No ID mapping required.
+> - **`startTime` is seconds since midnight** (range 0..86,400, 1,170 distinct values, canonical AM-rush + PM-rush double-peak histogram). Decided regime-split windows: rush `= [25200, 32400] ∪ [61200, 68400]`, off-peak `= [36000, 57600]`.
+> - **Route legality is 78.4 % at the pair level** — 19.7 % of consecutive edge pairs are Dijkstra-repaired "teleports" from the source data pipeline that don't share a junction in the SUMO net, 1.9 % share a junction but lack a lane connection. Loader splits trips at illegal boundaries into legal sub-trajectories rather than dropping; sub-trajectory mean length is **8.2 edges** (vs 15.1 for raw trips). Effective `T` for Phase-5 experiments is capped at ~5–7.
+> - **Cross-day anomalies:** Apr 8 / Apr 9 trip counts are *identical* (324,441 each) — almost certainly a duplicate file; use one. Apr 10's `startTime` max is 165,071 (≈ 2 days) — file may concatenate; exclude or investigate. Apr 5 (Tomb-Sweeping) and Apr 28-29 (Labour Day) are demand anomalies and provide a natural holiday-vs-normal contrast as in the paper §3.2.
+>
+> **Code shipped this session:**
+> - `real_data/load_xuancheng.py` — full loader with `load_xuancheng_regime(net_path, day_specs, regime_split, label_a, label_b)` returning the same 7-tuple `(edges, adj_out, idx, trajs_a, trajs_b, f_a, f_b)` the existing Phase-4 scripts expect. Smoke-tested on Apr 17: 327k trips → 330k sub-trajectories, 105,593 rush + 109,766 off-peak.
+> - Three regime-split functions: `split_rush_vs_offpeak`, `split_weekday_vs_weekend`, `split_holiday_vs_normal`.
+> - `--dataset {sumo,xuancheng}` flag added to `score_seed_big.py`, `contrast_correlation.py`, and `fd_check_features.py`. Default remains `sumo` for reproducibility. Xuancheng path takes `--day YYYY-MM-DD` + `--regime_split {rush_offpeak,weekday_weekend,holiday_normal}`.
+>
+> **Honest framing for the writeup.** No sat-nav ground truth on Xuancheng; regime contrast is *behavioural* (rush-hour congestion patterns vs off-peak free-flow), not labelled sat-nav adoption. Weaker claim than SUMO Phase-4 where satnav vehicles are labelled by construction, but the direction-of-effect hypothesis is the same: congestion induces re-routing, so the rush-regime chain should differ from the off-peak chain in ways the detector can pick up. Holiday-vs-normal is a second independent contrast (Apr 5/28/29 vs midweek Apr 10–21) that mirrors the paper's own school-closure case study and gives a sharper demand-shift signal.
+>
+> **Open Phase-5 experiments (will run when CPU is free):** FD check on Xuancheng net + features (safety gate, ~30 s), first AUC at `--day 2023-04-17 --regime_split rush_offpeak --features {none,real} --T {5,10}`, then holiday-vs-normal sweep, then T-sweep, then 2-step empirical on Xuancheng. Iter-21 logbook entry will hold the results.
+
+> **Iter 21 — Xuancheng rush-vs-off-peak detection, single-day → pooled → OD-matched (2026-05-28).** Three configurations evaluated in sequence; the OD-matched result is the load-bearing finding of the real-world tier.
+>
+> **(A) Single-day Apr 17, T=10.** FD check passes on Xuancheng net + features. The loader cleanly produces 330,320 sub-trajectories from 327,026 raw trips (76.6% pair-legal rate; trips split at illegal boundaries into legal sub-trips with mean length 8.2 edges). Rush=105,593, offpeak=109,766. `|X_o|=433`, beta=0.879, maxiter=1500. Results:
+>
+> | features | auc_emp | auc_fit | gap_closed | Pearson [all-br] |
+> |---|---|---|---|---|
+> | none | 0.556 | 0.498 | -2.7% | +0.139 |
+> | real | 0.556 | 0.508 | 13.3% | +0.048 |
+>
+> Single-seed numbers within the ±0.024 noise band. AUC barely above chance. Features marginally help AUC but **hurt** chain-recovery Pearson (0.139 → 0.048). Suspicious; could be (i) too little data, (ii) features designed for SUMO don't transfer, (iii) basin failure.
+>
+> **(B) Pooled Apr 17-21 (5 weekdays).** Same script with `--day 2023-04-17,2023-04-18,...,2023-04-21`. Total: rush=526,137, offpeak=555,294 (≈5× single-day). `|X_o|=433` unchanged (capped at 25%×n). Results:
+>
+> | features | auc_emp | auc_fit | gap_closed | Pearson [all-br] |
+> |---|---|---|---|---|
+> | none | 0.573 | 0.524 | 33.3% | +0.096 |
+> | real | 0.573 | 0.536 | 48.9% | +0.072 |
+>
+> Empirical ceiling lifts modestly (0.556 → 0.573); fitted_f lifts to above-chance (0.498 → 0.524 with none, 0.508 → 0.536 with real). gap_closed jumps to 33-49% — the fitter is now doing real work. BUT: per-row Pearson on observed-states `[X_o branching]` crashes from 0.320 (single-day) → 0.004 (pooled none) and 0.173 → 0.046 (pooled real). Pooling averages out single-day idiosyncratic contrasts; the chain converges to "typical urban Markov chain" for both regimes. The pooled detection AUC comes mostly from aggregate-bias drift, not per-row chain recovery.
+>
+> **The features=real basin failure.** Both single-day and pooled rush-fit losses with features=real spike by ~350× over features=none (single-day: not seen; pooled un-matched: 1477 vs 4.156). Classic L-BFGS multi-modality from iter-15. The +0.012 AUC features lift on pooled data is **likely a basin artefact**, not a real features lift. Multistart needed to confirm.
+>
+> **(C) Pooled + OD-matched K=8 (the load-bearing run).** Same pool, `--od_match 8`. K-means clusters the 1,733 junctions by (x, y) coords into 8 spatial zones. For each (zone_o, zone_d) cell, takes min(n_a, n_b) trips from each regime. **55 of 56 unique OD cells were shared between rush and off-peak** (only 1 cell rush-only or offpeak-only — discarded). Rush 526,137 → 517,477 (-1.6%), offpeak 555,294 → 517,477 (-6.8%). The matching dropped only 7% of the off-peak pool, meaning the OD distributions of rush and off-peak are already quite similar at this spatial granularity. Yet:
+>
+> | features | auc_emp | auc_fit | gap_closed | Pearson [all-br] |
+> |---|---|---|---|---|
+> | none | **0.518** | 0.476 | -131.1% | +0.104 |
+> | real | **0.518** | 0.530 | 165.2% (!) | +0.077 |
+>
+> **Headline finding: the empirical ceiling crashes from 0.573 → 0.518 — only 0.018 AUC above chance.** Approximately three-quarters of the un-matched pool's apparent detection signal (0.073 above chance) was attributable to OD-mix, not routing. After controlling for OD-mix, the within-OD rush-vs-off-peak routing contrast is essentially below detection threshold at the 1-step Markov level.
+>
+> The `fitted_f (real) = 0.530 > auc_emp = 0.518` is technically impossible under correct chain recovery (empirical chain is the full-observation upper bound). The most plausible explanation: same features=real basin failure (rush-fit loss 1397 vs 4.058, ~340× ratio); the broken fit drifts in a direction that happens to produce a slightly better aggregate-bias signal than empirical chains, but per-row Pearson (+0.077 with features vs +0.104 without) confirms it's not chain-accuracy. The "165% gap closed" is meaningless arithmetic at this regime.
+>
+> **The Pearson result reinforces the earlier reading.** Per-row Pearson on `[all branching]` is +0.104 (none) and +0.077 (real) — essentially flat across un-matched vs OD-matched. The chain-recovery diagnostic was always pointing at near-zero per-row contrast on rush-vs-off-peak in Xuancheng; OD-matching just tightened the ceiling estimate to confirm what Pearson already showed.
+>
+> **Combined Phase-5 read.** The pipeline works mechanically. The framework recovers approximately the same fraction of per-row chain contrast on real-world data as on SUMO (Pearson +0.10 vs +0.21 — comparable order of magnitude), BUT the absolute chain contrast available between rush-hour and off-peak driving in Xuancheng is small once OD-mix is controlled for. The methodological lever any future real-world validation needs is **ground-truth sat-navigation adoption labels** on the underlying trip records; behavioural proxies systematically over-estimate the detection signal until OD-mix is controlled for, at which point they fall below the framework's detectability threshold.
+>
+> **Status closing iter-21.** Phase-5 experimental tier is complete. Headline number for real-world tier: AUC_emp = 0.518 (OD-matched ceiling), AUC_fit ≈ 0.48-0.53 (basin-pollution-suspect). Thesis tier-3 chapter (`thesis/sections/07_phase5_xuancheng.tex`) written with these numbers and the honest framing. Remaining open: multistart K≥5 to resolve features=real basin question; multi-seed Tier-2 confirmation; figure generation for thesis revision.
+
+> **Iter 22 — Thesis first draft written, figures generated, LaTeX toolchain set up (2026-05-28).** Closing the experimental phase and opening the writeup phase in a single session.
+>
+> **(A) LaTeX project scaffolded at `thesis/`.** Imperial College Design Engineering MEng thesis format, 35-page main-body limit per the module mark scheme, IEEEtran numerical citations matching the Aditya Munot example dissertation reference. Structure: `main.tex` (top level), `references.bib` (16 cited works including Morimura 2013, Ma 2026 Xuancheng, Cappi 2026 Padua, Wang 2023 Xuancheng, Lopez 2018 SUMO, Gu 2018 anomaly-detection prior, plus standard route-choice and inverse-MC priors), and `sections/` with 11 chapter files numbered 00-09 plus appendix. Voice: academic "we" per user preference.
+>
+> **(B) All chapters drafted in this session.**
+> - `00_abstract.tex`: ~0.5 pg, captures all three tier headlines including the OD-matched ceiling crash as the central real-world finding.
+> - `01_notation.tex`: symbol table mirroring the Aditya Munot example convention.
+> - `02_introduction.tex`: context, contributions (5 numbered), roadmap.
+> - `03_background.tex`: inverse Markov chains, softmax route-choice, the Morimura framework, prior rerouting-detection work (Gu 2018, Thai 2016, Krichene 2018, Flötteröd 2017), SUMO, real-world AVI datasets (Padua / Wang 2023 Xuancheng / Ma 2026 Xuancheng comparison).
+> - `04_methodology.tex`: parametric chain (Eq. 17 score with 3 terms), regularised loss with analytic gradients (citing FD-verification at ~1e-9), and the three extensions: (1) real edge features (phi_T 8-dim, psi 2-dim), (2) 2-step empirical diagnostic, (3) OD-rebalancing.
+> - `05_phase1_synthetic.tex`: Tier 1 reproduction. RMAE table vs paper Fig 2A, scaling-gotcha aside, FD verification ~5e-9.
+> - `06_phase4_sumo.tex`: Tier 2 SUMO. Features lift (AUC 0.612→0.644, Pearson 0.132→0.215, median cosine 0.095→0.435), 2-step empirical refutation (AUC_2step=0.666 < AUC_1step=0.685), T-sweep (T=20→40 lifts ceiling 0.685→0.801 and detector 0.644→0.708), f+g infeasibility documented.
+> - `07_phase5_xuancheng.tex`: Tier 3 Xuancheng with all three configs (single-day, pooled, OD-matched), with the OD-matched ceiling crash 0.573→0.518 framed as the load-bearing real-world finding (~75% of un-matched signal was OD-mix).
+> - `08_discussion.tex`: cross-tier read, three documented limits (single-seed Tier 2/3, basin failure on features=real Xuancheng, f+g infeasibility), social/environmental/technological implications, five-item future-work list.
+> - `09_reflection.tex`: project management retrospective (what worked: audit-before-extend, epistemic memory; what didn't: f+g compute scaling, late OD-mix identification), benchmarking against the three example dissertations, personal-skill development with the negative-result-framing skill foregrounded.
+> - `A_appendix.tex`: repo structure, AI-use declaration, terminal build instructions.
+>
+> **(C) Four figures generated.** Hand-keyed from logbook numbers via `thesis/figures/make_figures.py` (consistent palette: muted blue + grey, red chance-line, no rainbow).
+> - `fig01_phase1_rmae.png`: Tier 1 RMAE curve, our "Proposed (with g)" vs "no g" vs NWKR vs paper Fig 2A eyeball, with std-dev error bars across 10 trials.
+> - `fig02_phase4_tsweep.png`: Tier 2 T-sweep, ceiling vs detector line plot with shaded recoverable-contrast gap.
+> - `fig03_phase4_features_lift.png`: Tier 2 features-lift bar chart on all five metrics, [all branching] block.
+> - `fig04_phase5_xuancheng.png`: Tier 3 three-config bar chart with annotated "ceiling crash: OD-mix subtracted" arrow.
+> All four wired into the relevant .tex sections with `\includegraphics` + caption + `\label` and cross-referenced from the result tables via `\cref{...}`.
+>
+> **(D) LaTeX toolchain.** MacTeX installed via Homebrew cask, but Homebrew left the `.pkg` un-run; manually ran via `sudo installer -pkg /opt/homebrew/Caskroom/mactex/2026.0324/mactex-20260324.pkg -target /` to actually deploy the binaries to `/Library/TeX/texbin/`. VS Code LaTeX Workshop initially complained about missing pdflatex on PATH (PATH was cached from before MacTeX install); hard-coded absolute paths in `thesis/.vscode/settings.json` to bypass PATH inheritance entirely.
+>
+> **Status closing iter-22.** Thesis first draft is complete (all 11 sections + appendix + bibliography + 4 figures). PDF compile pending the user's VS Code reload. Remaining for thesis: (i) compile sanity-check + fix any LaTeX warnings, (ii) revision pass for prose tightness (current draft is ~30-37 pg estimate, may need trimming to the 35-page main-body cap), (iii) optional figures from existing PNGs in repo root (`morimura_fig.png`, `congestion_filter_fig.png`, etc.) if they add narrative value, (iv) supervisor / examiner declaration text on the title page once you've confirmed the local format conventions. Remaining for experiments: multistart K≥5 on features=real Xuancheng to resolve the basin question; multi-seed Tier-2 confirmation if examiner pushes on the single-seed numbers.
 
 ### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 

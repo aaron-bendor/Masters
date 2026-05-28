@@ -1,0 +1,48 @@
+\section{Notation}\label{sec:notation}
+
+A consolidated reference for the mathematical objects used throughout this
+report. Notation follows \citet{morimura2013} where it does, and is extended
+in \cref{sec:methodology} where required.
+
+\begin{table}[H]
+\centering
+\caption{Key symbols.}
+\label{tab:notation}
+\small
+\begin{tabular}{@{}lp{0.74\linewidth}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$\mathcal{X}$, $n$ & Full state space (directed road edges); $n = |\mathcal{X}|$. \\
+$\Xo \subset \mathcal{X}$ & Subset of \emph{observed} states at which counts are available. \\
+$\mathrm{adj}(x)$ & Set of legal successors of state $x$ (out-neighbours in the directed graph). \\
+$\pT(x'\mid x)$ & One-step transition probability from $x$ to $x'$; row $x$ of the kernel $\Pchain$. \\
+$\pI(x)$ & Initial / teleport probability on $\mathcal{X}$; row vector. \\
+$\beta \in [0,1]$ & Continuation probability per step; together with $\pI$ defines the stationary mixture $P = \beta\Pchain + (1-\beta)\,\bm{1}\pI^\top$. \\
+$\pi$ & Stationary distribution of $P$; obtained from $\pi^\top P = \pi^\top$, $\bm{1}^\top\pi = 1$. \\
+$\fobs(x)$ & Empirical visit count (or normalised frequency) at $x$. Observed only for $x \in \Xo$. \\
+$\gobs(x, x')$ & Empirical (or analytical) \emph{hitting rate} from $x$ to $x'$, a discounted first-passage probability on $\Xo \times \Xo$. \\
+$\phi_T(x') \in \mathbb{R}^{d_T}$ & Destination-state feature vector (\cref{sec:features}). \\
+$\psi(x, x') \in \mathbb{R}^{d_\psi}$ & Directed-edge feature vector. \\
+$\nu \in \mathbb{R}^n$ & Per-state base parameters of $\pI$. \\
+$\omega^{\mathrm{loc}} \in \mathbb{R}^E$ & Per-edge local weights of $\pT$, with $E = \sum_x |\mathrm{adj}(x)|$ the number of directed edges. \\
+$\omega^{\mathrm{glo}_1} \in \mathbb{R}^{d_T}$ & Shared weights on destination features $\phi_T$ (paper Eq.~17). \\
+$\omega^{\mathrm{glo}_2} \in \mathbb{R}^{d_\psi}$ & Shared weights on edge features $\psi$ (paper Eq.~17). \\
+$\theta$ & Full parameter vector $[\nu;\omega^{\mathrm{loc}};\omega^{\mathrm{glo}_1};\omega^{\mathrm{glo}_2}] \in \mathbb{R}^{d}$, $d = n + E + d_T + d_\psi$. \\
+$\lambda$ & Tikhonov regularisation strength on $\|\theta\|^2$. \\
+$\gamma \in [0,1]$ & Mixing weight between the stationary-match loss $L_d$ and the hitting-rate loss $L_h$. \\
+$\Lam(\tau)$ & Log-likelihood-ratio score of a test trajectory $\tau$ under two fitted chains (\cref{sec:methodology}). \\
+$\AUC$ & Area under the ROC curve of the LR score against labelled regime test trajectories. \\
+$\RMAE(\hat{\pi},\pi)$ & Relative mean absolute error of recovered stationary mass at unobserved states. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Throughout, ``regime'' refers to one of two distinguishable driver
+populations whose chains we fit and compare. In controlled simulation
+this is intrinsic vs.\ sat-navigation-influenced; in real-world data it
+is a behavioural proxy (e.g.\ rush-hour vs.\ off-peak). The contrast
+$\Delta_{\mathrm{fit}}(x, \cdot) = \pT^{(B)}(x,\cdot) - \pT^{(A)}(x,\cdot)$
+between two fitted chains is the central quantity assessed against the
+empirical ground-truth contrast
+$\Delta_{\mathrm{emp}}(x, \cdot)$.

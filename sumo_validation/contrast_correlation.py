@@ -28,9 +28,13 @@ os.chdir(HERE)
 
 from sumo_to_phase3 import (
     build_adj, read_edge_counts, read_trajectories, empirical_chain,
+    extract_features,
 )
 from per_car_detector import fit_chain, _scores_for_chains
 from congestion_filter import roc
+from score_seed_big_fg import (
+    empirical_g_counts, fit_beta_mom, shrink_g_beta_binomial,
+)
 
 
 def contrast_rows(PT_a_h, PT_b_h, PT_a_emp, PT_b_emp, adj_out, states):
@@ -99,22 +103,98 @@ def cosine(a, b, eps=1e-12):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--seed", type=int, required=True)
+    p.add_argument("--dataset", choices=("sumo", "xuancheng"), default="sumo",
+                   help="'sumo' = bigger-bbox SUMO with --seed (historical default); "
+                        "'xuancheng' = real-world Xuancheng AVI data with --day / --regime_split.")
+    p.add_argument("--seed", type=int, default=None,
+                   help="Required when --dataset sumo. SUMO/randomTrips seed.")
+    p.add_argument("--day", type=str, default=None,
+                   help="Required when --dataset xuancheng. ISO date e.g. 2023-04-17. "
+                        "For multi-day pooling, pass a comma-separated list "
+                        "(e.g. 2023-04-17,2023-04-18,2023-04-19).")
+    p.add_argument("--regime_split", choices=("rush_offpeak", "weekday_weekend",
+                                              "holiday_normal"),
+                   default="rush_offpeak",
+                   help="Xuancheng only. How to partition trips into two regimes.")
+    p.add_argument("--od_match", type=int, default=None,
+                   help="Xuancheng only. If set, OD-match the two regime pools "
+                        "by k-means-clustering junctions into K zones then "
+                        "subsampling per (zone_o, zone_d) cell to equalise "
+                        "counts. Removes OD-mix confound. Recommended: K=8.")
     p.add_argument("--x_o_seed", type=int, default=13)
     p.add_argument("--T", type=int, default=20)
     p.add_argument("--maxiter", type=int, default=1500)
+    p.add_argument("--features", choices=("none", "real"), default="none",
+                   help="'none' = local-only fit (historical default); "
+                        "'real' = enable omega-globals using SUMO edge attributes.")
+    p.add_argument("--fit_mode",
+                   choices=("f", "fg_floor", "fg_shrink"), default="f",
+                   help="'f' = f-only fit (gamma=1.0, default); "
+                        "'fg_floor' = f+g with empirical g floored at 1e-3; "
+                        "'fg_shrink' = f+g with Beta-Binomial shrinkage on g.")
+    p.add_argument("--gamma_fg", type=float, default=0.1,
+                   help="Mix weight on stationary loss when fit_mode includes g "
+                        "(0.1 = paper default).")
     args = p.parse_args()
 
-    S = args.seed
-    print(f"=== contrast-correlation diagnostic (big bbox, seed={S}) ===")
+    if args.dataset == "sumo":
+        if args.seed is None:
+            p.error("--seed is required when --dataset sumo")
+        S = args.seed
+        print(f"=== contrast-correlation diagnostic (SUMO big bbox, seed={S}) ===")
+        edges, adj_out, idx = build_adj("net.net.xml")
+        f_intr = read_edge_counts(f"edgedata.intr.big.seed{S}.xml", idx)
+        f_satnav = read_edge_counts(f"edgedata.satnav.big.seed{S}.xml", idx)
+        trajs_intr, _ = read_trajectories(f"vehroutes.intr.big.seed{S}.xml", idx)
+        trajs_satnav, _ = read_trajectories(f"vehroutes.satnav.big.seed{S}.xml", idx)
+        # Path used by extract_features below
+        net_path_for_features = "net.net.xml"
+        regime_a, regime_b = "intr", "satnav"
+    else:  # xuancheng
+        if args.day is None:
+            p.error("--day is required when --dataset xuancheng (e.g. 2023-04-17)")
+        import datetime
+        import sys as _sys
+        _REAL_DATA = os.path.join(os.path.dirname(HERE), "real_data")
+        _sys.path.insert(0, _REAL_DATA)
+        from load_xuancheng import (  # noqa: E402
+            load_xuancheng_regime, day_spec,
+            split_rush_vs_offpeak, split_weekday_vs_weekend,
+            split_holiday_vs_normal, NET_PATH_DEFAULT,
+        )
+        date_strs = [s.strip() for s in args.day.split(",") if s.strip()]
+        dates = [datetime.date.fromisoformat(s) for s in date_strs]
+        split_map = {
+            "rush_offpeak":    (lambda st, d: split_rush_vs_offpeak(st["start_time"]),
+                                "rush", "offpeak"),
+            "weekday_weekend": (lambda st, d: split_weekday_vs_weekend(d),
+                                "weekday", "weekend"),
+            "holiday_normal":  (lambda st, d: split_holiday_vs_normal(d),
+                                "holiday", "normal"),
+        }
+        rs, label_a, label_b = split_map[args.regime_split]
+        S = args.day  # used only for log printing
+        print(f"=== contrast-correlation diagnostic (Xuancheng, "
+              f"days={','.join(date_strs)}, "
+              f"split={args.regime_split}) ===")
+        edges, adj_out, idx, trajs_intr, trajs_satnav, f_intr, f_satnav = (
+            load_xuancheng_regime(
+                net_path=NET_PATH_DEFAULT,
+                day_specs=[day_spec(d) for d in dates],
+                regime_split=rs,
+                label_a=label_a, label_b=label_b,
+                min_segment_len=5,
+                verbose=True,
+                od_match_zones=args.od_match,
+            )
+        )
+        # extract_features uses sumolib to re-read the network for feature
+        # construction; point it at the Xuancheng net.
+        net_path_for_features = NET_PATH_DEFAULT
+        regime_a, regime_b = label_a, label_b
 
-    edges, adj_out, idx = build_adj("net.net.xml")
     n = len(edges)
     out_deg = np.array([len(a) for a in adj_out])
-    f_intr = read_edge_counts(f"edgedata.intr.big.seed{S}.xml", idx)
-    f_satnav = read_edge_counts(f"edgedata.satnav.big.seed{S}.xml", idx)
-    trajs_intr, _ = read_trajectories(f"vehroutes.intr.big.seed{S}.xml", idx)
-    trajs_satnav, _ = read_trajectories(f"vehroutes.satnav.big.seed{S}.xml", idx)
 
     mean_len = float(np.mean([len(t) for t in trajs_intr + trajs_satnav]))
     beta = float(max(0.5, min(0.99, 1.0 - 1.0 / mean_len)))
@@ -139,11 +219,59 @@ def main():
     rng_xo = np.random.default_rng(args.x_o_seed)
     X_o = np.sort(rng_xo.choice(cands, size=n_obs, replace=False))
 
-    print(f"  n={n}  |X_o|={len(X_o)}  beta={beta:.3f}  T={T}  N_test={n_t}")
+    if args.features == "real":
+        phi_T, psi = extract_features(net_path_for_features, edges, adj_out)
+        d_T, d_psi = phi_T.shape[1], psi.shape[1]
+    else:
+        phi_T, psi = None, None
+        d_T, d_psi = 0, 0
+
+    print(f"  dataset={args.dataset}  n={n}  |X_o|={len(X_o)}  beta={beta:.3f}  "
+          f"T={T}  N_test={n_t}  features={args.features}  "
+          f"d_T={d_T}  d_psi={d_psi}  fit_mode={args.fit_mode}  "
+          f"gamma_fg={args.gamma_fg}  regimes={regime_a}/{regime_b}  "
+          f"od_match={args.od_match}")
+
+    # Compute the g matrices (only if fit_mode requests them).
+    if args.fit_mode == "f":
+        g_intr, g_satnav = None, None
+        gamma_to_use = None  # let fit_chain pick its default (1.0 when g=None)
+    else:
+        print("  computing empirical g (hit_sum / visit_count) ...")
+        hit_intr, vis_intr = empirical_g_counts(train_intr, X_o, beta)
+        hit_satnav, vis_satnav = empirical_g_counts(train_satnav, X_o, beta)
+
+        if args.fit_mode == "fg_floor":
+            g_intr = np.clip(
+                hit_intr / np.maximum(vis_intr[:, None], 1.0), 1e-3, 1.0)
+            g_satnav = np.clip(
+                hit_satnav / np.maximum(vis_satnav[:, None], 1.0), 1e-3, 1.0)
+            print(f"    floor 1e-3: intr at-floor={100*(g_intr<=1e-3+1e-12).mean():.1f}%  "
+                  f"satnav at-floor={100*(g_satnav<=1e-3+1e-12).mean():.1f}%")
+        else:  # fg_shrink
+            raw_g_i = hit_intr / np.maximum(vis_intr[:, None], 1.0)
+            raw_g_s = hit_satnav / np.maximum(vis_satnav[:, None], 1.0)
+            w_i = np.broadcast_to(vis_intr[:, None], raw_g_i.shape)
+            w_s = np.broadcast_to(vis_satnav[:, None], raw_g_s.shape)
+            a_i, b_i = fit_beta_mom(raw_g_i, weights=w_i)
+            a_s, b_s = fit_beta_mom(raw_g_s, weights=w_s)
+            g_intr = shrink_g_beta_binomial(hit_intr, vis_intr, a_i, b_i)
+            g_satnav = shrink_g_beta_binomial(hit_satnav, vis_satnav, a_s, b_s)
+            print(f"    Beta(intr  ): alpha={a_i:.3f} beta={b_i:.3f} "
+                  f"prior_mean={a_i/(a_i+b_i):.3f}")
+            print(f"    Beta(satnav): alpha={a_s:.3f} beta={b_s:.3f} "
+                  f"prior_mean={a_s/(a_s+b_s):.3f}")
+        gamma_to_use = args.gamma_fg
 
     print("  fitting chains ...")
-    _, PT_intr_h, _ = fit_chain(adj_out, beta, X_o, f_intr[X_o], maxiter=args.maxiter)
-    _, PT_satnav_h, _ = fit_chain(adj_out, beta, X_o, f_satnav[X_o], maxiter=args.maxiter)
+    _, PT_intr_h, _ = fit_chain(
+        adj_out, beta, X_o, f_intr[X_o], g_obs=g_intr, gamma=gamma_to_use,
+        maxiter=args.maxiter, phi_T=phi_T, psi=psi,
+    )
+    _, PT_satnav_h, _ = fit_chain(
+        adj_out, beta, X_o, f_satnav[X_o], g_obs=g_satnav, gamma=gamma_to_use,
+        maxiter=args.maxiter, phi_T=phi_T, psi=psi,
+    )
     PT_intr_emp = empirical_chain(train_intr, adj_out)
     PT_satnav_emp = empirical_chain(train_satnav, adj_out)
 
@@ -190,7 +318,11 @@ def main():
         print(f"    rows with cosine > 0: {frac_pos*100:5.1f}%  "
               f"(50% = chance)")
 
-    print(f"\nRESULT  seed={S}  auc_emp={auc_emp:.3f}  auc_fit={auc_fit:.3f}  "
+    print(f"\nRESULT  dataset={args.dataset}  seed_or_day={S}  "
+          f"regimes={regime_a}/{regime_b}  features={args.features}  "
+          f"d_T={d_T}  d_psi={d_psi}  fit_mode={args.fit_mode}  "
+          f"gamma_fg={args.gamma_fg}  od_match={args.od_match}  "
+          f"auc_emp={auc_emp:.3f}  auc_fit={auc_fit:.3f}  "
           f"gap_closed={100*gap:.1f}%")
 
 

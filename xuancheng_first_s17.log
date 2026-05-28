@@ -1,0 +1,87 @@
+=== FD CHECK (Xuancheng) ===
+=== FD gradient check (dataset=xuancheng, real features) ===
+  n=1733  E=4393  d_T=8  d_psi=2  d=6136
+  |X_o|=433  gamma=1.0  (f-only, log_g=None)
+  L(theta0) = 668784.441041
+  expected FD round-off floor (abs): ~1.5e-04
+  pass criterion: rel_err < rtol=1e-03 when |grad| > atol=5e-02,
+                  else abs_err < atol (tiny-gradient regime)
+
+  block       i      analytic         FD           abs_err   rel_err   ok
+  nu           192  +9.981067e+01  +9.981322e+01  2.55e-03  2.55e-05    
+  nu           333  -3.471525e+01  -3.471575e+01  4.95e-04  1.43e-05    
+  nu          1168  +2.692890e+02  +2.692880e+02  9.90e-04  3.68e-06    
+  om_loc      3803  +3.905068e+02  +3.905068e+02  3.60e-05  9.21e-08    
+  om_loc      2473  +1.081813e-04  +1.164153e-04  8.23e-06  7.07e-02    
+  om_loc      5856  +2.692273e+02  +2.692277e+02  4.43e-04  1.64e-06    
+  om_glo1     6133  -2.397015e+05  -2.397016e+05  1.64e-03  6.84e-09    
+  om_glo1     6126  +7.955790e-05  +5.820766e-05  2.14e-05  2.68e-01    
+  om_glo1     6130  -9.325790e-05  -1.164153e-04  2.32e-05  1.99e-01    
+  om_glo2     6134  -1.428636e+05  -1.428636e+05  1.57e-03  1.10e-08    
+  om_glo2     6135  -2.078451e+05  -2.078450e+05  1.83e-03  8.81e-09    
+
+  failing dims: 0
+  verdict: PASS
+=== Xuancheng 2023-04-17  rush_vs_offpeak  features=none ===
+=== contrast-correlation diagnostic (Xuancheng, day=2023-04-17, split=rush_offpeak) ===
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  rush=105,593  offpeak=109,766  other=114,961
+  total: rush=105,593, offpeak=109,766
+  edges with traffic (rush): 1052/1733
+  edges with traffic (offpeak): 1046/1733
+  dataset=xuancheng  n=1733  |X_o|=433  beta=0.879  T=10  N_test=300  features=none  d_T=0  d_psi=0  fit_mode=f  gamma_fg=0.1  regimes=rush/offpeak
+  fitting chains ...
+    L-BFGS: success=False, nit=1500, final_loss=11.72, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=5.524, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+  AUC reference: empirical=0.556  fitted_f=0.498  gap_closed= -2.7%
+
+  branching states total: 1318 / 1733
+  branching states in X_o: 368 / 433
+
+  [X_o branching]  (368 branching states, 1108 legal-edge entries)
+    stacked Pearson   = +0.320
+    stacked cosine    = +0.320
+    per-row cosine    mean = +0.196  median = +0.455
+    rows with cosine > 0:  62.1%  (50% = chance)
+
+  [all branching]  (1318 branching states, 3978 legal-edge entries)
+    stacked Pearson   = +0.139
+    stacked cosine    = +0.139
+    per-row cosine    mean = +0.156  median = +0.341
+    rows with cosine > 0:  59.2%  (50% = chance)
+
+RESULT  dataset=xuancheng  seed_or_day=2023-04-17  regimes=rush/offpeak  features=none  d_T=0  d_psi=0  fit_mode=f  gamma_fg=0.1  auc_emp=0.556  auc_fit=0.498  gap_closed=-2.7%
+=== Xuancheng 2023-04-17  rush_vs_offpeak  features=real ===
+=== contrast-correlation diagnostic (Xuancheng, day=2023-04-17, split=rush_offpeak) ===
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  rush=105,593  offpeak=109,766  other=114,961
+  total: rush=105,593, offpeak=109,766
+  edges with traffic (rush): 1052/1733
+  edges with traffic (offpeak): 1046/1733
+  dataset=xuancheng  n=1733  |X_o|=433  beta=0.879  T=10  N_test=300  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1  regimes=rush/offpeak
+  fitting chains ...
+    L-BFGS: success=False, nit=1500, final_loss=34.51, d=6136 (n=1733, E=4393, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=24.7, d=6136 (n=1733, E=4393, d_T=8, d_psi=2), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+  AUC reference: empirical=0.556  fitted_f=0.508  gap_closed= 13.3%
+
+  branching states total: 1318 / 1733
+  branching states in X_o: 368 / 433
+
+  [X_o branching]  (368 branching states, 1108 legal-edge entries)
+    stacked Pearson   = +0.173
+    stacked cosine    = +0.173
+    per-row cosine    mean = +0.058  median = +0.210
+    rows with cosine > 0:  52.3%  (50% = chance)
+
+  [all branching]  (1318 branching states, 3978 legal-edge entries)
+    stacked Pearson   = +0.048
+    stacked cosine    = +0.048
+    per-row cosine    mean = +0.044  median = +0.146
+    rows with cosine > 0:  51.4%  (50% = chance)
+
+RESULT  dataset=xuancheng  seed_or_day=2023-04-17  regimes=rush/offpeak  features=real  d_T=8  d_psi=2  fit_mode=f  gamma_fg=0.1  auc_emp=0.556  auc_fit=0.508  gap_closed=13.3%
+=== ALL DONE ===

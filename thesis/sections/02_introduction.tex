@@ -1,0 +1,129 @@
+\section{Introduction}\label{sec:introduction}
+
+\subsection{Context: urban traffic and the external-influence problem}
+\label{sec:context}
+
+The widespread adoption of satellite-navigation applications such as Google
+Maps, Waze, and TomTom has structurally altered how vehicles use urban road
+networks. These systems no longer merely report a single shortest path:
+they reroute users in real time around observed congestion, redistributing
+traffic across alternative arteries on time-scales of minutes to hours.
+The consequence is that any traffic observation aggregating across modern
+drivers reflects a \emph{mixture} of two distinct routing rules: the
+intrinsic preferences a driver would express in the absence of guidance
+(habit, scenic preference, fuel-cost optimisation, familiarity), and the
+external recommendations of a sat-navigation system reacting to live
+network state.
+
+This mixture creates a problem for downstream traffic models. Demand
+estimation, route-choice inference, transport-policy evaluation, and
+infrastructure-investment decisions all rely on revealed-preference data
+that is assumed to encode \emph{driver} preferences. When a sizeable
+fraction of observed trips are guided by an external recommender that
+itself responds to congestion (and thereby to other guided trips), the
+revealed data encodes a partially synthetic, congestion-coupled signal
+that the underlying driver population would not have produced unaided.
+Identifying and filtering this externally-influenced traffic, or at minimum
+quantifying its presence, has therefore become a methodological
+prerequisite for any inference about driver behaviour in modern urban
+environments.
+
+\subsection{Inverse Markov-chain methods and the Morimura framework}
+\label{sec:intro-morimura}
+
+A long line of work models route choice as a Markov chain over road
+network edges, in which each driver, conditional on their current edge,
+selects a next edge with probabilities determined by local and global
+features of the network. \citet{morimura2013} introduced an
+\emph{inverse} formulation that fits the parameters of such a chain
+from only partial observations of the network --- specifically, from
+vehicle counts at a small subset of observation stations $\Xo$ and
+optionally from pairwise hitting rates between those stations. Their
+softmax-parametric chain admits an analytic gradient of the regularised
+log-ratio loss, enabling reliable fitting on networks of several
+thousand edges with $20\text{--}90\%$ observation coverage.
+
+The Morimura framework is well validated on synthetic data and was
+applied by its authors to one real-world traffic case study in Nairobi.
+It has not, however, been adapted to the specific problem of detecting
+externally-influenced routing as distinct from intrinsic preferences:
+the original work treats the inverse problem as one of \emph{recovering}
+a single chain, not of \emph{distinguishing} two coexisting routing
+regimes within the same network.
+
+\subsection{Contributions}
+\label{sec:contributions}
+
+This dissertation extends the Morimura inverse-Markov-chain method into a
+three-tier detection pipeline for externally-influenced routing, validates
+each tier honestly, and quantifies where the framework's limits actually
+lie. Specifically:
+
+\begin{enumerate}
+\item \textbf{Reproduction of the Morimura $\S 6.1$ synthetic benchmark.}
+We re-implement the inverter, derive and finite-difference-verify the
+analytic gradients (including the omega-global gradient extensions for
+shared destination and edge features that the paper presents but does
+not derive in full), and reproduce the headline RMAE curve in
+Fig.~2A of \cite{morimura2013} within $\sim 0.05$ across observation
+fractions $\Xo/n \in [0.10, 0.90]$. This locks in the upstream
+implementation as a faithful reference.
+
+\item \textbf{Simulated-tier detector built on SUMO microscopic traffic
+simulation.} We construct a bigger-bbox SUMO scenario in which an
+identical population of vehicles is simulated twice --- once with no
+sat-navigation rerouting (\emph{intrinsic} regime) and once with full
+sat-navigation rerouting (\emph{sat-nav} regime) --- and fit a Morimura
+inverter to each regime's partial observations. The fitted chains feed
+a per-trajectory log-likelihood-ratio detector for which the area under
+the ROC curve at $T=20$ test transitions reaches $\AUC = 0.644$ when the
+inverter is augmented with real SUMO edge features, against an empirically
+verified $1$-step Markov data ceiling of $0.685$ (closing $77.5\%$ of the
+recoverable gap). A trajectory-length sweep lifts the ceiling and the
+detector together to $\AUC = 0.708$ at $T=40$ against a ceiling of $0.801$.
+
+\item \textbf{An honest model-class diagnostic.} The remaining gap to the
+$0.801$ ceiling could in principle be closed by extending the inverter to
+a $2$-step Markov family (modelling the choice of the next edge given the
+current \emph{and previous} edge). We test this by constructing a
+$2$-step \emph{empirical} detector --- counting $(x_{t-1}, x_t)
+\to x_{t+1}$ triples on the same trajectories --- and comparing its AUC
+to the $1$-step empirical ceiling. The $2$-step detector
+\emph{underperforms} ($\AUC_{2\text{-step}} = 0.666 < \AUC_{1\text{-step}}
+= 0.685$), refuting higher-order memory as the missing lever and
+identifying the $1$-step softmax family itself as the binding
+model-class constraint. This is a publishable negative result that
+forecloses an otherwise-tempting line of work.
+
+\item \textbf{Real-world validation tier on the Xuancheng AVI dataset.}
+We port the entire pipeline to a real-world urban traffic dataset of
+$\sim 10.5$ million reconstructed vehicle trips over April~2023
+\cite{ma2026xuancheng}. Because no real dataset comes with sat-navigation
+adoption labels, we use a time-of-day behavioural proxy (rush-hour vs.\
+off-peak driving) and introduce an OD-rebalancing extension to the
+loader that subsamples each regime to share the same
+$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ distribution,
+removing the population-mix confound that distinguishes any
+real-world proxy contrast from a SUMO-style controlled comparison.
+
+\item \textbf{An end-to-end pipeline, reusable across tiers.} A single
+CLI controls all three validation tiers via a \code{--dataset
+\{sumo,xuancheng\}} flag. The inverter, feature extractor,
+gradient implementation, and contrast diagnostics are unchanged across
+tiers; only the loader, the regime split, and the per-tier honest
+caveats differ. The artefact is in the repository at
+\code{https://github.com/<placeholder>}.
+\end{enumerate}
+
+\subsection{Roadmap}
+\label{sec:roadmap}
+
+\cref{sec:background} situates the work in relevant prior literature.
+\cref{sec:methodology} presents the mathematical framework and the three
+extensions (real features, $2$-step diagnostic, OD-rebalancing) in detail.
+\cref{sec:phase1-synthetic,sec:phase4-sumo,sec:phase5-xuancheng}
+present the three validation tiers in turn, each one with its own
+honest discussion of what does and does not transfer. \cref{sec:discussion}
+draws cross-tier conclusions and limitations. \cref{sec:reflection}
+addresses project management and personal-development reflection per the
+module's \emph{Reflection} learning outcome \cite{markscheme}.

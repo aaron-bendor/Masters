@@ -1,0 +1,13 @@
+{
+    "interval": 1.0,
+    "seed": 0,
+    "dir": "./",
+    "roadnetFile": "data/Jinan_3_4/roadnet_3_4.json",
+    "flowFile": "data/Jinan_3_4/anon_3_4_jinan_real.json",
+    "rlTrafficLight": true,
+    "saveReplay": true,
+    "roadnetLogFile": "log/roadnet_jinan_3x4.log",
+    "replayLogFile": "log/replay_jinan_3x4.log",
+    "step_time": 10,
+    "all_red_time": 3
+}

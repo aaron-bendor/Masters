@@ -1,0 +1,41 @@
+\begin{abstract}
+\noindent Urban traffic increasingly carries the fingerprint of external routing
+influence: satellite-navigation systems and live traffic services reroute their
+users around congestion, producing observed traffic patterns that no longer
+reflect drivers' intrinsic route preferences. Recovering those intrinsic
+preferences from partial network observations is the inverse problem of
+\citeauthor{morimura2013}~\cite{morimura2013}, who introduced a softmax-parametric Markov-chain
+inverter that fits a transition kernel to observed stationary
+distributions and hitting rates at a small subset of observation states.
+We extend that framework with three contributions that target real-world
+applicability. First, we wire SUMO-derived edge attributes (road class,
+speed, lanes, turn geometry) into the inverter as global features and
+quantify a single-seed lift on the headline detection AUC from $0.612$ to
+$0.644$ (T=20) and to $0.708$ at T=40 against an empirically verified
+$1$-step Markov data ceiling of $0.801$; per-row Pearson correlation
+between fitted and empirical regime contrasts rises from $+0.132$ to
+$+0.215$. Second, we settle whether a parametric $2$-step extension would
+close the remaining gap by comparing a $1$-step empirical detector to a
+$2$-step empirical detector built from the same trajectories: the $2$-step
+\emph{underperforms}, refuting higher-order memory as the missing lever
+and identifying the chosen $1$-step softmax family as the binding model-class
+constraint. Third, we port the entire pipeline to a real-world urban
+Automatic-Vehicle-Identification dataset from Xuancheng, China
+\cite{ma2026xuancheng} ($\sim 10.5\text{M}$ reconstructed vehicle trips
+over April~2023), with an OD-rebalancing extension that controls
+for the population-mix confound absent in simulated data. The OD-rebalancing
+reveals that approximately three-quarters of the apparent rush-vs-off-peak
+chain difference in raw pooled data is attributable to OD-mix between
+commuter and discretionary trip populations, not to routing-choice
+differences: the empirical $1$-step Markov ceiling falls from
+$\AUC = 0.573$ on the un-matched pool to $\AUC = 0.518$ on the OD-matched
+pool. After controlling for this confound, the within-OD routing
+contrast is only $0.018$ above chance --- below the detectability
+threshold of the framework under the chosen behavioural proxy. Across all three validation tiers,
+methodology and pipeline remain identical; only the data changes.
+The resulting work establishes both an
+upper bound (synthetic reproduction within $\sim 0.05$ RMAE of the
+original paper) and an honest lower bound on what 1-step Markov inverse
+methods can achieve on real urban traffic without ground-truth rerouting
+labels.
+\end{abstract}

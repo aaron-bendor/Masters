@@ -1,0 +1,142 @@
+\section{Background and Related Work}\label{sec:background}
+
+\subsection{Inverse problems on Markov chains}
+\label{sec:inverse-mc}
+
+A Markov chain is a stochastic process in which the next state depends
+only on the current state. The \emph{forward} problem asks, given a
+transition kernel $\Pchain$, what statistics (stationary distribution,
+hitting times, expected occupation, etc.) does the chain produce? The
+\emph{inverse} problem reverses this: given partial statistics observed
+on the chain, recover the transition kernel itself. Inverse problems on
+Markov chains arise in transport modelling \cite{ben-akiva1985},
+biological systems \cite{noe2008}, and recommender systems
+\cite{huang2018}, and are typically ill-posed under sparse observation
+because many distinct kernels produce identical low-order statistics.
+The usual remedy is a parametric restriction: rather than fit
+$\Pchain \in \mathbb{R}^{n \times n}$ directly, one fits a parameter
+vector $\theta \in \mathbb{R}^d$ with $d \ll n^2$ such that the
+parametric form $\Pchain(\theta)$ is constrained to lie in a manifold of
+plausible chains. The choice of parametric family is then load-bearing:
+the wrong family caps recovery quality regardless of optimisation
+effort.
+
+\subsection{Route choice as a softmax-parametric Markov chain}
+\label{sec:route-softmax}
+
+In the route-choice setting the state space $\mathcal{X}$ is the set of
+directed road edges and the kernel
+$\pT(x'\mid x)$ is the probability that a vehicle currently on edge $x$
+moves next to edge $x'$. Multinomial-logit route-choice models
+\cite{ben-akiva1985, frejinger2007} parametrise the transition
+probability as a softmax over the legal successors of $x$:
+\begin{equation}
+\pT(x'\mid x) \;=\;
+\frac{\exp\bigl(s(x, x')\bigr)}{\sum_{x'' \in \mathrm{adj}(x)} \exp\bigl(s(x, x'')\bigr)},
+\label{eq:softmax}
+\end{equation}
+where $s(x, x')$ is a real-valued score, typically a linear combination
+of features of the edge $(x, x')$ and of the destination state $x'$.
+This formulation has two important properties for inverse problems.
+First, it is parameter-efficient: one global feature shared across
+many states adds one parameter, regardless of network size. Second, its
+gradient is analytic in $s$, which combined with the chain-rule
+propagation through stationary computations and hitting-rate solves makes
+$\nabla_\theta \log \pi$ and $\nabla_\theta \log \gobs$ tractable to
+derive in closed form.
+
+\subsection{The Morimura inverse-MC framework}
+\label{sec:morimura}
+
+\citet{morimura2013} apply the softmax form of \cref{eq:softmax} to the
+partial-observation regime in which the modeller observes only a
+small subset $\Xo \subset \mathcal{X}$. They consider two empirical
+observation types:
+\begin{itemize}
+\item \textbf{Empirical stationary distribution $\fobs$ at $\Xo$.}
+A count of vehicle passages at each station; effectively a sample of
+$\pi(x)$ for $x \in \Xo$.
+\item \textbf{Empirical hitting rates $\gobs(x, x')$ on $\Xo \times \Xo$.}
+The fraction of vehicles observed at $x$ that subsequently visit $x'$
+discounted by their travel time; effectively a sample of the
+$\beta$-discounted first-passage probability.
+\end{itemize}
+They define a regularised loss that mixes a log-ratio match on $\fobs$
+(via the stationary distribution of the parametric chain) and a log-error
+match on $\gobs$ (via the hitting-rate matrix of the parametric chain),
+weighted by a mixing parameter $\gamma$. Their key contribution is the
+analytic derivation of the gradient of this loss with respect to
+$\theta$, enabling optimisation via L-BFGS-B or, alternatively, the
+natural-gradient descent the paper introduces in $\S 4.1$ as the
+optimiser of choice when the loss landscape is ill-conditioned.
+
+The paper validates the framework synthetically on a $n=100$ network
+(their $\S 6.1$) and applies it to a $1497$-link Nairobi minibus
+network as a real-world demonstration ($\S 6.2$). Both validations report
+favourable RMAE on the recovered stationary distribution. Two limitations
+of this validation are directly relevant to our work. First, the
+synthetic experiment uses analytical (i.e.\ noise-free) hitting rates
+$\gobs$ computed from the true chain; on noisy real-world data the
+empirical $\gobs$ is overwhelmingly sparse, an effect documented in
+\cref{sec:phase4-fg-infeasible}. Second, the real-world Nairobi case is
+not framed as a regime-detection problem: the authors do not split the
+data into two coexisting routing populations and ask whether the chain
+recovery distinguishes them.
+
+\subsection{Re-routing detection and external traffic influence}
+\label{sec:rerouting-prior}
+
+Detecting externally-influenced rerouting is a relatively recent
+research direction. \citet{gu2018} proposed a junction-level
+anomaly-detection approach in which deviations from a learned
+turning-distribution baseline serve as evidence of unusual routing
+behaviour; their setup is restricted to snapshot-level (population-level)
+detection rather than per-trajectory. Active-routing-game analyses
+\cite{thai2016, krichene2018} model the equilibrium effects of
+sat-navigation adoption on aggregate network performance, but assume a
+known navigation rule and focus on welfare bounds rather than detection.
+Closest in spirit to this work is the line of route-choice research
+that combines partially observed counts with route-fragment
+likelihoods \cite{flotterod2017}: this addresses estimation under
+partial observation but does not separate populations.
+
+To our knowledge no prior work combines the Morimura inverse-MC
+framework with a regime-detection objective, evaluated across both
+controlled simulation and real-world data with an OD-mix-controlled
+contrast. That is the gap this thesis addresses.
+
+\subsection{Microscopic traffic simulation: SUMO}
+\label{sec:sumo}
+
+Simulation of Urban MObility (SUMO) \cite{lopez2018} is the open-source
+microscopic traffic simulator used in this thesis to construct the
+controlled validation tier (\cref{sec:phase4-sumo}). Each vehicle is
+simulated with realistic car-following and lane-change dynamics on a
+network derived from OpenStreetMap. Crucially, SUMO exposes a
+\code{--device.rerouting.probability} flag that, when set to $1.0$,
+gives each vehicle access to an internal congestion-aware
+sat-navigation device; when set to $0.0$, vehicles route via static
+shortest-path Dijkstra. By running an identical vehicle population
+twice with that flag toggled, we obtain a controlled labelled
+comparison --- intrinsic-routed vs.\ sat-navigation-routed --- against
+which the Morimura-based detector can be honestly benchmarked.
+
+\subsection{Real-world traffic from Automatic Vehicle Identification}
+\label{sec:avi-prior}
+
+AVI systems (Automatic License Plate Recognition cameras at selected
+junctions, optionally extended with Bluetooth or floating-car-data
+fusion) have produced a small but growing collection of openly
+released city-scale traffic datasets. Among recent releases:
+the Padua AVI deposit \cite{cappi2026} provides $10$-minute aggregated
+flow statistics and pairwise travel times over $40$ junctions but
+explicitly strips per-vehicle trajectories for privacy; the
+Wang \emph{et al.}\ Xuancheng dataset \cite{wang2023xuancheng}
+similarly restricts raw trajectory access; the
+\citet{ma2026xuancheng} Xuancheng dataset --- used in this thesis ---
+releases joinable entry/exit tables with anonymised vehicle IDs from
+which complete trajectories can be reconstructed, covering
+$\sim 350{,}000$ trips/day across $\sim 1{,}760$ road segments for the
+month of April~2023. The Ma~\emph{et al.}\ release is, to our knowledge,
+the largest openly available city-scale AVI dataset with
+per-vehicle granularity at the time of writing.

@@ -1,0 +1,11 @@
+{
+    "interval": 1.0,
+    "seed": 0,
+    "dir": "./",
+    "roadnetFile": "data/Nanchang_round2/roadnet_round2.json",
+    "flowFile": "data/Nanchang_round2/flow_round2.json",
+    "rlTrafficLight": true,
+    "saveReplay": false,
+    "step_time": 10,
+    "all_red_time": 5
+}
