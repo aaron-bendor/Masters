@@ -7,7 +7,8 @@
 \providecommand{\BIBentrySTDinterwordspacing}{\spaceskip=0pt\relax}
 \providecommand{\BIBentryALTinterwordstretchfactor}{4}
 \providecommand{\BIBentryALTinterwordspacing}{\spaceskip=\fontdimen2\font plus
-\BIBentryALTinterwordstretchfactor\fontdimen3\font minus \fontdimen4\font\relax}
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
 \providecommand{\BIBforeignlanguage}[2]{{%
 \expandafter\ifx\csname l@#1\endcsname\relax
 \typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
@@ -21,45 +22,76 @@
 \BIBdecl
 
 \bibitem{morimura2013}
-T.~Morimura, T.~Osogami, and T.~Id\'{e}, ``Solving inverse problem of {M}arkov chain with partial observations,'' in \emph{Advances in Neural Information Processing Systems 26 (NeurIPS)}, 2013, pp. 1655--1663.
+T.~Morimura, T.~Osogami, and T.~Id\'{e}, ``Solving inverse problem of {M}arkov
+  chain with partial observations,'' in \emph{Advances in Neural Information
+  Processing Systems 26 (NeurIPS)}, 2013, pp. 1655--1663.
 
 \bibitem{ma2026xuancheng}
-Q.~Ma, X.~Guo, W.~Zhong, Z.~He, Z.~Su, W.~Ma, and R.~Zhong, ``City-scale high-resolution traffic datasets with refined networks for hierarchical traffic control,'' \emph{Scientific Data}, vol.~12, p. 547, 2026, figshare deposit 29925824.
+Q.~Ma, X.~Guo, W.~Zhong, Z.~He, Z.~Su, W.~Ma, and R.~Zhong, ``City-scale
+  high-resolution traffic datasets with refined networks for hierarchical
+  traffic control,'' \emph{Scientific Data}, vol.~12, p. 547, 2026, figshare
+  deposit 29925824.
 
 \bibitem{markscheme}
-{Imperial College London, Dyson School of Design Engineering}, ``{Design-Engineering Master's Project: Module Descriptor and Assessment Brief},'' \url{https://imperialcollegelondon.github.io/Design-Engineering-Masters-Project/Module_and_assessment/}, 2025.
+{Imperial College London, Dyson School of Design Engineering},
+  ``{Design-Engineering Master's Project: Module Descriptor and Assessment
+  Brief},''
+  \url{https://imperialcollegelondon.github.io/Design-Engineering-Masters-Project/Module_and_assessment/},
+  2025.
 
 \bibitem{ben-akiva1985}
-M.~Ben-Akiva and S.~R. Lerman, \emph{Discrete Choice Analysis: Theory and Application to Travel Demand}.\hskip 1em plus 0.5em minus 0.4em\relax MIT Press, 1985.
+M.~Ben-Akiva and S.~R. Lerman, \emph{Discrete Choice Analysis: Theory and
+  Application to Travel Demand}.\hskip 1em plus 0.5em minus 0.4em\relax MIT
+  Press, 1985.
 
 \bibitem{noe2008}
-F.~No\'{e}, ``Probability distributions of molecular observables computed from {M}arkov state models,'' \emph{Journal of Chemical Physics}, vol. 128, p. 244103, 2008.
+F.~No\'{e}, ``Probability distributions of molecular observables computed from
+  {M}arkov state models,'' \emph{Journal of Chemical Physics}, vol. 128, p.
+  244103, 2008.
 
 \bibitem{huang2018}
-X.~Huang, Y.~Chen, J.~Wu, and S.~Pan, ``Learning from {M}arkov-chain models: Recommender-system applications,'' in \emph{Proc.\ ACM Conf.\ Recommender Systems (RecSys)}, 2018.
+X.~Huang, Y.~Chen, J.~Wu, and S.~Pan, ``Learning from {M}arkov-chain models:
+  Recommender-system applications,'' in \emph{Proc.\ ACM Conf.\ Recommender
+  Systems (RecSys)}, 2018.
 
 \bibitem{frejinger2007}
-E.~Frejinger and M.~Bierlaire, ``Capturing correlation with subnetworks in route choice models,'' \emph{Transportation Research Part B: Methodological}, vol.~41, no.~3, pp. 363--378, 2007.
+E.~Frejinger and M.~Bierlaire, ``Capturing correlation with subnetworks in
+  route choice models,'' \emph{Transportation Research Part B: Methodological},
+  vol.~41, no.~3, pp. 363--378, 2007.
 
 \bibitem{gu2018}
-Y.~Gu, E.~Crisostomi, Y.~Liu, and R.~Shorten, ``Identification of new patterns of vehicular movement at junctions,'' \emph{IEEE Transactions on Intelligent Transportation Systems}, 2018, population-level junction-turning anomaly detection; conceptual reference for the Phase-3 detector of this work.
+Y.~Gu, E.~Crisostomi, Y.~Liu, and R.~Shorten, ``Identification of new patterns
+  of vehicular movement at junctions,'' \emph{IEEE Transactions on Intelligent
+  Transportation Systems}, 2018, population-level junction-turning anomaly
+  detection; conceptual reference for the Phase-3 detector of this work.
 
 \bibitem{thai2016}
-J.~Thai, N.~Hariharan, and A.~M. Bayen, ``Stat-of-the-art routing information and the inefficiency of {N}ash equilibria,'' \emph{arXiv preprint}, 2016.
+J.~Thai, N.~Hariharan, and A.~M. Bayen, ``Stat-of-the-art routing information
+  and the inefficiency of {N}ash equilibria,'' \emph{arXiv preprint}, 2016.
 
 \bibitem{krichene2018}
-W.~Krichene, B.~Drighes, and A.~M. Bayen, ``On the convergence of no-regret learning in selfish routing,'' \emph{Mathematical Programming}, 2018.
+W.~Krichene, B.~Drighes, and A.~M. Bayen, ``On the convergence of no-regret
+  learning in selfish routing,'' \emph{Mathematical Programming}, 2018.
 
 \bibitem{flotterod2017}
-G.~Fl\"{o}tter\"{o}d, ``Cadyts -- a free calibration tool for dynamic traffic simulations,'' \emph{Transport Reviews}, 2017.
+G.~Fl\"{o}tter\"{o}d, ``Cadyts -- a free calibration tool for dynamic traffic
+  simulations,'' \emph{Transport Reviews}, 2017.
 
 \bibitem{lopez2018}
-P.~A. Lopez, M.~Behrisch, L.~Bieker-Walz, J.~Erdmann, Y.-P. Fl\"{o}tter\"{o}d, R.~Hilbrich, L.~L\"{u}cken, J.~Rummel, P.~Wagner, and E.~Wiessner, ``Microscopic traffic simulation using {SUMO},'' in \emph{21st International Conference on Intelligent Transportation Systems (ITSC)}.\hskip 1em plus 0.5em minus 0.4em\relax IEEE, 2018, pp. 2575--2582.
+P.~A. Lopez, M.~Behrisch, L.~Bieker-Walz, J.~Erdmann, Y.-P. Fl\"{o}tter\"{o}d,
+  R.~Hilbrich, L.~L\"{u}cken, J.~Rummel, P.~Wagner, and E.~Wiessner,
+  ``Microscopic traffic simulation using {SUMO},'' in \emph{21st International
+  Conference on Intelligent Transportation Systems (ITSC)}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2018, pp. 2575--2582.
 
 \bibitem{cappi2026}
-R.~Cappi, M.~Luca, P.~Fontolan, N.~Navarin, B.~Lepri, and A.~Sperduti, ``A city-scale dataset of traffic flows, travel times, and urban context,'' \emph{arXiv preprint arXiv:2605.18782}, 2026.
+R.~Cappi, M.~Luca, P.~Fontolan, N.~Navarin, B.~Lepri, and A.~Sperduti, ``A
+  city-scale dataset of traffic flows, travel times, and urban context,''
+  \emph{arXiv preprint arXiv:2605.18782}, 2026.
 
 \bibitem{wang2023xuancheng}
-Y.~Wang, Y.~Chen, G.~Li, Y.~Lu, Z.~He, Z.~Yu, and W.~Sun, ``City-scale holographic traffic flow data based on vehicular trajectory resampling,'' \emph{Scientific Data}, vol.~10, p.~57, 2023.
+Y.~Wang, Y.~Chen, G.~Li, Y.~Lu, Z.~He, Z.~Yu, and W.~Sun, ``City-scale
+  holographic traffic flow data based on vehicular trajectory resampling,''
+  \emph{Scientific Data}, vol.~10, p.~57, 2023.
 
 \end{thebibliography}

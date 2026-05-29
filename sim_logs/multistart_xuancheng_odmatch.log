@@ -1,0 +1,79 @@
+
+=== Multi-start L-BFGS-B variant (K=5, val_frac=0.2, init_scale=1.0) ===
+dataset=xuancheng  days=2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  split=rush_offpeak  od_match=8  x_o_seed=13  T=10  maxiter=1500
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  rush=105,593  offpeak=109,766  other=114,961
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  rush=107,006  offpeak=114,465  other=113,091
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  rush=104,355  offpeak=109,862  other=111,156
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  rush=101,523  offpeak=106,384  other=111,789
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  rush=107,660  offpeak=114,817  other=120,910
+  total: rush=526,137, offpeak=555,294
+  edges with traffic (rush): 1068/1733
+  edges with traffic (offpeak): 1066/1733
+  OD-matching: clustering junctions into K=8 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 55 shared cells (of 56 unique OD pairs)
+  od-match: rush 526,137 → 517,477 (dropped 4 in non-shared cells, plus per-cell excess)
+  od-match: offpeak 555,294 → 517,477 (dropped 0 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (rush): 1068/1733, (offpeak): 1066/1733
+n=1733  |X_o|=433  beta=0.879  #train_intr=517177  #train_satnav=517177  #test_per_class=300
+features=real  d_T=8  d_psi=2
+theta dimension d = n + E + d_T + d_psi = 6136
+
+--- Baseline single-init fits (theta_0 = zeros) ---
+  baseline intr   loss=1397 nit=1500
+  baseline satnav loss=24 nit=1500
+  baseline wall-clock (2 fits): 760.7s
+
+  BASELINE  empirical=0.5184  fitted_f=0.5303  gap_closed=165.2%
+  baseline val_loglik:  intr=-484571.396  satnav=-470061.312
+
+--- Multi-start intr (K=5) ---
+  [intr init  0/4] seed= 235434831 loss=1413 nit=1500 val_loglik=-519462.190 t=379.7s
+  [intr init  1/4] seed= 691629666 loss=1844 nit=1500 val_loglik=-617678.089 t=387.4s
+  [intr init  2/4] seed= 841660522 loss=273.4 nit=1500 val_loglik=-528134.430 t=375.2s
+  [intr init  3/4] seed=  58876431 loss=9.186 nit=1500 val_loglik=-486891.990 t=379.5s
+  [intr init  4/4] seed= 546868765 loss=1792 nit=1500 val_loglik=-587104.438 t=396.4s
+  multi-start intr wall-clock: 1919.3s (383.9s per fit avg)
+
+--- Multi-start satnav (K=5) ---
+  [satnav init  0/4] seed= 216303183 loss=151.1 nit=1500 val_loglik=-571614.245 t=413.6s
+  [satnav init  1/4] seed=  80407934 loss=1515 nit=1500 val_loglik=-580459.009 t=411.5s
+  [satnav init  2/4] seed=  76323480 loss=1377 nit=1500 val_loglik=-507691.615 t=409.1s
+  [satnav init  3/4] seed= 474660448 loss=1377 nit=1500 val_loglik=-511287.364 t=378.6s
+  [satnav init  4/4] seed= 758569577 loss=25.42 nit=1500 val_loglik=-491844.432 t=376.1s
+  multi-start satnav wall-clock: 1990.0s (398.0s per fit avg)
+
+========================================================================
+SUMMARY
+========================================================================
+empirical AUC        : 0.5184
+baseline (zeros init): fitted_f AUC = 0.5303  gap_closed = 165.2%
+multi-start (K=5, val-select): fitted_f AUC = 0.4831  gap_closed = -91.8%
+
+Per-init validation log-likelihoods (sorted desc):
+  intr   (selected idx=3, n_val=103435, baseline val_ll=-484571.396):
+    * rank  0  init  3  val_ll= -486891.990  final_loss=9.186
+      rank  1  init  0  val_ll= -519462.190  final_loss=1413
+      rank  2  init  2  val_ll= -528134.430  final_loss=273.4
+      rank  3  init  4  val_ll= -587104.438  final_loss=1792
+      rank  4  init  1  val_ll= -617678.089  final_loss=1844
+  satnav (selected idx=4, n_val=103435, baseline val_ll=-470061.312):
+    * rank  0  init  4  val_ll= -491844.432  final_loss=25.42
+      rank  1  init  2  val_ll= -507691.615  final_loss=1377
+      rank  2  init  3  val_ll= -511287.364  final_loss=1377
+      rank  3  init  0  val_ll= -571614.245  final_loss=151.1
+      rank  4  init  1  val_ll= -580459.009  final_loss=1515
+
+Per-init test AUCs (intr init varied, satnav at selected best):
+  0.493, 0.484, 0.501, 0.483, 0.491
+  range = [0.483, 0.501]  mean=0.490  std=0.007
+Per-init test AUCs (satnav init varied, intr at selected best):
+  0.501, 0.497, 0.494, 0.494, 0.483
+  range = [0.483, 0.501]  mean=0.494  std=0.006
+Per-init test AUCs (intr[k] paired with satnav[k]):
+  0.504, 0.492, 0.497, 0.494, 0.491
+  range = [0.491, 0.504]  mean=0.496  std=0.004
+
+Wall-clock: single (2 fits) = 760.7s, multi-start total = 3909.3s (intr 1919.3s + satnav 1990.0s) -- ratio 5.1x
+========================================================================

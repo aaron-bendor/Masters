@@ -190,9 +190,63 @@ low ($30$--$34\%$) and seeds $\{42, 101, 2024\}$ cluster high
 clusters as the earlier run, indicating the split is a stable property of
 the L-BFGS basin structure on these instances rather than measurement
 noise. The \code{features=none} $\AUC_{\mathrm{fit}}$ across seeds is
-$0.575 \pm 0.027$, matching the historical $\pm 0.024$ band. Whether the
-low basin is escapable by multi-start re-initialisation is left as a
-documented open question (\cref{sec:disc-limits}).
+$0.575 \pm 0.027$, matching the historical $\pm 0.024$ band. Whether this
+low basin is escapable by multi-start re-initialisation --- left open by the
+multi-seed sweep --- is settled in \cref{sec:phase4-multistart}: it is not.
+
+\subsection{Multistart basin check: the low basin is not an initialisation artefact}
+\label{sec:phase4-multistart}
+
+The bimodal basin structure of \cref{sec:phase4-multiseed} raises an
+optimiser-quality question: is the low-gap basin on seeds $\{7, 23\}$ an
+artefact of the zero-initialisation that L-BFGS starts from, escapable by
+multi-start re-initialisation? To test this we re-ran both low-basin seeds
+with $K = 5$ random restarts per chain (initial $\theta_0 \sim
+\mathcal{N}(0, I)$, \code{features=none}, $T = 20$), selecting the restart
+with the highest held-out validation log-likelihood and comparing it to the
+zero-init baseline (\cref{fig:phase4-multistart}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{fig06_phase4_multistart.png}
+\caption{Tier~2 multistart basin check on the two low-basin seeds
+(\code{features=none}, $K = 5$, $T = 20$). \textbf{(a)} The val-selected
+multistart detector ties the zero-init baseline on seed~$7$ and is markedly
+worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of
+seeds $\{42, 101, 2024\}$ (dashed). \textbf{(b)} Every one of the ten random
+restarts (five per regime) converges to a strictly \emph{higher} final loss
+than zero-init --- so zero-init is the best optimum found, and the low basin
+is not an initialisation artefact.}
+\label{fig:phase4-multistart}
+\end{figure}
+
+The answer is negative, and informatively so. On \emph{both} seeds, every one
+of the ten random restarts (five per regime) converged to a strictly
+\emph{worse} training loss \emph{and} a worse held-out validation
+log-likelihood than the zero-init baseline (\cref{fig:phase4-multistart}b):
+on seed~$7$ the restarts reach intrinsic-chain loss $44.99$--$45.5$ against
+the baseline's $42.15$; on seed~$23$, $457$--$459$ against $455.9$. The
+val-selected multistart detector therefore \emph{ties} the baseline on
+seed~$7$ ($30.2\%$ vs $30.3\%$ gap closed) and is markedly \emph{worse} on
+seed~$23$ ($7.9\%$ vs $34.2\%$); neither approaches the $\sim 61\%$
+good-basin level of seeds $\{42, 101, 2024\}$ (\cref{fig:phase4-multistart}a).
+
+Two conclusions follow. First, the cross-seed bimodality is \emph{not} an
+initialisation artefact: zero-init is the best optimum found on these
+instances and random restarts cannot reach the high basin, so the low gap on
+seeds $\{7, 23\}$ is a property of those instances' loss landscapes rather
+than of where the optimiser starts. This closes the open question left by
+\cref{sec:phase4-multiseed} and reinforces the reading that the split is
+structural. Second, the seed-$23$ collapse to $7.9\%$ is itself a small
+cautionary result: selecting the fit by held-out \emph{log-likelihood} picked
+a chain that \emph{discriminates worse} (the val-selected sat-nav restart was
+among the lowest-AUC of the five), another instance of the
+likelihood$\leftrightarrow$detection decoupling that recurs throughout this
+work (\cref{sec:phase4-features-result}). The honest caveat is that all fits
+were \code{maxiter}-capped at $1{,}500$ iterations and the random inits have
+large norm ($\lVert\theta_0\rVert \approx 92$ at $d = 8{,}392$); we have thus
+shown that the \emph{standard} random-restart recipe does not escape the low
+basin, not that the basin is provably global.
 
 \subsection{Higher-order memory diagnostic: refuting the 2-step parametric extension}
 \label{sec:phase4-2step}

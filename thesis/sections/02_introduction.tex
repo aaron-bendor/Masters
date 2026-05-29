@@ -75,12 +75,16 @@ identical population of vehicles is simulated twice --- once with no
 sat-navigation rerouting (\emph{intrinsic} regime) and once with full
 sat-navigation rerouting (\emph{sat-nav} regime) --- and fit a Morimura
 inverter to each regime's partial observations. The fitted chains feed
-a per-trajectory log-likelihood-ratio detector for which the area under
-the ROC curve at $T=20$ test transitions reaches $\AUC = 0.644$ when the
-inverter is augmented with real SUMO edge features, against an empirically
-verified $1$-step Markov data ceiling of $0.685$ (closing $77.5\%$ of the
-recoverable gap). A trajectory-length sweep lifts the ceiling and the
-detector together to $\AUC = 0.708$ at $T=40$ against a ceiling of $0.801$.
+a per-trajectory log-likelihood-ratio detector. Augmenting the inverter
+with real SUMO edge features robustly improves \emph{per-row chain
+recovery} across a five-seed sweep (stacked Pearson $+0.050 \pm 0.023$,
+$p \approx 0.008$), although the aggregate detection-AUC lift is
+seed-dependent rather than robust. On the representative seed the
+area under the ROC curve at $T=20$ test transitions reaches
+$\AUC = 0.644$, against an empirically verified $1$-step Markov data
+ceiling of $0.685$ (closing $77.5\%$ of the recoverable gap); a
+trajectory-length sweep lifts the ceiling and the detector together to
+$\AUC = 0.708$ at $T=40$ against a ceiling of $0.801$.
 
 \item \textbf{An honest model-class diagnostic.} The remaining gap to the
 $0.801$ ceiling could in principle be closed by extending the inverter to

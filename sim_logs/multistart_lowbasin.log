@@ -1,0 +1,140 @@
+=== single-init baselines (features=none, T=20) ===
+  seed  7 : gap_closed=30.3%  stacked_Pearson=+0.191
+  seed 23 : gap_closed=34.2%  stacked_Pearson=+0.133
+  target  : good-basin gap_closed ~60-62%  (seeds 42/101/2024)
+===================================================
+
+############ multistart seed=7 features=none  start=2026-05-29 01:32:40 ############
+#### single-init baseline: gap_closed=30.3%  stacked_Pearson=+0.191 ####
+
+=== Multi-start L-BFGS-B variant (K=5, val_frac=0.2, init_scale=1.0) ===
+seed=7  x_o_seed=13  T=20  maxiter=1500
+n=2405  |X_o|=601  beta=0.971  #train_intr=20218  #train_satnav=27231  #test_per_class=300
+features=none  d_T=0  d_psi=0
+theta dimension d = n + E + d_T + d_psi = 8392
+
+--- Baseline single-init fits (theta_0 = zeros) ---
+  baseline intr   loss=42.15 nit=1500
+  baseline satnav loss=51.71 nit=1500
+  baseline wall-clock (2 fits): 1727.4s
+
+  BASELINE  empirical=0.6457  fitted_f=0.5442  gap_closed=30.3%
+  baseline val_loglik:  intr=-61232.668  satnav=-270067.072
+
+--- Multi-start intr (K=5) ---
+  [intr init  0/4] seed= 235434831 loss=44.99 nit=1500 val_loglik=-71349.408 t=846.0s
+  [intr init  1/4] seed= 691629666 loss=45.47 nit=1500 val_loglik=-74468.688 t=851.7s
+  [intr init  2/4] seed= 841660522 loss=44.99 nit=1500 val_loglik=-72041.690 t=854.6s
+  [intr init  3/4] seed=  58876431 loss=45.27 nit=1500 val_loglik=-75843.910 t=843.3s
+  [intr init  4/4] seed= 546868765 loss=45.5 nit=1500 val_loglik=-73369.598 t=913.8s
+  multi-start intr wall-clock: 4309.4s (861.9s per fit avg)
+
+--- Multi-start satnav (K=5) ---
+  [satnav init  0/4] seed= 216303183 loss=54.9 nit=1500 val_loglik=-300001.057 t=860.1s
+  [satnav init  1/4] seed=  80407934 loss=54 nit=1500 val_loglik=-295046.160 t=865.1s
+  [satnav init  2/4] seed=  76323480 loss=54.86 nit=1500 val_loglik=-301187.681 t=853.6s
+  [satnav init  3/4] seed= 474660448 loss=54.97 nit=1500 val_loglik=-298469.987 t=855.2s
+  [satnav init  4/4] seed= 758569577 loss=55.2 nit=1500 val_loglik=-298342.380 t=841.1s
+  multi-start satnav wall-clock: 4275.3s (855.1s per fit avg)
+
+========================================================================
+SUMMARY
+========================================================================
+empirical AUC        : 0.6457
+baseline (zeros init): fitted_f AUC = 0.5442  gap_closed =  30.3%
+multi-start (K=5, val-select): fitted_f AUC = 0.5439  gap_closed =  30.2%
+
+Per-init validation log-likelihoods (sorted desc):
+  intr   (selected idx=0, n_val=4044, baseline val_ll=-61232.668):
+    * rank  0  init  0  val_ll=  -71349.408  final_loss=44.99
+      rank  1  init  2  val_ll=  -72041.690  final_loss=44.99
+      rank  2  init  4  val_ll=  -73369.598  final_loss=45.5
+      rank  3  init  1  val_ll=  -74468.688  final_loss=45.47
+      rank  4  init  3  val_ll=  -75843.910  final_loss=45.27
+  satnav (selected idx=1, n_val=5446, baseline val_ll=-270067.072):
+    * rank  0  init  1  val_ll= -295046.160  final_loss=54
+      rank  1  init  4  val_ll= -298342.380  final_loss=55.2
+      rank  2  init  3  val_ll= -298469.987  final_loss=54.97
+      rank  3  init  0  val_ll= -300001.057  final_loss=54.9
+      rank  4  init  2  val_ll= -301187.681  final_loss=54.86
+
+Per-init test AUCs (intr init varied, satnav at selected best):
+  0.544, 0.497, 0.491, 0.467, 0.516
+  range = [0.467, 0.544]  mean=0.503  std=0.026
+Per-init test AUCs (satnav init varied, intr at selected best):
+  0.545, 0.544, 0.574, 0.569, 0.560
+  range = [0.544, 0.574]  mean=0.558  std=0.012
+Per-init test AUCs (intr[k] paired with satnav[k]):
+  0.545, 0.497, 0.514, 0.474, 0.506
+  range = [0.474, 0.545]  mean=0.507  std=0.023
+
+Wall-clock: single (2 fits) = 1727.4s, multi-start total = 8584.6s (intr 4309.4s + satnav 4275.3s) -- ratio 5.0x
+========================================================================
+
+############ multistart seed=23 features=none  start=2026-05-29 04:24:33 ############
+#### single-init baseline: gap_closed=34.2%  stacked_Pearson=+0.133 ####
+
+=== Multi-start L-BFGS-B variant (K=5, val_frac=0.2, init_scale=1.0) ===
+dataset=sumo  seed=23  x_o_seed=13  T=20  maxiter=1500
+n=2405  |X_o|=601  beta=0.971  #train_intr=18541  #train_satnav=27244  #test_per_class=300
+features=none  d_T=0  d_psi=0
+theta dimension d = n + E + d_T + d_psi = 8392
+
+--- Baseline single-init fits (theta_0 = zeros) ---
+  baseline intr   loss=455.9 nit=1500
+  baseline satnav loss=572.5 nit=1500
+  baseline wall-clock (2 fits): 1682.6s
+
+  BASELINE  empirical=0.6585  fitted_f=0.5542  gap_closed=34.2%
+  baseline val_loglik:  intr=-55314.623  satnav=-286356.280
+
+--- Multi-start intr (K=5) ---
+  [intr init  0/4] seed= 235434831 loss=458.8 nit=1500 val_loglik=-64853.613 t=847.9s
+  [intr init  1/4] seed= 691629666 loss=458.3 nit=1500 val_loglik=-61225.388 t=857.1s
+  [intr init  2/4] seed= 841660522 loss=458.6 nit=1500 val_loglik=-65701.538 t=840.8s
+  [intr init  3/4] seed=  58876431 loss=457.3 nit=1500 val_loglik=-61834.917 t=848.2s
+  [intr init  4/4] seed= 546868765 loss=458.1 nit=1500 val_loglik=-63414.401 t=838.5s
+  multi-start intr wall-clock: 4232.5s (846.5s per fit avg)
+
+--- Multi-start satnav (K=5) ---
+  [satnav init  0/4] seed= 216303183 loss=575.1 nit=1500 val_loglik=-311514.282 t=843.9s
+  [satnav init  1/4] seed=  80407934 loss=575.4 nit=1500 val_loglik=-312127.292 t=844.8s
+  [satnav init  2/4] seed=  76323480 loss=575.4 nit=1500 val_loglik=-314807.063 t=843.1s
+  [satnav init  3/4] seed= 474660448 loss=575.8 nit=1500 val_loglik=-314408.935 t=850.6s
+  [satnav init  4/4] seed= 758569577 loss=575.9 nit=1500 val_loglik=-316069.549 t=850.4s
+  multi-start satnav wall-clock: 4232.7s (846.5s per fit avg)
+
+========================================================================
+SUMMARY
+========================================================================
+empirical AUC        : 0.6585
+baseline (zeros init): fitted_f AUC = 0.5542  gap_closed =  34.2%
+multi-start (K=5, val-select): fitted_f AUC = 0.5125  gap_closed =   7.9%
+
+Per-init validation log-likelihoods (sorted desc):
+  intr   (selected idx=1, n_val=3708, baseline val_ll=-55314.623):
+    * rank  0  init  1  val_ll=  -61225.388  final_loss=458.3
+      rank  1  init  3  val_ll=  -61834.917  final_loss=457.3
+      rank  2  init  4  val_ll=  -63414.401  final_loss=458.1
+      rank  3  init  0  val_ll=  -64853.613  final_loss=458.8
+      rank  4  init  2  val_ll=  -65701.538  final_loss=458.6
+  satnav (selected idx=0, n_val=5449, baseline val_ll=-286356.280):
+    * rank  0  init  0  val_ll= -311514.282  final_loss=575.1
+      rank  1  init  1  val_ll= -312127.292  final_loss=575.4
+      rank  2  init  3  val_ll= -314408.935  final_loss=575.8
+      rank  3  init  2  val_ll= -314807.063  final_loss=575.4
+      rank  4  init  4  val_ll= -316069.549  final_loss=575.9
+
+Per-init test AUCs (intr init varied, satnav at selected best):
+  0.538, 0.512, 0.534, 0.524, 0.543
+  range = [0.512, 0.543]  mean=0.530  std=0.011
+Per-init test AUCs (satnav init varied, intr at selected best):
+  0.512, 0.488, 0.509, 0.491, 0.505
+  range = [0.488, 0.512]  mean=0.501  std=0.010
+Per-init test AUCs (intr[k] paired with satnav[k]):
+  0.538, 0.488, 0.526, 0.511, 0.526
+  range = [0.488, 0.538]  mean=0.518  std=0.017
+
+Wall-clock: single (2 fits) = 1682.6s, multi-start total = 8465.3s (intr 4232.5s + satnav 4232.7s) -- ratio 5.0x
+========================================================================
+ALL DONE 2026-05-29 07:13:43

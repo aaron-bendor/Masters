@@ -37,6 +37,42 @@ robust fraction of the recoverable per-row chain contrast on real
 urban data, but the recoverable contrast under realistic
 sat-navigation adoption is small.}
 
+\Cref{tab:cross-tier} consolidates the three tiers on a common axis:
+the same inverter and diagnostic produce every row, and the trend in the
+empirical ceiling --- from a noise-free synthetic recovery, through a
+labelled simulated comparison, to a behavioural real-world proxy ---
+quantifies how much detectable signal each setting actually contains.
+
+\begin{table}[H]
+\centering
+\caption{Cross-tier synthesis of the three validation tiers. The single
+pipeline of \cref{sec:disc-cross-tier} produces every row; only the data
+changes. Tier~2 is the representative seed~$42$ at $T=20$
+(\cref{tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at
+$T=10$ (\cref{tab:phase5-headline}). Fitted and Pearson cells are
+\code{none}/\code{real}.
+$^{\dagger}$Tier~1 is a $\pi$-recovery reproduction scored by RMAE, not a
+detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the
+paper's Fig.~2A (\cref{tab:phase1-rmae}).
+$^{\ddagger}$OD-matching crashes the Tier-3 ceiling from $0.573$ to
+$0.518$ ($0.018$ above chance), attributing $\sim 75\%$ of the pooled
+signal to OD-mix rather than routing (\cref{sec:phase5-reading}).
+The Tier-2 Pearson lift is robust across five seeds
+($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$,
+\cref{sec:phase4-multiseed}).}
+\label{tab:cross-tier}
+\small
+\begin{tabular}{llccc}
+\toprule
+tier & dataset ($n$) & $\AUC_{\mathrm{emp}}$ ceiling & $\AUC_{\mathrm{fit}}$ & per-row Pearson \\
+\midrule
+1 synthetic$^{\dagger}$  & random graph ($100$)  & ---     & ---             & --- \\
+2 SUMO                   & Munich bbox ($2{,}405$) & $0.685$ & $0.612 / 0.644$ & $+0.132 / +0.215$ \\
+3 Xuancheng$^{\ddagger}$ & AVI ($1{,}733$)        & $0.573$ & $0.524 / 0.536$ & $+0.096 / +0.072$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Limits of the chosen approach}
 \label{sec:disc-limits}
 
@@ -51,22 +87,32 @@ five seeds, $p \approx 0.11$), whereas the per-row chain-recovery lift
 \emph{is} ($+0.050 \pm 0.023$, positive on all five, $p \approx 0.008$).
 The multi-seed sweep also reproduced the iter-16 bimodal basin structure,
 confirming the cross-seed AUC variance is L-BFGS basin-selection rather
-than measurement noise. Tier~3 (Xuancheng), by contrast, remains a single
+than measurement noise; a follow-up multistart check
+(\cref{sec:phase4-multistart}) further established that this low basin is
+\emph{not} escapable by random re-initialisation --- zero-init is the best
+optimum found on both low-basin seeds, so the bimodality is a property of
+the loss landscape, not of the starting point. Tier~3 (Xuancheng), by
+contrast, remains a single
 day-pool (Apr~17--21): a multi-pool replication is the analogous
 outstanding confirmation there, a compute-cost trade-off rather than a
 methodological barrier.
 
-\paragraph{L-BFGS basin selection on \code{features=real}.}
-The Xuancheng pooled \code{features=real} rush-chain fit hit
-final loss $1477$, against the \code{features=none} fit's loss $4.156$ on
-the same data. The same iter-15 multi-modality of L-BFGS that motivated
-the paper's natural-gradient choice is the most likely explanation. We
-patched the multistart variant for Xuancheng (\code{score\_seed\_big\_multistart.py})
-but did not run it in the time available. This means the
-small features lift on the pooled Xuancheng pool
-(\cref{sec:phase5-reading}) cannot be cleanly distinguished from a
-basin artefact. A multistart $K \ge 5$ run would resolve this in
-$\sim 4$ hours of wall-clock; flagged as immediate future work.
+\paragraph{L-BFGS basin selection on \code{features=real} --- now
+resolved.} The Xuancheng OD-matched \code{features=real} rush-chain fit
+hit final loss $1397$, against the \code{features=none} fit's loss
+$4.058$ on the same data, and produced the ``impossible''
+$\AUC_{\mathrm{fit}} = 0.530 > \AUC_{\mathrm{emp}} = 0.518$. We ran the
+multistart variant (\cref{sec:phase5-multistart}, $K=5$): it escaped the
+high-loss basin (rush loss $1397 \rightarrow 9.186$, validation-selected),
+and the correctly-fit chains then gave $\AUC_{\mathrm{fit}} = 0.483$ ---
+chance. The ceiling violation was therefore an optimiser artefact, and
+removing it \emph{strengthens} the Tier-3 negative result: the within-OD
+routing contrast is genuinely absent at the $1$-step Markov level, not
+masked by a bad optimum. This also makes the SUMO and Xuancheng basin
+checks complementary --- on SUMO zero-init was already the best optimum
+(\cref{sec:phase4-multistart}); on Xuancheng a better optimum existed but
+only confirmed the negative result --- so neither tier's headline rests
+on an optimiser accident.
 
 \paragraph{The hitting-rate ($f+g$) extension does not transfer to SUMO
 scale.} The synthetic experiment of Tier~1 uses analytical (noise-free)
@@ -115,13 +161,6 @@ welfare analyses and possible regulatory disclosure requirements.
 \label{sec:disc-future}
 
 \begin{enumerate}
-\item \textbf{Multistart on \code{features=real}.} Highest expected
-information per hour of compute; resolves the open question of whether
-the small Xuancheng features lift is a basin artefact.
-\item \textbf{Multi-seed Tier-2 confirmation.} Run the Tier-2 pipeline
-on the $5$ pre-built SUMO seeds and report
-$\AUC_{\mathrm{fit}}$ with confidence intervals. Required for
-Tier-1 reporting precision in the eventual paper writeup.
 \item \textbf{Trajectory-level feature augmentation.} The strict
 $1$-step Markov LR detector ignores trip-level features (length, mean
 speed, edge-class composition, dwell time at congested edges). A

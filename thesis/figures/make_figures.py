@@ -267,6 +267,140 @@ def fig_phase4_multiseed():
 
 
 # =============================================================================
+# Figure 6: Phase 4 multistart basin check -- random restarts never beat zero-init
+# =============================================================================
+def fig_phase4_multistart():
+    seeds = ["7", "23"]
+    gap_base = np.array([30.3, 34.2])   # zero-init baseline gap-closed (%)
+    gap_ms   = np.array([30.2, 7.9])    # multistart (val-select) gap-closed (%)
+    good_basin = 61.5                   # mean of seeds 42/101/2024
+
+    # Final training loss of each random restart minus the zero-init baseline.
+    # All positive => every restart lands in a strictly worse basin.
+    dloss = {
+        "7":  {"intr":   np.array([44.99, 45.47, 44.99, 45.27, 45.5]) - 42.15,
+               "satnav": np.array([54.9, 54.0, 54.86, 54.97, 55.2]) - 51.71},
+        "23": {"intr":   np.array([458.8, 458.3, 458.6, 457.3, 458.1]) - 455.9,
+               "satnav": np.array([575.1, 575.4, 575.4, 575.8, 575.9]) - 572.5},
+    }
+
+    x = np.arange(len(seeds))
+    w = 0.38
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.2, 3.8))
+
+    # Panel (a): gap-closed -- baseline vs multistart, with good-basin reference
+    axA.bar(x - w/2, gap_base, w, color=C_NONE, label="zero-init baseline",
+            edgecolor="white")
+    axA.bar(x + w/2, gap_ms, w, color=C_REAL, label="multistart (K=5, val-select)",
+            edgecolor="white")
+    axA.axhline(good_basin, color=C_CEILING, linestyle="--", linewidth=1.4,
+                label="good-basin (seeds 42/101/2024)")
+    for xi, gb, gm in zip(x, gap_base, gap_ms):
+        axA.annotate(f"{gb:.1f}%", (xi - w/2, gb), textcoords="offset points",
+                     xytext=(0, 3), ha="center", fontsize=8)
+        axA.annotate(f"{gm:.1f}%", (xi + w/2, gm), textcoords="offset points",
+                     xytext=(0, 3), ha="center", fontsize=8)
+    axA.set_xticks(x); axA.set_xticklabels(seeds)
+    axA.set_xlabel("low-basin SUMO seed")
+    axA.set_ylabel("gap closed (%)")
+    axA.set_ylim(0, 75)
+    axA.set_title("(a) Multistart does not escape the low basin\n"
+                  "(ties on seed 7, worse on seed 23)")
+    axA.legend(loc="upper right", framealpha=0.95)
+
+    # Panel (b): every restart is worse than zero-init (Delta loss > 0)
+    for xi, s in zip(x, seeds):
+        for marker, regime, col in (("o", "intr", C_OURS_FG),
+                                    ("^", "satnav", C_NWKR)):
+            yv = dloss[s][regime]
+            jit = np.linspace(-0.10, 0.10, len(yv))
+            off = -0.13 if regime == "intr" else 0.13
+            axB.scatter(np.full_like(yv, xi + off) + jit, yv, marker=marker,
+                        color=col, s=34, zorder=3,
+                        label=(regime if xi == 0 else None))
+    axB.axhline(0.0, color="black", linestyle="-", linewidth=1.2)
+    axB.text(axB.get_xlim()[1], 0.02, "zero-init baseline (best basin)",
+             ha="right", va="bottom", fontsize=8, fontstyle="italic")
+    axB.set_xticks(x); axB.set_xticklabels(seeds)
+    axB.set_xlabel("low-basin SUMO seed")
+    axB.set_ylabel("final loss $-$ zero-init loss")
+    axB.set_ylim(bottom=-0.5)
+    axB.set_title("(b) Every random restart lands in a\n"
+                  "strictly worse basin than zero-init")
+    axB.legend(loc="upper right", framealpha=0.95, title="restart chain")
+
+    fig.suptitle("Tier 2 multistart basin check (SUMO, features=none, $K=5$, "
+                 "$T=20$): the low basin is\nnot an initialisation artefact "
+                 "-- zero-init is the best optimum found",
+                 fontsize=10)
+    fig.tight_layout(rect=[0, 0, 1, 0.90])
+    out = HERE / "fig06_phase4_multistart.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  saved {out.name}")
+
+
+def fig_phase5_multistart():
+    # Xuancheng OD-matched features=real, K=5 restarts (rush/intrinsic chain).
+    restart_loss = np.array([1413.0, 1844.0, 273.4, 9.186, 1792.0])
+    base_loss = 1397.0          # zero-init baseline rush-chain loss
+    sel_idx = 3                 # validation-selected restart (loss 9.186)
+
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.2, 3.8))
+
+    # Panel (a): the loss escape -- baseline vs each restart, log scale
+    xr = np.arange(len(restart_loss))
+    cols = [C_NONE] * len(restart_loss)
+    cols[sel_idx] = C_REAL
+    axA.axhline(base_loss, color=C_CHANCE, linestyle="--", linewidth=1.4,
+                label=f"zero-init baseline ({base_loss:.0f})")
+    axA.bar(xr, restart_loss, 0.62, color=cols, edgecolor="white")
+    for xi, lv in zip(xr, restart_loss):
+        axA.annotate(f"{lv:.0f}" if lv >= 100 else f"{lv:.2f}",
+                     (xi, lv), textcoords="offset points", xytext=(0, 3),
+                     ha="center", fontsize=8)
+    axA.set_yscale("log")
+    axA.set_xticks(xr)
+    axA.set_xticklabels([f"r{i+1}" for i in xr])
+    axA.set_xlabel("random restart")
+    axA.set_ylabel("rush-chain final loss (log)")
+    axA.set_title("(a) Multistart escapes the high-loss basin\n"
+                  r"(rush loss $1{,}397 \rightarrow 9.186$, val-selected)")
+    axA.legend(loc="upper right", framealpha=0.95)
+
+    # Panel (b): AUC collapses to chance once the chain is correctly fit
+    labels = ["zero-init\nbaseline", "multistart\n(val-select)"]
+    aucs = np.array([0.530, 0.483])
+    bcols = [C_NONE, C_REAL]
+    xb = np.arange(2)
+    axB.axhline(0.518, color=C_CEILING, linestyle="--", linewidth=1.4,
+                label=r"empirical ceiling $0.518$")
+    axB.axhline(0.5, color="black", linestyle=":", linewidth=1.0,
+                label="chance")
+    axB.bar(xb, aucs, 0.5, color=bcols, edgecolor="white")
+    for xi, av in zip(xb, aucs):
+        axB.annotate(f"{av:.3f}", (xi, av), textcoords="offset points",
+                     xytext=(0, 3), ha="center", fontsize=8)
+    axB.set_xticks(xb); axB.set_xticklabels(labels)
+    axB.set_ylabel(r"$\mathrm{AUC}_{\mathrm{fit}}$")
+    axB.set_ylim(0.45, 0.56)
+    axB.set_title("(b) The well-fit chain returns to chance\n"
+                  r"(baseline $0.530 > $ ceiling was an artefact)")
+    axB.legend(loc="upper right", framealpha=0.95)
+
+    fig.suptitle("Tier 3 multistart basin check (Xuancheng OD-matched, "
+                 "features=real, $K=5$, $T=10$): multistart escapes the\n"
+                 "basin but the correct fit is chance -- the ceiling "
+                 "violation was an optimiser artefact",
+                 fontsize=10)
+    fig.tight_layout(rect=[0, 0, 1, 0.90])
+    out = HERE / "fig07_phase5_multistart.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  saved {out.name}")
+
+
+# =============================================================================
 # Driver
 # =============================================================================
 if __name__ == "__main__":
@@ -275,5 +409,7 @@ if __name__ == "__main__":
     fig_phase4_t_sweep()
     fig_phase4_features_lift()
     fig_phase4_multiseed()
+    fig_phase4_multistart()
     fig_phase5_xuancheng()
+    fig_phase5_multistart()
     print("Done.")

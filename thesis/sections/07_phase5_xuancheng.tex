@@ -157,16 +157,23 @@ A secondary observation: in the OD-matched row, $\AUC_{\mathrm{fit}}$
 under \code{features=real} ($0.530$) numerically exceeds
 $\AUC_{\mathrm{emp}}$ ($0.518$). Under correct chain recovery this is
 impossible, since the full-observation empirical chains should upper-bound
-any partial-observation fit. The most plausible explanation is the
-same L-BFGS basin-selection pathology that hit the un-matched pool
-(rush-fit loss spikes from $4.058$ at \code{features=none} to $1397$ at
-\code{features=real}, a $\sim 340\times$ ratio); the resulting fitted
-chains drift in directions that happen to produce a slightly better
-aggregate-bias signal than the empirical chains, but not because they
-are more chain-accurate. The per-row Pearson on \texttt{[all branching]}
-of $+0.077$ (real) vs $+0.104$ (none) under OD-matching corroborates
-this: features make chain recovery slightly \emph{worse}, not better,
-on real data with this loss landscape.
+any partial-observation fit. The suspected cause was the
+L-BFGS basin-selection pathology also seen on the un-matched pool
+(rush-fit loss $1397$ at \code{features=real} vs.\ $4.058$ at
+\code{features=none}, a $\sim 340\times$ ratio). A multistart
+$K=5$ run (\cref{sec:phase5-multistart}) confirms it: random
+re-initialisation \emph{escapes} the bad basin --- the rush-chain loss
+drops from $1397$ to $9.186$ at a validation-selected restart --- and the
+properly-fit chains then give $\AUC_{\mathrm{fit}} = 0.483$, i.e.\ they
+fall \emph{back to chance} and no longer violate the empirical ceiling.
+The $0.530$ was therefore an optimiser artefact, not a real signal; the
+genuine within-OD routing contrast under correct chain recovery is
+indistinguishable from chance. This strengthens rather than weakens the
+Tier-3 negative result: the apparent ``features help on real data''
+reading was a basin coincidence, and the per-row Pearson on
+\texttt{[all branching]} of $+0.077$ (real) vs $+0.104$ (none) already
+pointed the same way --- features do not improve chain recovery on this
+real-world loss landscape.
 
 \subsection{Honest reading}\label{sec:phase5-reading}
 
@@ -194,15 +201,72 @@ Whatever real congestion-induced rerouting exists in Xuancheng at
 April 2023 sat-navigation adoption rates is below the $1$-step Markov
 behavioural-proxy detection threshold of this framework.
 
-\paragraph{The features=real basin failure repeats post-matching.} Both
-the un-matched pool (\cref{sec:phase5-results}) and the OD-matched pool
-show the same pattern: the rush-fit \code{features=real} loss is
-$\sim 350\times$ the \code{features=none} loss
-($1397$ vs.\ $4.058$ here). The $\AUC_{\mathrm{fit}} > \AUC_{\mathrm{emp}}$
-behaviour in the matched row is consistent with this being a
-basin-selection artefact rather than a chain-recovery improvement. A
-multistart $K \ge 5$ run is the obvious diagnostic; it is flagged as
-immediate future work and not run here.
+\paragraph{The features=real basin failure repeats post-matching ---
+and multistart resolves it.} Both the un-matched pool
+(\cref{sec:phase5-results}) and the OD-matched pool show the same pattern:
+the rush-fit \code{features=real} loss is $\sim 350\times$ the
+\code{features=none} loss ($1397$ vs.\ $4.058$ here). The
+$\AUC_{\mathrm{fit}} > \AUC_{\mathrm{emp}}$ behaviour in the matched row
+suggested a basin-selection artefact rather than a chain-recovery
+improvement. The multistart check of \cref{sec:phase5-multistart}
+confirms exactly this: random restarts escape the high-loss basin (rush
+loss $1397 \rightarrow 9.186$), and the resulting well-fit chains give
+$\AUC_{\mathrm{fit}} = 0.483$ --- chance --- resolving the apparent
+ceiling violation.
+
+\subsection{Multistart on \code{features=real}: the ceiling violation is
+an optimiser artefact}\label{sec:phase5-multistart}
+
+The one anomaly left open above is the OD-matched
+$\AUC_{\mathrm{fit}} = 0.530 > \AUC_{\mathrm{emp}} = 0.518$ under
+\code{features=real}, with its tell-tale $1397$ rush-chain loss. We ran
+the multistart variant (\code{score\_seed\_big\_multistart.py},
+$K=5$ random restarts $\theta_0 \sim \mathcal{N}(0,I)$ per chain,
+validation-selected by held-out log-likelihood) on the exact OD-matched
+\code{features=real} configuration ($d=6{,}136$, $T=10$,
+$|X_o| = 433$, $517{,}177$ train transitions per regime).
+
+The result is decisive and \emph{opposite} to the SUMO basin check of
+\cref{sec:phase4-multistart}. On Xuancheng, multistart \emph{does} escape
+the high-loss basin: the rush (intrinsic) chain loss drops from the
+zero-init baseline of $1397$ to $9.186$ at the validation-selected
+restart (restart losses $\{1413, 1844, 273.4, 9.186, 1792\}$, so one
+restart of five found the good basin). But the well-fit chains then give
+$\AUC_{\mathrm{fit}} = 0.483$ --- below chance --- against the
+baseline's spurious $0.530$. The per-init paired AUCs
+($\{0.504, 0.492, 0.497, 0.494, 0.491\}$, mean $0.496$) cluster tightly
+at chance regardless of which basin each restart lands in.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/fig07_phase5_multistart.png}
+\caption{Xuancheng OD-matched \code{features=real} multistart
+($K=5$). \textbf{(a)} The rush-chain training loss collapses from the
+zero-init baseline ($1{,}397$) to the validation-selected restart
+($9.186$): random re-initialisation \emph{escapes} the high-loss basin,
+unlike the SUMO case (\cref{sec:phase4-multistart}). \textbf{(b)} Despite
+the proper fit, $\AUC_{\mathrm{fit}}$ falls from the baseline's spurious
+$0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ ---
+chance. The ceiling violation was an optimiser artefact; the genuine
+within-OD routing contrast under correct chain recovery is absent.}
+\label{fig:phase5-multistart}
+\end{figure}
+
+The interpretation closes two threads. First, the
+$\AUC_{\mathrm{fit}} > \AUC_{\mathrm{emp}}$ ``impossible'' result was
+indeed a basin artefact: a high-loss chain that drifted into a direction
+producing a marginally favourable aggregate-bias signal. Once the
+optimiser reaches the genuine optimum, that spurious signal disappears
+and the detector returns to chance. Second --- and this is the
+load-bearing scientific point --- the correctly-fit \code{features=real}
+chains \emph{confirm} the central Tier-3 finding rather than overturning
+it: the within-OD rush-vs-off-peak routing contrast is genuinely absent
+at the $1$-step Markov level, not merely hidden by a bad optimum. The
+SUMO and Xuancheng basin checks are thus complementary: on SUMO,
+zero-init was already the best optimum and the low basin was not an
+artefact; on Xuancheng, multistart found a better optimum but it only
+confirmed the negative result. Neither dataset's headline depends on an
+optimiser accident.
 
 \subsection{Bottom line for Tier 3}\label{sec:phase5-bottom}
 
