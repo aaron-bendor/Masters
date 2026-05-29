@@ -42,16 +42,19 @@ sat-navigation adoption is small.}
 
 Three limitations are foregrounded honestly.
 
-\paragraph{Single-seed numbers on Tiers 2 and 3.} All Tier~2 and Tier~3
-results are reported for a single SUMO seed ($42$) and a single
-day-pool (Apr~17--21). The iter-15 work in the project characterised the
-SUMO single-seed noise band as $\sim \pm 0.024$ AUC; the present
-findings sit outside that band but lack the $\ge 5$-seed
-confirmation that would convert them from ``directionally robust
-single-seed'' to ``Tier-1 multi-seed.'' This is a compute-cost
-trade-off, not a methodological barrier; the script supports
-multi-seed sweep trivially. The decision to halt at single-seed is a
-project-management judgement, not a finding about the data.
+\paragraph{Multi-seed Tier 2; single day-pool on Tier 3.} The Tier~2
+features result has been confirmed across five SUMO seeds
+(\cref{sec:phase4-multiseed}), and that confirmation materially revised
+the single-seed reading: the aggregate detection-AUC lift is
+\emph{not} statistically robust ($+0.024 \pm 0.026$, reversing on one of
+five seeds, $p \approx 0.11$), whereas the per-row chain-recovery lift
+\emph{is} ($+0.050 \pm 0.023$, positive on all five, $p \approx 0.008$).
+The multi-seed sweep also reproduced the iter-16 bimodal basin structure,
+confirming the cross-seed AUC variance is L-BFGS basin-selection rather
+than measurement noise. Tier~3 (Xuancheng), by contrast, remains a single
+day-pool (Apr~17--21): a multi-pool replication is the analogous
+outstanding confirmation there, a compute-cost trade-off rather than a
+methodological barrier.
 
 \paragraph{L-BFGS basin selection on \code{features=real}.}
 The Xuancheng pooled \code{features=real} rush-chain fit hit

@@ -188,11 +188,12 @@ chain-drift rather than per-row chain accuracy, we additionally report
 a \emph{contrast-correlation} diagnostic at branching states (states
 with out-degree $> 1$): for each such state $x$, we compute
 \[
-\Delta_{\mathrm{fit}}(x, \cdot) = \pT^{(B)}_{\mathrm{fit}}(x, \cdot) - \pT^{(A)}_{\mathrm{fit}}(x, \cdot),
-\qquad
-\Delta_{\mathrm{emp}}(x, \cdot) = \pT^{(B)}_{\mathrm{emp}}(x, \cdot) - \pT^{(A)}_{\mathrm{emp}}(x, \cdot),
+\begin{aligned}
+\Delta_{\mathrm{fit}}(x, \cdot) &= p^{(B)}_{T,\mathrm{fit}}(x, \cdot) - p^{(A)}_{T,\mathrm{fit}}(x, \cdot), \\
+\Delta_{\mathrm{emp}}(x, \cdot) &= p^{(B)}_{T,\mathrm{emp}}(x, \cdot) - p^{(A)}_{T,\mathrm{emp}}(x, \cdot),
+\end{aligned}
 \]
-where the empirical chain $\Pchain_{\mathrm{emp}}$ is the
+where the empirical chain $P_{T,\mathrm{emp}}$ is the
 full-observation Laplace-smoothed transition matrix from the trajectories.
 We report the stacked Pearson correlation of $\Delta_{\mathrm{fit}}$
 against $\Delta_{\mathrm{emp}}$ over all branching-state legal-edge entries,

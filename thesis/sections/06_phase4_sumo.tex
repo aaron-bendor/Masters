@@ -44,7 +44,7 @@ contrast diagnostic). The inverter sees only $|X_o| = 601$ randomly
 sampled edges --- $25\%$ of the network --- consistent with the
 operating point of the Morimura $\S 6.1$ benchmark.
 
-\subsection{Single-seed result: features lift AUC and per-row chain recovery}
+\subsection{Single-seed result: features and the inverse fit}
 \label{sec:phase4-features-result}
 
 We compare \code{--features none} (local-only fit, $d = n+E = 8{,}392$)
@@ -89,17 +89,21 @@ rows with cosine $> 0$ & $53.5\%$ & $55.4\%$ & $+1.9$ pp \\
 \end{tabular}
 \end{table}
 
-Two readings are worth separating. First, the $+0.032$ AUC lift sits
-outside the previously characterised $\pm 0.024$ single-seed SUMO-instance
-noise band (iter-15 of the project), so the directional change is
-robust to the dominant noise source. Second --- and this is the more
-methodologically important reading --- the stacked Pearson on
-\texttt{[all branching]} rises from $+0.132$ to $+0.215$, and the
-per-row cosine median from $+0.095$ to $+0.435$. Per the iter-18
-diagnostic, those are the metrics that distinguish ``the fit improved
-because the chains got more accurate per-row'' from ``the fit improved
-because the chains drifted in helpful opposite directions in aggregate''.
-Both moved positively, supporting the stronger chain-recovery claim.
+Two readings are worth separating. First, the $+0.032$ AUC lift on this
+seed sits outside the previously characterised $\pm 0.024$ single-seed
+SUMO-instance noise band (iter-15 of the project). As the multi-seed
+analysis of \cref{sec:phase4-multiseed} shows, however, this aggregate
+AUC lift does \emph{not} survive replication across SUMO instances --- it
+is the per-row chain-recovery improvement, not the aggregate AUC, that is
+the robust effect. Second --- and this is the more methodologically
+important reading --- the stacked Pearson on \texttt{[all branching]}
+rises from $+0.132$ to $+0.215$, and the per-row cosine median from
+$+0.095$ to $+0.435$. Per the iter-18 diagnostic, those are the metrics
+that distinguish ``the fit improved because the chains got more accurate
+per-row'' from ``the fit improved because the chains drifted in helpful
+opposite directions in aggregate''. Both moved positively, supporting the
+stronger chain-recovery claim --- and, unlike the aggregate AUC, this
+per-row lift replicates across seeds (\cref{sec:phase4-multiseed}).
 
 The one metric that barely moves is the fraction of rows with positive
 cosine (only $+1.9$ pp on \texttt{[all branching]}, $58.6\%$ at
@@ -108,6 +112,87 @@ the rows that were already approximately right, but do not flip the
 sign on the $\sim 45\%$ of branching states whose fitted contrast points
 the wrong way. This suggests the residual misspecification is
 structural to the $1$-step softmax family --- a hypothesis we test next.
+
+\subsection{Multi-seed validation: chain recovery is robust, detection AUC is not}
+\label{sec:phase4-multiseed}
+
+To test whether the seed-42 lift replicates, we re-ran the
+contrast-correlation diagnostic across five independent SUMO instances
+(\code{randomTrips} seeds $\in \{7, 23, 42, 101, 2024\}$, $X_o$ seed
+fixed at $13$, $T=20$, $|X_o|=601$, $\code{maxiter}=1500$) under both
+\code{features=none} and \code{features=real}
+(\cref{tab:phase4-multiseed}, \cref{fig:phase4-multiseed}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{fig05_phase4_multiseed.png}
+\caption{Multi-seed Tier~2 features sweep (five SUMO seeds,
+\texttt{[all branching]} block, $T=20$). \textbf{(a)} The aggregate
+detection metric (gap-closed) lifts under \code{features=real} on four
+seeds but \emph{reverses} on seed~$101$; the \code{features=none} bars
+also reproduce the bimodal basin structure ($\{7,23\}$ low,
+$\{42,101,2024\}$ high). \textbf{(b)} The per-row chain-recovery metric
+(stacked Pearson) lifts on \emph{all five} seeds. Features are a robust
+chain-recovery lever, not a robust aggregate-detection lever.}
+\label{fig:phase4-multiseed}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Multi-seed features sweep on SUMO bigger-bbox
+(\cref{fig:phase4-multiseed}), \texttt{[all branching]} block,
+$T=20$, $|X_o|=601$. The AUC lift reverses on seed~$101$; the Pearson
+lift is positive on all five seeds. Mean~$\Delta$ rows are
+\code{real}~$-$~\code{none} with sample standard deviation.}
+\label{tab:phase4-multiseed}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{gap closed} & \multicolumn{2}{c}{$\AUC_{\mathrm{fit}}$} & \multicolumn{2}{c}{Pearson} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+seed & none & real & none & real & none & real \\
+\midrule
+$7$    & $30.3\%$ & $60.3\%$          & $0.544$ & $0.588$          & $+0.191$ & $+0.238$ \\
+$23$   & $34.2\%$ & $53.8\%$          & $0.554$ & $0.585$          & $+0.133$ & $+0.194$ \\
+$42$   & $60.6\%$ & $77.5\%$          & $0.612$ & $0.644$          & $+0.132$ & $+0.215$ \\
+$101$  & $62.1\%$ & $\mathbf{45.0\%}$ & $0.581$ & $\mathbf{0.559}$ & $+0.171$ & $+0.194$ \\
+$2024$ & $61.8\%$ & $85.1\%$          & $0.585$ & $0.618$          & $+0.131$ & $+0.168$ \\
+\midrule
+mean $\Delta$ & \multicolumn{2}{c}{---} & \multicolumn{2}{c}{$+0.024 \pm 0.026$} & \multicolumn{2}{c}{$\mathbf{+0.050 \pm 0.023}$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three findings. First, the aggregate detection lift is \emph{not}
+statistically robust: the paired $\AUC_{\mathrm{fit}}$ lift averages
+$+0.024 \pm 0.026$ across the five seeds, positive on four but reversing
+on seed~$101$ (a paired $t$-test gives $t \approx 2.0$, $p \approx 0.11$,
+not significant at $\alpha = 0.05$). The single-seed $+0.032$ headline of
+\cref{sec:phase4-features-result} is therefore a favourable draw, not a
+replicable property of the aggregate AUC.
+
+Second --- and this is the load-bearing result --- the per-row
+chain-recovery metrics \emph{are} robust. The stacked Pearson lift
+averages $+0.050 \pm 0.023$ and is positive on \emph{all five} seeds
+($t \approx 4.9$, $p \approx 0.008$); the per-row cosine median lifts on
+all five as well (mean $\approx +0.25$). Seed~$101$ is the cleanest
+illustration of the AUC$\leftrightarrow$chain-quality decoupling first
+noted in iter-18: features \emph{hurt} its detection AUC
+($0.581 \to 0.559$) while \emph{improving} its chain recovery (cosine
+median $0.062 \to 0.475$). The honest framing of the features lever is
+therefore that it is a \textbf{chain-recovery} improvement, not an
+aggregate-detection improvement.
+
+Third, the \code{features=none} fit reproduces the bimodal gap-closure
+structure observed independently in iter-16: seeds $\{7, 23\}$ cluster
+low ($30$--$34\%$) and seeds $\{42, 101, 2024\}$ cluster high
+($61$--$62\%$), with nothing in between. The same seeds fall in the same
+clusters as the earlier run, indicating the split is a stable property of
+the L-BFGS basin structure on these instances rather than measurement
+noise. The \code{features=none} $\AUC_{\mathrm{fit}}$ across seeds is
+$0.575 \pm 0.027$, matching the historical $\pm 0.024$ band. Whether the
+low basin is escapable by multi-start re-initialisation is left as a
+documented open question (\cref{sec:disc-limits}).
 
 \subsection{Higher-order memory diagnostic: refuting the 2-step parametric extension}
 \label{sec:phase4-2step}

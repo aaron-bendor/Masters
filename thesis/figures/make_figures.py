@@ -152,9 +152,9 @@ def fig_phase4_features_lift():
     ax.set_xticklabels(labels)
     ax.set_ylim(0, max(real_vals.max(), 0.85) + 0.1)
     ax.set_ylabel(r"value on $[\mathrm{all\ branching}]$ states")
-    ax.set_title(r"Tier 2 (SUMO seed 42, T=20, $|X_o|=601$):"
+    ax.set_title(r"Tier 2 (SUMO seed 42, T=20, $|X_o|=601$): all metrics lift"
                  + "\n"
-                 + r"features lift AUC and per-row chain recovery together")
+                 + r"on this single seed (cf. Fig. 5 for the multi-seed picture)")
     ax.legend(loc="upper right", framealpha=0.95)
     fig.tight_layout()
     out = HERE / "fig03_phase4_features_lift.png"
@@ -215,6 +215,58 @@ def fig_phase5_xuancheng():
 
 
 # =============================================================================
+# Figure 5: Phase 4 multi-seed -- AUC lift is seed-dependent, Pearson lift robust
+# =============================================================================
+def fig_phase4_multiseed():
+    seeds     = ["7", "23", "42", "101", "2024"]
+    gap_none  = np.array([30.3, 34.2, 60.6, 62.1, 61.8])
+    gap_real  = np.array([60.3, 53.8, 77.5, 45.0, 85.1])
+    pear_none = np.array([0.191, 0.133, 0.132, 0.171, 0.131])
+    pear_real = np.array([0.238, 0.194, 0.215, 0.194, 0.168])
+
+    x = np.arange(len(seeds))
+    w = 0.38
+
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.2, 3.8))
+
+    # Panel (a): gap-closed (aggregate detection) -- seed-dependent
+    axA.bar(x - w/2, gap_none, w, color=C_NONE, label="features = none",
+            edgecolor="white")
+    axA.bar(x + w/2, gap_real, w, color=C_REAL, label="features = real",
+            edgecolor="white")
+    axA.annotate("reversal", xy=(3 + w/2, 45.0), xytext=(3 + w/2, 18.0),
+                 ha="center", fontsize=8, color=C_CHANCE, fontstyle="italic",
+                 arrowprops=dict(arrowstyle="->", color=C_CHANCE, lw=1.2))
+    axA.set_xticks(x); axA.set_xticklabels(seeds)
+    axA.set_xlabel("SUMO seed")
+    axA.set_ylabel("gap closed (%)")
+    axA.set_ylim(0, 100)
+    axA.set_title("(a) Detection: seed-dependent\n(features hurt on seed 101)")
+    axA.legend(loc="upper left", framealpha=0.95)
+
+    # Panel (b): per-row Pearson (chain recovery) -- robust across all seeds
+    axB.bar(x - w/2, pear_none, w, color=C_NONE, label="features = none",
+            edgecolor="white")
+    axB.bar(x + w/2, pear_real, w, color=C_REAL, label="features = real",
+            edgecolor="white")
+    axB.set_xticks(x); axB.set_xticklabels(seeds)
+    axB.set_xlabel("SUMO seed")
+    axB.set_ylabel("stacked Pearson ([all branching])")
+    axB.set_ylim(0, 0.30)
+    axB.set_title("(b) Chain recovery: robust\n(features help on all 5 seeds)")
+    axB.legend(loc="upper right", framealpha=0.95)
+
+    fig.suptitle("Multi-seed Tier 2 (SUMO, $T=20$, $|X_o|=601$): features robustly "
+                 "improve\nchain recovery (b), not aggregate detection (a)",
+                 fontsize=10)
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
+    out = HERE / "fig05_phase4_multiseed.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  saved {out.name}")
+
+
+# =============================================================================
 # Driver
 # =============================================================================
 if __name__ == "__main__":
@@ -222,5 +274,6 @@ if __name__ == "__main__":
     fig_phase1_rmae()
     fig_phase4_t_sweep()
     fig_phase4_features_lift()
+    fig_phase4_multiseed()
     fig_phase5_xuancheng()
     print("Done.")

@@ -667,6 +667,24 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 >
 > **Status closing iter-22.** Thesis first draft is complete (all 11 sections + appendix + bibliography + 4 figures). PDF compile pending the user's VS Code reload. Remaining for thesis: (i) compile sanity-check + fix any LaTeX warnings, (ii) revision pass for prose tightness (current draft is ~30-37 pg estimate, may need trimming to the 35-page main-body cap), (iii) optional figures from existing PNGs in repo root (`morimura_fig.png`, `congestion_filter_fig.png`, etc.) if they add narrative value, (iv) supervisor / examiner declaration text on the title page once you've confirmed the local format conventions. Remaining for experiments: multistart K≥5 on features=real Xuancheng to resolve the basin question; multi-seed Tier-2 confirmation if examiner pushes on the single-seed numbers.
 
+> **Iter 23 — multi-seed Tier-2 features confirmation (2026-05-29).** Ran the iter-19 features comparison across all five bigger-bbox SUMO seeds {7, 23, 42, 101, 2024} under both `--features {none, real}` (`contrast_correlation.py`, X_o seed 13, T=20, |X_o|=601, maxiter=1500); 10 fits, ~5.3 h wall-clock via `run_multiseed.sh`. This was the outstanding "single-seed → multi-seed" Tier-2 confirmation flagged since iter-19. Full `[all branching]` results:
+>
+> | Seed | gap none | gap real | auc_fit none | auc_fit real | Pearson none | Pearson real | cos-med none | cos-med real |
+> |---|---|---|---|---|---|---|---|---|
+> | 7    | 30.3% | 60.3% | 0.544 | 0.588 | +0.191 | +0.238 | 0.099 | 0.429 |
+> | 23   | 34.2% | 53.8% | 0.554 | 0.585 | +0.133 | +0.194 | 0.079 | 0.199 |
+> | 42   | 60.6% | 77.5% | 0.612 | 0.644 | +0.132 | +0.215 | 0.095 | 0.435 |
+> | 101  | 62.1% | **45.0%** | 0.581 | **0.559** | +0.171 | +0.194 | 0.062 | 0.475 |
+> | 2024 | 61.8% | 85.1% | 0.585 | 0.618 | +0.131 | +0.168 | 0.187 | 0.220 |
+>
+> **(1) The aggregate AUC lift is NOT robust.** Paired Δauc_fit = **+0.024 ± 0.026** (sample sd), positive on 4/5 seeds but **reversing on seed 101** (0.581 → 0.559). Paired t ≈ 2.0, p ≈ 0.11 — not significant at α = 0.05. The iter-19 single-seed=42 headline (+0.032 auc_fit) was a favourable draw, not a replicable aggregate property. **Do not quote "features add +0.03 AUC" in the thesis.**
+>
+> **(2) The per-row chain-recovery lift IS robust — this is the load-bearing finding.** Stacked Pearson Δ = **+0.050 ± 0.023**, positive on **all 5 seeds** (t ≈ 4.9, p ≈ 0.008). Per-row cosine median lifts on all 5 (mean Δ ≈ +0.25). Seed 101 is the clean AUC↔chain-quality decoupling case foreshadowed in iter-18: features *hurt* detection AUC (−0.022) yet *helped* chain recovery (cosine median 0.062 → 0.475). Reframes the features lever as a **chain-recovery** improvement, not an aggregate-detection one — strengthening, not weakening, the iter-18 "AUC is aggregate-bias-driven" thesis.
+>
+> **(3) The iter-16 bimodality reproduced exactly.** `features=none` gap-closed splits {7, 23} ≈ 30–34% (low basin) vs {42, 101, 2024} ≈ 61–62% (high basin) — *same seeds, same clusters* as the independent iter-16 run. Confirms the cross-seed AUC spread is stable L-BFGS basin-selection, not sampling noise. `features=none` auc_fit across seeds = 0.575 ± 0.027, matching the historical ±0.024 band. Whether the low basin is escapable by multi-start is the next experiment (`run_multistart.sh` repointed at low-basin seeds 7 & 23).
+>
+> **Thesis updated to match.** Abstract first-contribution sentence rewritten (multi-seed framing). `06_phase4_sumo.tex`: §6.2 retitled "features and the inverse fit," robustness paragraph corrected to forward-ref the multi-seed result, new §6.3 "Multi-seed validation: chain recovery is robust, detection AUC is not" added with `tab:phase4-multiseed` + `fig:phase4-multiseed`. `08_discussion.tex`: single-seed limitation rewritten (Tier 2 now multi-seed; Tier 3 still single day-pool). New figure `fig05_phase4_multiseed.png` (2-panel: gap-closed seed-dependence with seed-101 reversal annotated; Pearson lift on all 5 seeds) added to `make_figures.py` and regenerated.
+
 ### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 
 `sumo_validation/sumo_phase3_fig.png`. Final numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class, 4 h simulated time:
