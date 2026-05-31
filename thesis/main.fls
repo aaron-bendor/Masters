@@ -299,6 +299,7 @@ INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm1
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmbx10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmmib10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmbsy10.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm
 OUTPUT main.toc
 INPUT ./sections/01_notation.tex
 INPUT ./sections/01_notation.tex
@@ -315,7 +316,6 @@ INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr8.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr6.tfm
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm
 INPUT ./sections/03_background.tex
 INPUT ./sections/03_background.tex
 INPUT ./sections/03_background.tex
@@ -356,6 +356,10 @@ INPUT ./figures/fig05_phase4_multiseed.png
 INPUT ./figures/fig05_phase4_multiseed.png
 INPUT ./figures/fig05_phase4_multiseed.png
 INPUT ./figures/fig05_phase4_multiseed.png
+INPUT ./figures/fig06_phase4_multistart.png
+INPUT ./figures/fig06_phase4_multistart.png
+INPUT ./figures/fig06_phase4_multistart.png
+INPUT ./figures/fig06_phase4_multistart.png
 INPUT ./figures/fig02_phase4_tsweep.png
 INPUT ./figures/fig02_phase4_tsweep.png
 INPUT ./figures/fig02_phase4_tsweep.png
@@ -370,6 +374,12 @@ INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr9.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtk10.tfm
+INPUT ./figures/fig07_phase5_multistart.png
+INPUT ./figures/fig07_phase5_multistart.png
+INPUT ./figures/fig07_phase5_multistart.png
+INPUT ./figures/fig07_phase5_multistart.png
+INPUT ./figures/fig07_phase5_multistart.png
 INPUT ./sections/08_discussion.tex
 INPUT ./sections/08_discussion.tex
 INPUT ./sections/08_discussion.tex

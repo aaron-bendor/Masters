@@ -1,0 +1,54 @@
+\section{Conclusion}\label{sec:conclusion}
+
+This work adapts the Morimura, Osogami and Id\'e inverse-Markov-chain
+framework \cite{morimura2013} --- originally a single-chain recovery method
+--- into a two-regime detection pipeline, and validates it across a
+synthetic reproduction, a controlled SUMO simulation, and a real-world
+Xuancheng AVI dataset using a single shared scoring core.
+
+\paragraph{What was built.} A faithful, FD-verified re-implementation of the
+inverter (including the omega-global gradients the paper states but does not
+derive), a per-trajectory log-likelihood-ratio detector, a contrast-correlation
+diagnostic that separates per-row chain recovery from aggregate-bias detection,
+an empirical $2$-step diagnostic, an OD-rebalancing loader for real-world
+population-mix control, and multistart basin checks for optimiser robustness.
+
+\paragraph{What worked.} The synthetic tier reproduces the proposed-method
+curve closely for $|\Xo| \ge 10$. On controlled SUMO data, real edge features
+robustly improve per-row chain recovery (stacked Pearson $+0.050 \pm 0.023$,
+$p \approx 0.008$, positive on all five seeds), and the detector reaches
+$\AUC = 0.708$ at $T = 40$ against a full-observation empirical $1$-step
+reference of $0.801$. The pipeline ports unchanged at its core to a
+$1{,}733$-edge real network.
+
+\paragraph{What failed or was limited.} The aggregate detection-AUC lift from
+features is seed-dependent, reversing on one of five seeds, so features are a
+chain-recovery lever rather than a robust detection lever. The empirical
+$2$-step detector does not improve over the $1$-step reference, weakening the
+case for a parametric $2$-step extension as the immediate next step. The $f+g$
+hitting-rate route is computationally infeasible at SUMO scale because the
+empirical $g$ is floor-dominated. On the real AVI data, OD-mix explains roughly
+three-quarters of the apparent rush-versus-off-peak chain difference; after
+OD-matching, the remaining within-OD $1$-step Markov signal is close to chance,
+and a multistart check confirms this is a genuine near-chance result rather
+than an optimiser artefact.
+
+\paragraph{Strongest defensible claim.} Under controlled, labelled simulation,
+an inverse-MC regime detector with real network features recovers a robust
+fraction of the per-row routing contrast; on a real-world behavioural proxy
+without ground-truth labels, the within-OD routing signal is not detectable
+under the tested proxy, model class, and data split once population-mix is
+controlled. The work does \emph{not} claim to detect sat-navigation use in the
+real world --- it lacks the labels to do so --- and Tier~3 is reported as a
+confounding audit, not a positive detection result.
+
+\paragraph{Contribution.} Academically, the work establishes both the
+potential and the limits of $1$-step inverse-Markov-chain methods under partial
+observation: it extends the Morimura framework to regime detection, supplies
+diagnostics that distinguish chain recovery from aggregate bias, and documents
+where the approach breaks (model class, optimiser, labels, confounding).
+Practically, it shows that quantifying externally-influenced routing on
+real urban data is gated less by the inverse-MC machinery than by the
+availability of ground-truth adoption labels and by control for OD-mix
+confounding --- a result that directly informs how any future real-world
+sat-navigation detector should be scoped and evaluated.

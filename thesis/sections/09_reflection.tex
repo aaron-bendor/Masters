@@ -56,38 +56,14 @@ sweep at unfamiliar configuration.
 \item \textbf{Late identification of the OD-mix confound.} The Tier-3
 rush-vs-off-peak proxy was scoped before the methodological cost of
 the OD-mix confound was clearly understood. The OD-rebalancing
-extension --- the methodologically correct fix --- was added in the
-final week, and as of writing the matched-pool experiment is still
-in flight. Earlier scoping would have caught this; the lesson is that
+extension --- the methodologically correct fix --- was added late in the
+project, and the matched-pool result it produced
+(\cref{sec:phase5-reading}) materially changed the Tier-3 reading.
+Earlier scoping would have caught this; the lesson is that
 ``proxy weakness'' should be a structured pre-experiment audit item,
 not an ad-hoc discussion item.
 \end{itemize}
 
-\subsection{Benchmarking against the example dissertations}
-\label{sec:reflect-bench}
-
-I read three example MEng Design Engineering dissertations from
-previous years to calibrate quality expectations. The benchmarks I
-took from each:
-\begin{itemize}
-\item \textbf{Aditya Munot, ``Optimal Transport for Complex Sharing
-Economies with QoS Guarantees''}: the notation table at section~1
-that gives readers a clean reference for the math. I adopted this
-convention in \cref{sec:notation}. The clean separation of theoretical
-framework, scenario application, and benchmarking-against-state-of-the-art
-also informed how I structured the validation tiers.
-\item \textbf{Nora Luo, [thesis title placeholder]}: the discipline
-of foregrounding limitations in the discussion rather than burying
-them, and of writing the conclusion as a quantified claim
-($X = Y$ \% within tolerance $Z$) rather than a narrative. I have
-followed this style in \cref{sec:discussion} where every claim is
-backed by a number.
-\item \textbf{Antanas Zilinskas, [thesis title placeholder]}: the
-use of figure-paired tables (e.g.\ a small numerical summary alongside
-a curve) rather than relying on either alone. I have not yet adopted
-this fully but the figure scaffolding is in place for the eventual
-revision.
-\end{itemize}
 
 By the assessment criteria of \cite{markscheme}, the strengths I would
 foreground are: contextual investigation (a critical engagement with
@@ -121,13 +97,14 @@ project's outcome is \emph{honest framing of negative results}. The
 project did not produce the headline ``real-world detector with a
 high AUC and clean chain recovery'' that the SUMO Tier-2 result would
 have predicted. Instead it produced: a controlled-validation result
-($\sim 0.71$ AUC, $69\%$ gap closure on labelled SUMO), an
-empirically-verified data ceiling (the $2$-step refutation closes a
-tempting line of work), and an honest real-world result
-($\sim 0.53$ AUC on a behavioural proxy without ground-truth labels)
-that quantifies the gap between simulated and deployed
-detectability. Each of these is publishable, in part because they
-were framed honestly --- but the temptation in week~30 of the project
+($\sim 0.71$ AUC, $69\%$ gap closure on labelled SUMO), a model-class
+diagnostic (the empirical $2$-step detector does not improve the
+$1$-step reference, weakening the case for a parametric $2$-step
+extension), and an honest real-world result ($\sim 0.53$ AUC on a
+behavioural proxy without ground-truth labels) that quantifies the gap
+between simulated and real-world detectability. Each of these is a
+methodologically useful result, in part because they were framed
+honestly --- but the temptation in week~30 of the project
 to switch the real-world contrast to a stronger but methodologically
 incorrect proxy (holiday-vs-normal) had to be resisted. Resisting that
 temptation in real time, against the prospect of a higher headline

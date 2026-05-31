@@ -120,7 +120,8 @@ A natural concern is that this assumption is empirically violated:
 real drivers' next-edge choice may depend on \emph{both} the current
 edge and the previous edge (e.g.\ avoiding a U-turn, preserving heading,
 continuing on a high-priority arterial). If so, no fitting effort under
-the $1$-step model class can close the gap to the data ceiling.
+the $1$-step model class can close the gap to the full-observation
+empirical $1$-step reference.
 
 We test this by constructing an empirical $2$-step detector with no
 fitting. From the training trajectories of each regime we count
@@ -202,3 +203,32 @@ fraction of states with positive cosine). A high AUC with low Pearson
 indicates aggregate-bias-driven detection; a high AUC \emph{and} a
 non-trivial Pearson together support the stronger ``chain recovery''
 claim.
+
+\subsection{Design rationale: each extension targets a specific failure mode}
+\label{sec:design-rationale}
+
+The extensions above are not independent features but a deliberate
+sequence, each addressing a failure mode exposed by the previous one:
+\begin{itemize}
+\item \textbf{Real edge features} (\cref{sec:features}) address sparse
+observation and parameter explosion: $10$ shared parameters let edges of
+the same road class borrow strength, regularising the per-edge weights
+that are otherwise estimated from few or no observed transitions.
+\item \textbf{Per-row Pearson / cosine diagnostics} (\cref{sec:detector})
+address the risk that AUC improves for aggregate-bias reasons rather than
+correct chain recovery, by measuring the fitted-vs-empirical contrast
+directly at branching states.
+\item \textbf{The empirical $2$-step diagnostic} (\cref{sec:2step-diag})
+tests whether higher-order memory is an obvious missing lever before any
+parametric $2$-step model is built.
+\item \textbf{OD-rebalancing} (\cref{sec:od-rebal}) addresses the
+real-world population-mix confound that has no analogue in the controlled
+SUMO comparison.
+\item \textbf{Multistart / basin checks} (\cref{sec:phase4-multistart},
+\cref{sec:phase5-multistart}) address the possibility that a result is an
+L-BFGS optimiser artefact rather than a property of the data.
+\end{itemize}
+Where AUCs lie close to chance, the honest interpretation also requires
+quantifying sampling noise; we return to this as a limitation
+(\cref{sec:phase5-reading}, \cref{sec:disc-limits}) since the bootstrap
+confidence intervals it calls for were not computed in the time available.

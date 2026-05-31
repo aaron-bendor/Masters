@@ -113,8 +113,12 @@ analytic derivation. Details of the FD check infrastructure are in
 \subsection{Headline outcome}
 
 The synthetic reproduction is locked in as a faithful reference. The
-curve shape and method ordering both match the paper. This implementation
-serves as the upstream operational reference for all subsequent
-validation tiers; downstream limitations in Tier~2 and Tier~3 are
-attributable to the data and the model class at scale, not to the
-upstream framework as implemented here.
+proposed-method curve matches the original benchmark closely for
+$|X_o| \ge 10$, while the $|X_o| = 5$ case (a $\lambda$-CV degeneracy) and
+the NWKR comparator (an implementation gap, not a method error) are
+documented deviations. With those two caveats, the curve shape and
+method ordering match the paper. This implementation serves as the
+upstream operational reference for all subsequent validation tiers;
+downstream limitations in Tier~2 and Tier~3 are attributable to the data
+and the model class at scale, not to the upstream framework as
+implemented here.

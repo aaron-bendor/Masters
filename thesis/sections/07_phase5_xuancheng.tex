@@ -1,13 +1,19 @@
 \section{Tier 3: Real-World Validation on Xuancheng AVI Data}
 \label{sec:phase5-xuancheng}
 
-This tier ports the entire pipeline to a real-world urban AVI dataset
-from Xuancheng, China \cite{ma2026xuancheng}. The pipeline is unchanged
-from Tier~2; only the loader and the regime split differ. The
-methodological gap that distinguishes any real-world validation from
-the controlled Tier~2 comparison --- namely, the absence of a
-ground-truth sat-navigation adoption label --- is what we have to
-address explicitly here.
+This tier ports the inverse-MC scoring core to a real-world urban AVI
+dataset from Xuancheng, China \cite{ma2026xuancheng}; the loader, the
+regime definition, and the OD-control logic differ from Tier~2. Because
+no real dataset carries ground-truth sat-navigation adoption labels, this
+tier cannot validate sat-navigation detection directly. It is best read
+as a \emph{confounding audit and real-world stress test}: it asks whether
+a plausible real-world behavioural proxy (rush-hour vs.\ off-peak travel)
+contains a within-OD route-choice signal once the population-mix confound
+is controlled. As the results below show, under the tested proxy it
+mostly does not. The absence of a ground-truth label is therefore the
+defining methodological constraint of this tier, and we address it
+explicitly rather than claiming a detection result the data cannot
+support.
 
 \subsection{Dataset choice}\label{sec:phase5-dataset}
 
@@ -179,27 +185,48 @@ real-world loss landscape.
 
 Three findings are worth foregrounding from \cref{tab:phase5-headline}.
 
-\paragraph{The OD-mix dominates the un-matched signal.} The empirical
-ceiling falls from $0.573$ (un-matched pool) to $0.518$ (matched
-pool); $0.055$ AUC of the un-matched signal --- approximately $75\%$
-of the above-chance ceiling at $0.073$ --- is the OD-mix confound. The
-remaining $0.018$ AUC above chance is the genuine routing-given-OD
-contrast at the $1$-step Markov level. This is the central
-methodological point of the real-world tier: \emph{without} OD-matching,
-a method appears to detect ``rush-hour routing differences''; \emph{with}
-OD-matching, it correctly attributes most of that apparent signal to
-the trivially expected fact that commuters and discretionary travellers
-have different origin-destination distributions.
+\paragraph{The OD-mix dominates the un-matched signal.} The
+full-observation empirical $1$-step reference AUC falls from $0.573$
+(un-matched pool) to $0.518$ (matched pool); $0.055$ AUC of the
+un-matched signal --- approximately $75\%$ of the above-chance reference
+at $0.073$ --- is attributable to the OD-mix confound. The remaining
+$0.018$ AUC above chance is the routing-given-OD contrast at the
+$1$-step Markov level. This is the central methodological point of the
+real-world tier: \emph{without} OD-matching, a method appears to detect
+``rush-hour routing differences''; \emph{with} OD-matching, it correctly
+attributes most of that apparent signal to the trivially expected fact
+that commuters and discretionary travellers have different
+origin-destination distributions.
 
 \paragraph{The within-OD routing contrast is below detectability.}
-At the OD-matched ceiling of $0.518$ ($0.018$ above chance), the
+At the OD-matched reference of $0.518$ ($0.018$ above chance), the
 fitted detectors at $0.476$/$0.530$ are not meaningfully distinguishable
 from chance under any plausible single-seed noise band. Per-row
 Pearson on \texttt{[all branching]} is $\le 0.104$ in every Xuancheng
 configuration, against $+0.215$ on SUMO under labelled comparison.
 Whatever real congestion-induced rerouting exists in Xuancheng at
-April 2023 sat-navigation adoption rates is below the $1$-step Markov
-behavioural-proxy detection threshold of this framework.
+April 2023 sat-navigation adoption rates is not detectable under this
+$1$-step Markov behavioural proxy and data split. A stratified
+vehicle-level bootstrap ($B = 2{,}000$ resamples of the test
+trajectories, drawn with replacement within each regime to preserve
+class balance) confirms this is a genuine near-chance result rather than
+a point-estimate accident: the OD-matched empirical reference has a
+$95\%$ CI of $[0.471, 0.567]$, which \emph{straddles} $0.50$, with
+$P(\AUC > 0.5) = 0.78$ --- so even the sign of the $0.018$ margin is
+uncertain. The fitted detector ($0.476$, CI $[0.429, 0.524]$) is
+likewise indistinguishable from chance. The remaining caveat is the
+scope of the resampling: this is a vehicle-level bootstrap; a full
+OD-cell bootstrap (resampling which OD cells enter the match and refitting
+per replicate) would additionally quantify cell-selection variance but is
+left to future work for its $\sim\!2{,}000\times$ refit cost.
+
+\paragraph{The OD-matching conclusion is reported at a single zone
+granularity.} The OD-rebalancing result above uses $K=8$ junction zones.
+A submission-grade robustness check would sweep $K \in \{5, 8, 10, 12\}$
+to confirm that the collapse of the reference AUC from $0.573$ to $0.518$
+is not an artefact of zone granularity; we report $K=8$ only and flag the
+sweep as outstanding. The loader supports arbitrary $K$, so this is a
+compute-time rather than a methodological gap.
 
 \paragraph{The features=real basin failure repeats post-matching ---
 and multistart resolves it.} Both the un-matched pool
@@ -260,8 +287,9 @@ optimiser reaches the genuine optimum, that spurious signal disappears
 and the detector returns to chance. Second --- and this is the
 load-bearing scientific point --- the correctly-fit \code{features=real}
 chains \emph{confirm} the central Tier-3 finding rather than overturning
-it: the within-OD rush-vs-off-peak routing contrast is genuinely absent
-at the $1$-step Markov level, not merely hidden by a bad optimum. The
+it: the within-OD rush-vs-off-peak routing contrast is not detectable
+at the $1$-step Markov level under this proxy and data split, not merely
+hidden by a bad optimum. The
 SUMO and Xuancheng basin checks are thus complementary: on SUMO,
 zero-init was already the best optimum and the low basin was not an
 artefact; on Xuancheng, multistart found a better optimum but it only

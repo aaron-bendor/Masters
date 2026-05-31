@@ -18,48 +18,55 @@
 \contentsline {subsection}{\numberline {4.4}Extension 2: empirical 2-step Markov diagnostic}{10}{subsection.4.4}%
 \contentsline {subsection}{\numberline {4.5}Extension 3: OD-rebalancing for real-world regime contrast}{10}{subsection.4.5}%
 \contentsline {subsection}{\numberline {4.6}The detector and per-row diagnostic}{11}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Design rationale: each extension targets a specific failure mode}{11}{subsection.4.7}%
 \contentsline {section}{\numberline {5}Tier 1: Synthetic Reproduction of the Morimura Benchmark}{11}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Experimental setup}{11}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.1}Experimental setup}{12}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Results}{12}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Implementation gotcha: prediction rescaling}{12}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.3}Implementation gotcha: prediction rescaling}{13}{subsection.5.3}%
 \contentsline {subsection}{\numberline {5.4}Gradient verification}{13}{subsection.5.4}%
 \contentsline {subsection}{\numberline {5.5}Headline outcome}{13}{subsection.5.5}%
 \contentsline {section}{\numberline {6}Tier 2: Simulated Validation on SUMO}{13}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Scenario construction}{13}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.1}Scenario construction}{14}{subsection.6.1}%
 \contentsline {subsection}{\numberline {6.2}Single-seed result: features and the inverse fit}{14}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Multi-seed validation: chain recovery is robust, detection AUC is not}{15}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Multistart basin check: the low basin is not an initialisation artefact}{16}{subsection.6.4}%
-\contentsline {subsection}{\numberline {6.5}Higher-order memory diagnostic: refuting the 2-step parametric extension}{17}{subsection.6.5}%
-\contentsline {subsection}{\numberline {6.6}Trajectory-length sweep: lifting the ceiling and the detector together}{17}{subsection.6.6}%
-\contentsline {subsection}{\numberline {6.7}The $f+g$ extension at scale: documented infeasibility}{18}{subsection.6.7}%
-\contentsline {section}{\numberline {7}Tier 3: Real-World Validation on Xuancheng AVI Data}{19}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Dataset choice}{19}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Verification: route legality and time-of-day distribution}{19}{subsection.7.2}%
-\contentsline {paragraph}{Route legality.}{19}{paragraph*.13}%
-\contentsline {paragraph}{Time-of-day distribution.}{20}{paragraph*.14}%
-\contentsline {subsection}{\numberline {7.3}The fundamental real-world gap: no ground-truth sat-nav label}{20}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Results}{20}{subsection.7.4}%
-\contentsline {subsection}{\numberline {7.5}Honest reading}{22}{subsection.7.5}%
-\contentsline {paragraph}{The OD-mix dominates the un-matched signal.}{22}{paragraph*.17}%
-\contentsline {paragraph}{The within-OD routing contrast is below detectability.}{22}{paragraph*.18}%
-\contentsline {paragraph}{The features=real basin failure repeats post-matching --- and multistart resolves it.}{22}{paragraph*.19}%
-\contentsline {subsection}{\numberline {7.6}Multistart on \texttt {features=real}: the ceiling violation is an optimiser artefact}{22}{subsection.7.6}%
-\contentsline {subsection}{\numberline {7.7}Bottom line for Tier 3}{23}{subsection.7.7}%
-\contentsline {section}{\numberline {8}Discussion}{24}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Cross-tier read: what generalises}{24}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Limits of the chosen approach}{24}{subsection.8.2}%
-\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{24}{paragraph*.22}%
-\contentsline {paragraph}{L-BFGS basin selection on \texttt {features=real} --- now resolved.}{25}{paragraph*.23}%
-\contentsline {paragraph}{The hitting-rate ($f+g$) extension does not transfer to SUMO scale.}{25}{paragraph*.24}%
-\contentsline {subsection}{\numberline {8.3}Social, environmental, technological implications}{25}{subsection.8.3}%
-\contentsline {paragraph}{Transport-policy modelling.}{25}{paragraph*.25}%
-\contentsline {paragraph}{Privacy and data access.}{25}{paragraph*.26}%
-\contentsline {paragraph}{Sat-navigation regulation.}{26}{paragraph*.27}%
-\contentsline {subsection}{\numberline {8.4}Future work}{26}{subsection.8.4}%
-\contentsline {section}{\numberline {9}Project Management and Reflection}{26}{section.9}%
-\contentsline {subsection}{\numberline {9.1}Project structure and milestone management}{26}{subsection.9.1}%
-\contentsline {subsection}{\numberline {9.2}Benchmarking against the example dissertations}{27}{subsection.9.2}%
-\contentsline {subsection}{\numberline {9.3}Personal skill development}{27}{subsection.9.3}%
-\contentsline {section}{\numberline {A}Repository structure and reproducibility}{30}{appendix.A}%
-\contentsline {section}{\numberline {B}Use of generative AI}{30}{appendix.B}%
-\contentsline {section}{\numberline {C}Build and reproducibility}{30}{appendix.C}%
+\contentsline {subsection}{\numberline {6.3}Multi-seed validation: chain recovery is robust, detection AUC is not}{16}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Multistart basin check: the low basin is not an initialisation artefact}{17}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Higher-order memory diagnostic: the empirical 2-step detector does not improve the reference}{18}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Trajectory-length sweep: lifting the ceiling and the detector together}{18}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}The $f+g$ extension at scale: documented infeasibility}{19}{subsection.6.7}%
+\contentsline {section}{\numberline {7}Tier 3: Real-World Validation on Xuancheng AVI Data}{20}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Dataset choice}{20}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Verification: route legality and time-of-day distribution}{21}{subsection.7.2}%
+\contentsline {paragraph}{Route legality.}{21}{paragraph*.13}%
+\contentsline {paragraph}{Time-of-day distribution.}{21}{paragraph*.14}%
+\contentsline {subsection}{\numberline {7.3}The fundamental real-world gap: no ground-truth sat-nav label}{21}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Results}{21}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Honest reading}{23}{subsection.7.5}%
+\contentsline {paragraph}{The OD-mix dominates the un-matched signal.}{23}{paragraph*.17}%
+\contentsline {paragraph}{The within-OD routing contrast is below detectability.}{23}{paragraph*.18}%
+\contentsline {paragraph}{The OD-matching conclusion is reported at a single zone granularity.}{23}{paragraph*.19}%
+\contentsline {paragraph}{The features=real basin failure repeats post-matching --- and multistart resolves it.}{23}{paragraph*.20}%
+\contentsline {subsection}{\numberline {7.6}Multistart on \texttt {features=real}: the ceiling violation is an optimiser artefact}{24}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Bottom line for Tier 3}{25}{subsection.7.7}%
+\contentsline {section}{\numberline {8}Discussion}{25}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Cross-tier read: what generalises}{25}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Limits of the chosen approach}{26}{subsection.8.2}%
+\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{26}{paragraph*.23}%
+\contentsline {paragraph}{L-BFGS basin selection on \texttt {features=real} --- now resolved.}{26}{paragraph*.24}%
+\contentsline {paragraph}{The hitting-rate ($f+g$) extension does not transfer to SUMO scale.}{26}{paragraph*.25}%
+\contentsline {subsection}{\numberline {8.3}Social, environmental, technological implications}{27}{subsection.8.3}%
+\contentsline {paragraph}{Transport-policy modelling.}{27}{paragraph*.26}%
+\contentsline {paragraph}{Privacy and data access.}{27}{paragraph*.27}%
+\contentsline {paragraph}{Sat-navigation regulation.}{27}{paragraph*.28}%
+\contentsline {subsection}{\numberline {8.4}Future work}{27}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Conclusion}{28}{section.9}%
+\contentsline {paragraph}{What was built.}{28}{paragraph*.29}%
+\contentsline {paragraph}{What worked.}{28}{paragraph*.30}%
+\contentsline {paragraph}{What failed or was limited.}{28}{paragraph*.31}%
+\contentsline {paragraph}{Strongest defensible claim.}{28}{paragraph*.32}%
+\contentsline {paragraph}{Contribution.}{28}{paragraph*.33}%
+\contentsline {section}{\numberline {10}Project Management and Reflection}{29}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Project structure and milestone management}{29}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Personal skill development}{30}{subsection.10.2}%
+\contentsline {section}{\numberline {A}Repository structure and reproducibility}{32}{appendix.A}%
+\contentsline {section}{\numberline {B}Use of generative AI}{32}{appendix.B}%
+\contentsline {section}{\numberline {C}Build and reproducibility}{32}{appendix.C}%

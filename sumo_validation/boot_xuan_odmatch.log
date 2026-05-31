@@ -1,0 +1,21 @@
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  rush=105,593  offpeak=109,766  other=114,961
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  rush=107,006  offpeak=114,465  other=113,091
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  rush=104,355  offpeak=109,862  other=111,156
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  rush=101,523  offpeak=106,384  other=111,789
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  rush=107,660  offpeak=114,817  other=120,910
+  total: rush=526,137, offpeak=555,294
+  edges with traffic (rush): 1068/1733
+  edges with traffic (offpeak): 1066/1733
+  OD-matching: clustering junctions into K=8 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 55 shared cells (of 56 unique OD pairs)
+  od-match: rush 526,137 → 517,477 (dropped 4 in non-shared cells, plus per-cell excess)
+  od-match: offpeak 555,294 → 517,477 (dropped 0 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (rush): 1068/1733, (offpeak): 1066/1733
+    L-BFGS: success=False, nit=1500, final_loss=4.058, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=8.42, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+BOOTSTRAP  dataset=xuancheng  seed_or_day=2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=rush/offpeak  T=10  N_test_per_class=300  |X_o|=433  features=none  od_match=8  B=2000
+  empirical point=0.518  95% CI=[0.471, 0.567]  (straddles 0.5)  P(AUC>0.5)=0.775
+  fitted_f  point=0.476  95% CI=[0.429, 0.524]  (straddles 0.5)  P(AUC>0.5)=0.147

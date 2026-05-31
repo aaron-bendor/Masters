@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  29 MAY 2026 13:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  31 MAY 2026 21:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -751,30 +751,27 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             See the microtype manual for details.
 
 (./sections/00_abstract.tex
-
-Package natbib Warning: Author undefined for citation`morimura2013' 
-(natbib)                on page 1 on input line 7.
-
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 16.
+(Font)              <10> on input line 14.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 16.
+(Font)              <7> on input line 14.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 16.
+(Font)              <5> on input line 14.
 ) [1
 
 {/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
 al/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/202
-6/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2026/texmf-dist/f
-onts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2026/texmf-dist/fonts/enc/d
-vips/lm/lm-mathsy.enc}] (./main.toc
+6/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2026/texmf-di
+st/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2026/texmf-dist/fonts/enc/d
+vips/lm/lm-mathit.enc}] (./main.toc
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10.95> on input line 3.
  [2])
 \tf@toc=\write4
 \openout4 = `main.toc'.
 
- [3] (./sections/01_notation.tex
+
+[3] (./sections/01_notation.tex
 
 Package natbib Warning: Author undefined for citation`morimura2013' 
 (natbib)                on page 4 on input line 4.
@@ -810,122 +807,127 @@ Package natbib Warning: Author undefined for citation`ma2026xuancheng'
 Package natbib Warning: Author undefined for citation`morimura2013' 
 (natbib)                on page 11 on input line 6.
 
-<figures/fig01_phase1_rmae.png, id=422, 425.9112pt x 267.399pt>
+[11]
+<figures/fig01_phase1_rmae.png, id=442, 425.9112pt x 267.399pt>
 File: figures/fig01_phase1_rmae.png Graphic file (type png)
 <use figures/fig01_phase1_rmae.png>
 Package pdftex.def Info: figures/fig01_phase1_rmae.png  used on input line 47.
 (pdftex.def)             Requested size: 385.02547pt x 241.72997pt.
-[11] [12 <./figures/fig01_phase1_rmae.png>]) (./sections/06_phase4_sumo.tex
-Overfull \hbox (2.32367pt too wide) in paragraph at lines 26--29
+ [12 <./figures/fig01_phase1_rmae.png>]) (./sections/06_phase4_sumo.tex
+[13]
+Overfull \hbox (2.32367pt too wide) in paragraph at lines 39--42
 []\T1/lmr/bx/n/10.95 (-20) Intrinsic regime: \T1/lmtt/m/n/10.95 --device.rerout
 ing.probability 0\T1/lmr/m/n/10.95 (-20) . Ve-hi-cles route via static shortest
 -
  []
 
 
-Overfull \hbox (3.43605pt too wide) in paragraph at lines 29--32
+Overfull \hbox (3.43605pt too wide) in paragraph at lines 42--45
 []\T1/lmr/bx/n/10.95 (-20) Sat-navigation regime: \T1/lmtt/m/n/10.95 --device.r
 erouting.probability 1\T1/lmr/m/n/10.95 (-20) . Ev-ery ve-hi-cle re-evaluates
  []
 
-[13]
-<figures/fig03_phase4_features_lift.png, id=446, 455.7828pt x 253.9086pt>
+<figures/fig03_phase4_features_lift.png, id=464, 455.7828pt x 253.9086pt>
 File: figures/fig03_phase4_features_lift.png Graphic file (type png)
 <use figures/fig03_phase4_features_lift.png>
 Package pdftex.def Info: figures/fig03_phase4_features_lift.png  used on input 
-line 57.
+line 86.
 (pdftex.def)             Requested size: 430.31812pt x 239.72017pt.
- [14 <./figures/fig03_phase4_features_lift.png>]
-<figures/fig05_phase4_multiseed.png, id=460, 656.6934pt x 271.7352pt>
+[14] [15 <./figures/fig03_phase4_features_lift.png>]
+<figures/fig05_phase4_multiseed.png, id=482, 656.6934pt x 271.7352pt>
 File: figures/fig05_phase4_multiseed.png Graphic file (type png)
 <use figures/fig05_phase4_multiseed.png>
 Package pdftex.def Info: figures/fig05_phase4_multiseed.png  used on input line
- 128.
+ 157.
 (pdftex.def)             Requested size: 443.9066pt x 183.68283pt.
- [15 <./figures/fig05_phase4_multiseed.png>]
-<figures/fig06_phase4_multistart.png, id=474, 656.6934pt x 271.7352pt>
+ [16 <./figures/fig05_phase4_multiseed.png>]
+<figures/fig06_phase4_multistart.png, id=496, 656.6934pt x 271.7352pt>
 File: figures/fig06_phase4_multistart.png Graphic file (type png)
 <use figures/fig06_phase4_multistart.png>
 Package pdftex.def Info: figures/fig06_phase4_multistart.png  used on input lin
-e 211.
+e 240.
 (pdftex.def)             Requested size: 443.9066pt x 183.68283pt.
- [16 <./figures/fig06_phase4_multistart.png>]
-<figures/fig02_phase4_tsweep.png, id=488, 389.2944pt x 251.9814pt>
+ [17 <./figures/fig06_phase4_multistart.png>]
+<figures/fig02_phase4_tsweep.png, id=509, 389.2944pt x 251.9814pt>
 File: figures/fig02_phase4_tsweep.png Graphic file (type png)
 <use figures/fig02_phase4_tsweep.png>
-Package pdftex.def Info: figures/fig02_phase4_tsweep.png  used on input line 30
-8.
+Package pdftex.def Info: figures/fig02_phase4_tsweep.png  used on input line 34
+4.
 (pdftex.def)             Requested size: 353.31439pt x 228.69592pt.
- [17]
+ [18]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 354.
+(hyperref)                removing `math shift' on input line 390.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 354.
+(hyperref)                removing `math shift' on input line 390.
 
-[18 <./figures/fig02_phase4_tsweep.png>]) (./sections/07_phase5_xuancheng.tex
+[19 <./figures/fig02_phase4_tsweep.png>]) (./sections/07_phase5_xuancheng.tex
 
 Package natbib Warning: Author undefined for citation`ma2026xuancheng' 
-(natbib)                on page 19 on input line 21.
+(natbib)                on page 20 on input line 27.
 
-[19]
-<figures/fig04_phase5_xuancheng.png, id=520, 454.3374pt x 273.1806pt>
+[20]
+<figures/fig04_phase5_xuancheng.png, id=541, 454.3374pt x 273.1806pt>
 File: figures/fig04_phase5_xuancheng.png Graphic file (type png)
 <use figures/fig04_phase5_xuancheng.png>
 Package pdftex.def Info: figures/fig04_phase5_xuancheng.png  used on input line
- 113.
+ 119.
 (pdftex.def)             Requested size: 430.31812pt x 258.74893pt.
- [20]
-Overfull \hbox (14.08612pt too wide) in paragraph at lines 133--142
+ [21]
+Overfull \hbox (14.08612pt too wide) in paragraph at lines 139--148
  [][] 
  []
 
-[21 <./figures/fig04_phase5_xuancheng.png>]
+[22 <./figures/fig04_phase5_xuancheng.png>] [23]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 218.
-<figures/fig07_phase5_multistart.png, id=541, 657.1752pt x 271.7352pt>
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 245.
+<figures/fig07_phase5_multistart.png, id=572, 657.1752pt x 271.7352pt>
 File: figures/fig07_phase5_multistart.png Graphic file (type png)
 <use figures/fig07_phase5_multistart.png>
 Package pdftex.def Info: figures/fig07_phase5_multistart.png  used on input lin
-e 242.
+e 269.
 (pdftex.def)             Requested size: 385.02547pt x 159.207pt.
- [22]) (./sections/08_discussion.tex [23 <./figures/fig07_phase5_multistart.png
->] [24]
+ [24 <./figures/fig07_phase5_multistart.png>]) (./sections/08_discussion.tex [2
+5]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 101.
- [25])
-(./sections/09_reflection.tex [26]
-Overfull \hbox (18.35532pt too wide) in paragraph at lines 109--118
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 103.
+ [26] [27])
+(./sections/10_conclusion.tex) (./sections/09_reflection.tex [28] [29]
+Overfull \hbox (18.35532pt too wide) in paragraph at lines 85--94
 \T1/lmr/m/n/10.95 (-20) application-specific load-ers that sur-round it (\T1/lm
 tt/m/n/10.95 sumo_to_phase3.py\T1/lmr/m/n/10.95 (-20) , \T1/lmtt/m/n/10.95 real
 _data/load_xuancheng.py\T1/lmr/m/n/10.95 (-20) );
  []
 
-[27]) [28] (./main.bbl) (./sections/A_appendix.tex [29]
+) [30] (./main.bbl) (./sections/A_appendix.tex [31]
 (/usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 )
 (/usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
-) [30])
-[31] (./main.aux)
+)) [32]
+(./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 3F755475352CDDBD9554BD850B828182;13502.
+(rerunfilecheck)             Checksum: 87CB6EA77F1F92F0F24CC531A5CF89CE;13815.
  ) 
 Here is how much of TeX's memory you used:
- 20961 strings out of 467525
- 342325 string characters out of 5418982
- 1070073 words of memory out of 5000000
- 48918 multiletter control sequences out of 15000+600000
- 763924 words of font info for 359 fonts, out of 8000000 for 9000
+ 20969 strings out of 467525
+ 342601 string characters out of 5418982
+ 1082687 words of memory out of 5000000
+ 48926 multiletter control sequences out of 15000+600000
+ 763426 words of font info for 353 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,13n,79p,1052b,2169s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,13n,79p,1052b,1335s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/lo
 cal/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texliv
 e/2026/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/2026/te
@@ -951,10 +953,10 @@ al/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive
 f-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/2026/texmf-dist/font
 s/type1/public/lm/lmtti10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/p
 ublic/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (31 pages, 1014160 bytes).
+Output written on main.pdf (32 pages, 1023866 bytes).
 PDF statistics:
- 825 PDF objects out of 1000 (max. 8388607)
- 697 compressed objects within 7 object streams
- 165 named destinations out of 1000 (max. 500000)
- 72660 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 855 PDF objects out of 1000 (max. 8388607)
+ 725 compressed objects within 8 object streams
+ 174 named destinations out of 1000 (max. 500000)
+ 72668 words of extra memory for PDF output out of 74296 (max. 10000000)
 

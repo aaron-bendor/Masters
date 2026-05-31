@@ -6,10 +6,23 @@ vehicles is simulated once with sat-navigation rerouting turned off and
 once with it turned on, producing a labelled comparison
 against which the inverse-MC detector can be benchmarked. We construct
 the scenario at city-block scale ($n = 2{,}405$ edges), apply real edge
-features as global priors, characterise the model-class ceiling with the
-$2$-step empirical diagnostic, and quantify the lift due to trajectory
-length via a $T$-sweep. We close with a documented infeasibility of
-the hitting-rate ($f+g$) extension at this scale.
+features as global priors, probe whether higher-order memory is an
+obvious missing lever with the $2$-step empirical diagnostic, and quantify
+the lift due to trajectory length via a $T$-sweep. We close with a
+documented infeasibility of the hitting-rate ($f+g$) extension at this
+scale.
+
+A note on terminology used throughout this section. We refer to the
+no-rerouting regime as ``static unguided routing'': SUMO routes those
+vehicles by static shortest-path Dijkstra with no live rerouting. This is
+a controlled proxy for intrinsic route choice, not a behavioural model of
+human preference, and we read the fitted ``intrinsic'' chain accordingly.
+We also use ``empirical $1$-step reference'' (rather than an
+information-theoretic ceiling) for the AUC obtained from the
+full-observation Laplace-smoothed transition matrix; it is the best a
+$1$-step detector can do \emph{given this finite data and smoothing}, and
+finite-sample and train/test variation can move it (and occasionally
+produce apparent anomalies, \cref{sec:phase5-multistart}).
 
 \subsection{Scenario construction}\label{sec:phase4-scenario}
 
@@ -43,6 +56,22 @@ empirical $\fobs$) and complete per-vehicle routes \code{vehroutes.*.xml}
 contrast diagnostic). The inverter sees only $|X_o| = 601$ randomly
 sampled edges --- $25\%$ of the network --- consistent with the
 operating point of the Morimura $\S 6.1$ benchmark.
+
+A stationarity caveat applies here and carries through to Tier~3. The
+Morimura observation model assumes the counts $\fobs$ are samples of a
+\emph{stationary} distribution and that $\gobs$ are stationary hitting
+rates. SUMO produces finite-horizon, dynamic, congestion-affected
+counts over a four-hour window, so the \code{edgedata} totals are best
+read as empirical occupancy / visit-frequency summaries rather than
+exact stationary samples. We treat them as such: the inverse fit is a
+controlled operational test of the pipeline under a stationarity
+approximation, not a claim that the fitted chain is behavioural ground
+truth. This is one reason we report the full-observation empirical
+transition matrix as a finite-data reference rather than as a true
+ceiling, and why the per-row contrast diagnostic
+(\cref{sec:detector}) --- which compares fitted and empirical
+\emph{contrasts} on the same finite data --- is the load-bearing
+evidence rather than the absolute AUC.
 
 \subsection{Single-seed result: features and the inverse fit}
 \label{sec:phase4-features-result}
@@ -79,7 +108,7 @@ observe --- the generalisation block.}
 \toprule
 metric (\texttt{[all branching]}) & \texttt{features=none} & \texttt{features=real} & $\Delta$ \\
 \midrule
-$\AUC_{\mathrm{emp}}$ (data ceiling) & $0.685$ & $0.685$ & --- \\
+$\AUC_{\mathrm{emp}}$ (full-obs.\ reference) & $0.685$ & $0.685$ & --- \\
 $\AUC_{\mathrm{fit}}$ & $0.612$ & $\mathbf{0.644}$ & $+0.032$ \\
 gap closed & $60.6\%$ & $\mathbf{77.5\%}$ & $+16.9$ pp \\
 stacked Pearson($\Delta_{\mathrm{fit}}, \Delta_{\mathrm{emp}}$) & $+0.132$ & $\mathbf{+0.215}$ & $+63\%$ rel \\
@@ -248,7 +277,7 @@ large norm ($\lVert\theta_0\rVert \approx 92$ at $d = 8{,}392$); we have thus
 shown that the \emph{standard} random-restart recipe does not escape the low
 basin, not that the basin is provably global.
 
-\subsection{Higher-order memory diagnostic: refuting the 2-step parametric extension}
+\subsection{Higher-order memory diagnostic: the empirical 2-step detector does not improve the reference}
 \label{sec:phase4-2step}
 
 A natural hypothesis for the still-flipped rows is that the
@@ -275,7 +304,7 @@ unseen $(x_{t-1}, x_t)$ context.}
 \toprule
 detector & $\AUC$ \\
 \midrule
-$1$-step empirical (the ceiling we keep hitting) & $\mathbf{0.685}$ \\
+$1$-step empirical (full-observation reference) & $\mathbf{0.685}$ \\
 $2$-step empirical & $0.666$ \\
 $\Delta$ (2-step $-$ 1-step) & $\mathbf{-0.019}$ \\
 \bottomrule
@@ -283,15 +312,22 @@ $\Delta$ (2-step $-$ 1-step) & $\mathbf{-0.019}$ \\
 \end{table}
 
 The $2$-step detector \emph{loses} $\sim 0.02$ AUC despite using a
-strictly richer conditional, with the loss attributable to the data
-sparsity (the empirical $\widehat{p}_{2}$ is Laplace-smoothed but
-the $(x_{t-1}, x_t)$ pair space is $|X|^2 \approx 5.8\text{M}$ at the
-bigger-bbox scale, and most of it is empty). The headline conclusion
-is that \textbf{the $0.685$ ceiling at $T=20$ on this dataset
-is the $1$-step Markov data ceiling}: there is no higher-order memory
-left to access. A parametric $2$-step inverter would not help. This
-closes a non-trivial future-work item (\cref{sec:methodology}: ``the
-parametric $2$-step extension'') as not worth building.
+strictly richer conditional, with the loss attributable to data
+sparsity (the empirical $\widehat{p}_{2}$ is Laplace-smoothed but the
+$(x_{t-1}, x_t)$ pair space is $|X|^2 \approx 5.8\text{M}$ at the
+bigger-bbox scale, and most of it is empty). The defensible reading is
+narrow: \textbf{the naive empirical $2$-step route does not improve over
+the $1$-step empirical reference of $0.685$ at $T=20$ on this dataset.}
+This weakens the case for implementing a full parametric $2$-step
+Morimura extension as the immediate next step --- the obvious richer
+model class does not, in raw empirical form, contain extractable signal
+beyond the $1$-step one here. It does \emph{not} prove that all
+higher-order or destination-conditioned models are useless: a
+regularised, feature-based, destination-aware, or hierarchical
+higher-order model could still help by sharing parameters across the
+sparse $(x_{t-1}, x_t)$ space that defeats the unregularised empirical
+count. So what: $2$-step memory is not the obvious missing lever, so
+effort is better spent elsewhere (features, scoring window, optimiser).
 
 \subsection{Trajectory-length sweep: lifting the ceiling and the detector together}
 \label{sec:phase4-tsweep}
@@ -347,9 +383,9 @@ $\sim 21\%$ of the true per-row contrast regardless of how long we
 observe each test trip.
 
 The strongest single-seed SUMO headline is therefore $\AUC = 0.708$
-at $T=40$, $69\%$ of the gap closed against the verified $0.801$
-ceiling, with a stable per-row chain Pearson of $+0.216$ on
-\texttt{[all branching]}.
+at $T=40$, $69\%$ of the gap closed against the full-observation
+empirical $1$-step reference of $0.801$, with a stable per-row chain
+Pearson of $+0.216$ on \texttt{[all branching]}.
 
 \subsection{The $f+g$ extension at scale: documented infeasibility}
 \label{sec:phase4-fg-infeasible}
@@ -374,10 +410,18 @@ against $d = 8{,}402$ parameters). L-BFGS line-search backtracks
 indefinitely. A Beta-Binomial shrinkage of the floor (designed to
 mitigate the floor problem) does not change the compute cost.
 
-This is documented as a real limitation, not a bug: the framework's
-hitting-rate extension is computationally infeasible at this scale
-under the L-BFGS optimiser without one of the deeper algorithmic
-fixes the paper itself identifies as future work --- natural-gradient
-descent (paper $\S 4.1$) or a sparse-$g$ formulation that skips the
-empty cells. We do not pursue either in this thesis. The headline
-remains the $f$-only detector with features.
+The framing matters. Morimura's full framework fits the stationary
+match $f$ together with \emph{optional} hitting rates $g$; the synthetic
+$\S 6.1$ experiment uses analytic, noise-free $g$. At realistic SUMO
+scale the \emph{empirical} $g$ becomes extremely sparse and
+floor-dominated ($84$--$89\%$ of cells at the floor), and the L-BFGS
+optimiser on the resulting under-constrained landscape line-search
+backtracks indefinitely. The practical detector in this work therefore
+relies on the $f$-only fit with real network features. This is not a
+failure to implement Morimura --- the $f+g$ machinery is implemented and
+FD-verified (\cref{sec:phase1-synthetic}) and runs on the synthetic tier
+--- but a documented scalability and data-density limitation of the $f+g$
+route in this setting. Restoring $f+g$ tractability would need one of the
+deeper algorithmic fixes the paper itself identifies as future work ---
+natural-gradient descent (paper $\S 4.1$) or a sparse-$g$ formulation
+that skips the empty cells --- neither of which we pursue here.

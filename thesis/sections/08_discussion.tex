@@ -3,23 +3,24 @@
 \subsection{Cross-tier read: what generalises}
 \label{sec:disc-cross-tier}
 
-The mechanical pipeline ports cleanly across all three tiers:
-the inverter, FD-checked gradient, contrast diagnostic, feature
-plumbing, and OD-rebalancing extension operate identically on a
-synthetic $n=100$ chain, a SUMO $n=2{,}405$ network, and a
-real-world $n=1{,}733$ Xuancheng network. The single
-\code{--dataset \{sumo,xuancheng\}} CLI flag selects the tier; nothing
-else changes. This is a non-trivial generalisation result for an
-inverse-MC pipeline that the original paper validated only on
-synthetic and one real-world demonstration.
+The core inverse-MC scoring machinery ports cleanly across all three
+tiers: the inverter, FD-checked gradient, contrast diagnostic, and
+feature plumbing operate unchanged on a synthetic $n=100$ chain, a SUMO
+$n=2{,}405$ network, and a real-world $n=1{,}733$ Xuancheng network. What
+differs by tier is the loader, the regime definition, and the
+OD-control logic; the shared scoring core is selected by a single
+\code{--dataset \{sumo,xuancheng\}} CLI flag. This is a useful
+generalisation result for an inverse-MC pipeline that the original paper
+validated only on synthetic data and one real-world demonstration.
 
 What does \emph{not} generalise as cleanly is the magnitude of the
 detection signal. Tier~1 reproduces the paper's RMAE within
-$\sim 0.05$. Tier~2 reaches $\AUC = 0.708$ at $T=40$ on the controlled
-SUMO comparison, $\sim 69\%$ of the gap to the verified $0.801$
-ceiling, with per-row chain Pearson $\sim +0.21$. Tier~3 on
-Xuancheng, with no ground-truth sat-navigation label, gives
-$\AUC \sim 0.53$ on the rush-vs-off-peak behavioural proxy. The drop
+$\sim 0.05$ for $|\Xo| \ge 10$. Tier~2 reaches $\AUC = 0.708$ at $T=40$
+on the controlled SUMO comparison, $\sim 69\%$ of the gap to the
+full-observation empirical $1$-step reference of $0.801$, with per-row
+chain Pearson $\sim +0.21$. Tier~3 on Xuancheng, with no ground-truth
+sat-navigation label, gives $\AUC \sim 0.53$ on the rush-vs-off-peak
+behavioural proxy. The drop
 between Tier~2 and Tier~3 has two distinct contributions:
 \begin{itemize}
 \item The Xuancheng ceiling itself ($\AUC_{\mathrm{emp}} \sim 0.57$) is
@@ -32,10 +33,11 @@ at the same $T = 20$ equivalent), so the framework recovers a
 similar fraction of whatever signal is available --- there is just less
 signal to recover.
 \end{itemize}
-The cleanest single-sentence summary is: \emph{the method captures a
-robust fraction of the recoverable per-row chain contrast on real
-urban data, but the recoverable contrast under realistic
-sat-navigation adoption is small.}
+The cleanest single-sentence summary is: \emph{under controlled labelled
+simulation the method recovers a robust fraction of the per-row chain
+contrast, but on a real-world behavioural proxy the recoverable
+within-OD contrast, once population-mix is controlled, is small enough to
+be near chance under this proxy, model class, and data split.}
 
 \Cref{tab:cross-tier} consolidates the three tiers on a common axis:
 the same inverter and diagnostic produce every row, and the trend in the
@@ -107,8 +109,8 @@ high-loss basin (rush loss $1397 \rightarrow 9.186$, validation-selected),
 and the correctly-fit chains then gave $\AUC_{\mathrm{fit}} = 0.483$ ---
 chance. The ceiling violation was therefore an optimiser artefact, and
 removing it \emph{strengthens} the Tier-3 negative result: the within-OD
-routing contrast is genuinely absent at the $1$-step Markov level, not
-masked by a bad optimum. This also makes the SUMO and Xuancheng basin
+routing contrast is not detectable at the $1$-step Markov level under
+this proxy and data split, rather than being masked by a bad optimum. This also makes the SUMO and Xuancheng basin
 checks complementary --- on SUMO zero-init was already the best optimum
 (\cref{sec:phase4-multistart}); on Xuancheng a better optimum existed but
 only confirmed the negative result --- so neither tier's headline rests
@@ -161,6 +163,16 @@ welfare analyses and possible regulatory disclosure requirements.
 \label{sec:disc-future}
 
 \begin{enumerate}
+\item \textbf{OD-cell bootstrap and an OD-granularity sweep.} A
+stratified vehicle-level bootstrap already confirms the OD-matched
+Tier-3 reference is statistically indistinguishable from chance ($95\%$
+CI $[0.471, 0.567]$, straddling $0.50$; \cref{sec:phase5-reading}); the
+outstanding extension is an OD-\emph{cell} bootstrap that resamples which
+cells enter the match and refits per replicate, quantifying
+cell-selection variance on top of vehicle-sampling variance. The
+OD-matching conclusion should also be checked across zone granularities
+$K \in \{5, 8, 10, 12\}$ rather than the single $K=8$ reported here. Both
+are compute-time rather than methodological gaps.
 \item \textbf{Trajectory-level feature augmentation.} The strict
 $1$-step Markov LR detector ignores trip-level features (length, mean
 speed, edge-class composition, dwell time at congested edges). A

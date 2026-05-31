@@ -60,63 +60,60 @@ each tier honestly, and quantifies where the framework's limits actually
 lie. Specifically:
 
 \begin{enumerate}
-\item \textbf{Reproduction of the Morimura $\S 6.1$ synthetic benchmark.}
-We re-implement the inverter, derive and finite-difference-verify the
-analytic gradients (including the omega-global gradient extensions for
-shared destination and edge features that the paper presents but does
-not derive in full), and reproduce the headline RMAE curve in
-Fig.~2A of \cite{morimura2013} within $\sim 0.05$ across observation
-fractions $\Xo/n \in [0.10, 0.90]$. This locks in the upstream
-implementation as a faithful reference.
+\item \textbf{Faithful synthetic reproduction of the Morimura $\S 6.1$
+benchmark.} We re-implement the inverter, derive and
+finite-difference-verify the analytic gradients (including the
+omega-global gradient extensions for shared destination and edge features
+that the paper states but does not derive in full), and reproduce the
+proposed-method RMAE curve of Fig.~2A in \cite{morimura2013} closely for
+observation fractions $\Xo/n \ge 0.10$. The very-low-observation point
+($|\Xo|=5$) and the NWKR comparator are documented deviations
+(\cref{sec:phase1-synthetic}). This locks in the upstream implementation
+as a faithful operational reference.
 
-\item \textbf{Simulated-tier detector built on SUMO microscopic traffic
-simulation.} We construct a bigger-bbox SUMO scenario in which an
+\item \textbf{A SUMO regime detector under partial observation with real
+edge features.} We construct a bigger-bbox SUMO scenario in which an
 identical population of vehicles is simulated twice --- once with no
-sat-navigation rerouting (\emph{intrinsic} regime) and once with full
-sat-navigation rerouting (\emph{sat-nav} regime) --- and fit a Morimura
-inverter to each regime's partial observations. The fitted chains feed
-a per-trajectory log-likelihood-ratio detector. Augmenting the inverter
-with real SUMO edge features robustly improves \emph{per-row chain
-recovery} across a five-seed sweep (stacked Pearson $+0.050 \pm 0.023$,
-$p \approx 0.008$), although the aggregate detection-AUC lift is
-seed-dependent rather than robust. On the representative seed the
-area under the ROC curve at $T=20$ test transitions reaches
-$\AUC = 0.644$, against an empirically verified $1$-step Markov data
-ceiling of $0.685$ (closing $77.5\%$ of the recoverable gap); a
-trajectory-length sweep lifts the ceiling and the detector together to
-$\AUC = 0.708$ at $T=40$ against a ceiling of $0.801$.
+sat-navigation rerouting (static unguided routing) and once with full
+sat-navigation rerouting --- fit a Morimura inverter to each regime's
+partial observations, and feed the fitted chains to a per-trajectory
+log-likelihood-ratio detector. On the representative seed the detector
+reaches $\AUC = 0.644$ at $T=20$ against a full-observation empirical
+$1$-step reference of $0.685$, rising to $\AUC = 0.708$ at $T=40$ against
+a reference of $0.801$ as the scoring window widens.
 
-\item \textbf{An honest model-class diagnostic.} The remaining gap to the
-$0.801$ ceiling could in principle be closed by extending the inverter to
-a $2$-step Markov family (modelling the choice of the next edge given the
-current \emph{and previous} edge). We test this by constructing a
-$2$-step \emph{empirical} detector --- counting $(x_{t-1}, x_t)
-\to x_{t+1}$ triples on the same trajectories --- and comparing its AUC
-to the $1$-step empirical ceiling. The $2$-step detector
-\emph{underperforms} ($\AUC_{2\text{-step}} = 0.666 < \AUC_{1\text{-step}}
-= 0.685$), refuting higher-order memory as the missing lever and
-identifying the $1$-step softmax family itself as the binding
-model-class constraint. This is a publishable negative result that
-forecloses an otherwise-tempting line of work.
+\item \textbf{Per-row contrast diagnostics separating chain recovery from
+aggregate AUC.} Following the observation that detection AUC can improve
+through aggregate chain-drift rather than correct per-row recovery, we
+report a contrast-correlation diagnostic at branching states. Real edge
+features robustly improve \emph{per-row chain recovery} across a five-seed
+sweep (stacked Pearson $+0.050 \pm 0.023$, $p \approx 0.008$, positive on
+all five seeds), whereas the aggregate detection-AUC lift is
+seed-dependent rather than robust ($+0.024 \pm 0.026$, reversing on one
+of five seeds). Features are best described as a chain-recovery lever, not
+an aggregate-detection lever.
 
-\item \textbf{Real-world validation tier on the Xuancheng AVI dataset.}
-We port the entire pipeline to a real-world urban traffic dataset of
-$\sim 10.5$ million reconstructed vehicle trips over April~2023
-\cite{ma2026xuancheng}. Because no real dataset comes with sat-navigation
-adoption labels, we use a time-of-day behavioural proxy (rush-hour vs.\
-off-peak driving) and introduce an OD-rebalancing extension to the
-loader that subsamples each regime to share the same
-$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ distribution,
-removing the population-mix confound that distinguishes any
-real-world proxy contrast from a SUMO-style controlled comparison.
+\item \textbf{An empirical higher-order memory diagnostic.} A natural
+hypothesis is that the residual gap is missing $2$-step memory. We test
+this with a fitting-free empirical $2$-step detector --- counting
+$(x_{t-1}, x_t)\to x_{t+1}$ triples on the same trajectories --- and find
+it does \emph{not} improve over the $1$-step empirical reference
+($\AUC_{2\text{-step}} = 0.666 < \AUC_{1\text{-step}} = 0.685$). This
+weakens the case for implementing a parametric $2$-step extension as the
+immediate next step, but does not rule out regularised, feature-based,
+destination-aware, or hierarchical higher-order models.
 
-\item \textbf{An end-to-end pipeline, reusable across tiers.} A single
-CLI controls all three validation tiers via a \code{--dataset
-\{sumo,xuancheng\}} flag. The inverter, feature extractor,
-gradient implementation, and contrast diagnostics are unchanged across
-tiers; only the loader, the regime split, and the per-tier honest
-caveats differ. The artefact is in the repository at
-\code{https://github.com/<placeholder>}.
+\item \textbf{A real-world stress test with OD-rebalancing on the
+Xuancheng AVI dataset.} We port the pipeline to $\sim 10.5$ million
+reconstructed vehicle trips over April~2023 \cite{ma2026xuancheng}. Because
+no real dataset comes with sat-navigation adoption labels, we use a
+time-of-day behavioural proxy (rush-hour vs.\ off-peak) and introduce an
+OD-rebalancing step that subsamples each regime to share the same
+$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ distribution. This
+controls the population-mix confound and shows that most of the apparent
+proxy contrast is OD-mix, not routing choice (\cref{sec:phase5-xuancheng}).
+A single CLI runs all three tiers via a \code{--dataset \{sumo,xuancheng\}}
+flag; the repository structure is documented in \cref{app:repo}.
 \end{enumerate}
 
 \subsection{Roadmap}
