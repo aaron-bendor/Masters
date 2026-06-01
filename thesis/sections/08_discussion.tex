@@ -47,18 +47,22 @@ quantifies how much detectable signal each setting actually contains.
 
 \begin{table}[H]
 \centering
-\caption{Cross-tier synthesis of the three validation tiers. The single
-pipeline of \cref{sec:disc-cross-tier} produces every row; only the data
-changes. Tier~2 is the representative seed~$42$ at $T=20$
+\caption{Cross-tier synthesis of the three validation tiers. The shared
+inverse-MC scoring core of \cref{sec:disc-cross-tier} produces every row;
+the loader, regime definition, and OD-control logic differ by tier.
+Tier~2 is the representative seed~$42$ at $T=20$
 (\cref{tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at
 $T=10$ (\cref{tab:phase5-headline}). Fitted and Pearson cells are
 \code{none}/\code{real}.
 $^{\dagger}$Tier~1 is a $\pi$-recovery reproduction scored by RMAE, not a
 detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the
 paper's Fig.~2A (\cref{tab:phase1-rmae}).
-$^{\ddagger}$OD-matching crashes the Tier-3 ceiling from $0.573$ to
-$0.518$ ($0.018$ above chance), attributing $\sim 75\%$ of the pooled
-signal to OD-mix rather than routing (\cref{sec:phase5-reading}).
+$^{\ddagger}$The Tier-3 ceiling shown is the un-matched $5$-day pool.
+OD-matching at $K=8$ lowers it to $0.518$, but a granularity sweep
+$K \in \{8, 16, 32, 64\}$ returns the matched reference to
+$\sim\!0.55$--$0.58$ for $K \ge 16$, so no fixed OD-mix fraction is
+claimed; the fitted detector stays at chance across all $K$
+(\cref{tab:phase5-ksweep}).
 The Tier-2 Pearson lift is robust across five seeds
 ($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$,
 \cref{sec:phase4-multiseed}).}
@@ -163,16 +167,16 @@ welfare analyses and possible regulatory disclosure requirements.
 \label{sec:disc-future}
 
 \begin{enumerate}
-\item \textbf{OD-cell bootstrap and an OD-granularity sweep.} A
-stratified vehicle-level bootstrap already confirms the OD-matched
-Tier-3 reference is statistically indistinguishable from chance ($95\%$
-CI $[0.471, 0.567]$, straddling $0.50$; \cref{sec:phase5-reading}); the
-outstanding extension is an OD-\emph{cell} bootstrap that resamples which
-cells enter the match and refits per replicate, quantifying
-cell-selection variance on top of vehicle-sampling variance. The
-OD-matching conclusion should also be checked across zone granularities
-$K \in \{5, 8, 10, 12\}$ rather than the single $K=8$ reported here. Both
-are compute-time rather than methodological gaps.
+\item \textbf{OD-cell bootstrap.} A stratified vehicle-level bootstrap
+confirms the fitted Tier-3 detector is statistically indistinguishable
+from chance, and an OD-zone granularity sweep $K \in \{8, 16, 32, 64\}$
+confirms this holds at every resolution (\cref{tab:phase5-ksweep}); the
+sweep also showed the $K=8$ ``$\sim\!75\%$ OD-mix'' reading to be a
+coarse-zoning artefact. The remaining outstanding extension is an
+OD-\emph{cell} bootstrap that resamples which cells enter the match and
+refits per replicate, quantifying cell-selection variance on top of
+vehicle-sampling variance --- a compute-time rather than methodological
+gap.
 \item \textbf{Trajectory-level feature augmentation.} The strict
 $1$-step Markov LR detector ignores trip-level features (length, mean
 speed, edge-class composition, dwell time at congested edges). A

@@ -28,8 +28,20 @@ quantifying its presence, has therefore become a methodological
 prerequisite for any inference about driver behaviour in modern urban
 environments.
 
-\subsection{Inverse Markov-chain methods and the Morimura framework}
-\label{sec:intro-morimura}
+\subsection{This work: a partial-observation routing-influence filter}
+\label{sec:intro-filter}
+
+The central artefact of this dissertation is a designed pipeline ---
+called here the \emph{partial-observation routing-influence filter} ---
+that ingests a road graph, a small subset of observation stations $\Xo$
+(loop detectors, AVI gantries, or simulated counts), and two
+regime-labelled flow snapshots (e.g.\ rerouting on / rerouting off,
+rush-hour / off-peak), fits one inverse-Markov-chain model per regime,
+and emits a per-trajectory log-likelihood-ratio score together with a
+suite of trust diagnostics. The pipeline is the deliverable; the
+inverse-Markov-chain estimator is the component inside it, and the
+three experimental tiers reported in this dissertation exist to justify,
+parameterise, and stress-test the filter's design choices.
 
 A long line of work models route choice as a Markov chain over road
 network edges, in which each driver, conditional on their current edge,
@@ -37,94 +49,122 @@ selects a next edge with probabilities determined by local and global
 features of the network. \citet{morimura2013} introduced an
 \emph{inverse} formulation that fits the parameters of such a chain
 from only partial observations of the network --- specifically, from
-vehicle counts at a small subset of observation stations $\Xo$ and
-optionally from pairwise hitting rates between those stations. Their
-softmax-parametric chain admits an analytic gradient of the regularised
-log-ratio loss, enabling reliable fitting on networks of several
-thousand edges with $20\text{--}90\%$ observation coverage.
-
-The Morimura framework is well validated on synthetic data and was
-applied by its authors to one real-world traffic case study in Nairobi.
-It has not, however, been adapted to the specific problem of detecting
-externally-influenced routing as distinct from intrinsic preferences:
-the original work treats the inverse problem as one of \emph{recovering}
-a single chain, not of \emph{distinguishing} two coexisting routing
-regimes within the same network.
+vehicle counts at a small subset $\Xo$ and optionally from pairwise
+hitting rates between those stations. Their softmax-parametric chain
+admits an analytic gradient of the regularised log-ratio loss, enabling
+reliable fitting on networks of several thousand edges with
+$20\text{--}90\%$ observation coverage. This is the estimator we adopt
+inside the filter. The original method is presented as a
+\emph{single-chain recovery} procedure and was validated by its authors
+on synthetic data and one Nairobi case study; turning it into a
+trajectory-level \emph{detector and filter} for one routing regime against
+another, audited for the failure modes that show up only at urban scale,
+is the work this dissertation does on top of it.
 
 \subsection{Contributions}
 \label{sec:contributions}
 
-This dissertation extends the Morimura inverse-Markov-chain method into a
-three-tier detection pipeline for externally-influenced routing, validates
-each tier honestly, and quantifies where the framework's limits actually
-lie. Specifically:
+The contributions of this work are design-led. Each item below is a
+component of the filter, a design decision audited by experiment, or a
+diagnostic that establishes when the filter can or cannot be trusted.
 
 \begin{enumerate}
-\item \textbf{Faithful synthetic reproduction of the Morimura $\S 6.1$
-benchmark.} We re-implement the inverter, derive and
-finite-difference-verify the analytic gradients (including the
-omega-global gradient extensions for shared destination and edge features
-that the paper states but does not derive in full), and reproduce the
-proposed-method RMAE curve of Fig.~2A in \cite{morimura2013} closely for
-observation fractions $\Xo/n \ge 0.10$. The very-low-observation point
-($|\Xo|=5$) and the NWKR comparator are documented deviations
-(\cref{sec:phase1-synthetic}). This locks in the upstream implementation
-as a faithful operational reference.
+\item \textbf{A partial-observation filter for externally-influenced
+routing.} A pipeline that maps a road graph plus regime-labelled partial
+observations to a per-trajectory log-likelihood-ratio score and a filter
+decision. The architecture is specified end-to-end in
+\cref{sec:filter-design} (objective, inputs, estimator, scoring rule,
+decision output, diagnostic audits) and codified as Algorithm~\ref{alg:filter},
+with a schematic in \cref{fig:filter-schematic}.
 
-\item \textbf{A SUMO regime detector under partial observation with real
-edge features.} We construct a bigger-bbox SUMO scenario in which an
-identical population of vehicles is simulated twice --- once with no
-sat-navigation rerouting (static unguided routing) and once with full
-sat-navigation rerouting --- fit a Morimura inverter to each regime's
-partial observations, and feed the fitted chains to a per-trajectory
-log-likelihood-ratio detector. On the representative seed the detector
-reaches $\AUC = 0.644$ at $T=20$ against a full-observation empirical
-$1$-step reference of $0.685$, rising to $\AUC = 0.708$ at $T=40$ against
-a reference of $0.801$ as the scoring window widens.
+\item \textbf{An inverse-MC estimation engine validated through Morimura
+reproduction.} A faithful, FD-verified re-implementation of the
+softmax-parametric inverter --- including the omega-global gradients the
+paper states but does not derive in full --- whose recovery curve
+reproduces $\S 6.1$ of \citet{morimura2013} closely for observation
+fractions $\Xo/n \ge 0.10$. Tier~1 (\cref{sec:phase1-synthetic})
+validates the estimator that sits inside the filter, not the filter as a
+whole.
 
-\item \textbf{Per-row contrast diagnostics separating chain recovery from
-aggregate AUC.} Following the observation that detection AUC can improve
-through aggregate chain-drift rather than correct per-row recovery, we
-report a contrast-correlation diagnostic at branching states. Real edge
-features robustly improve \emph{per-row chain recovery} across a five-seed
-sweep (stacked Pearson $+0.050 \pm 0.023$, $p \approx 0.008$, positive on
-all five seeds), whereas the aggregate detection-AUC lift is
-seed-dependent rather than robust ($+0.024 \pm 0.026$, reversing on one
-of five seeds). Features are best described as a chain-recovery lever, not
-an aggregate-detection lever.
+\item \textbf{A feature-regularised filter variant using road-network
+attributes.} A version of the filter in which the estimator's global
+score terms ingest real per-edge attributes from the SUMO network's
+\code{.net.xml} (road class, speed limit, lane count, turn angle, speed
+ratio): $10$ shared parameters that let edges of the same class borrow
+strength across the chain. Across a five-seed SUMO sweep this variant
+robustly improves per-row chain recovery (stacked Pearson
+$+0.050 \pm 0.023$, $p \approx 0.008$, positive on all five seeds), while
+its aggregate detection-AUC lift is seed-dependent
+($+0.024 \pm 0.026$, reversing on one of five seeds) and not claimed as
+robust.
 
-\item \textbf{An empirical higher-order memory diagnostic.} A natural
-hypothesis is that the residual gap is missing $2$-step memory. We test
-this with a fitting-free empirical $2$-step detector --- counting
-$(x_{t-1}, x_t)\to x_{t+1}$ triples on the same trajectories --- and find
-it does \emph{not} improve over the $1$-step empirical reference
-($\AUC_{2\text{-step}} = 0.666 < \AUC_{1\text{-step}} = 0.685$). This
-weakens the case for implementing a parametric $2$-step extension as the
-immediate next step, but does not rule out regularised, feature-based,
-destination-aware, or hierarchical higher-order models.
+\item \textbf{A trajectory log-likelihood-ratio scoring rule.} A
+per-trip detection score $\Lam(\tau) = \sum_t [\log \hat
+p_B(x_{t+1}\!\mid\!x_t) - \log \hat p_A(x_{t+1}\!\mid\!x_t)]$ derived
+from the two fitted regime kernels, with a tunable decision threshold
+$\eta$. On the representative SUMO seed the score reaches
+$\AUC = 0.644$ at $T=20$ against a full-observation empirical $1$-step
+reference of $0.685$, rising to $\AUC = 0.708$ at $T=40$ against a
+reference of $0.801$ as the scoring window widens.
 
-\item \textbf{A real-world stress test with OD-rebalancing on the
-Xuancheng AVI dataset.} We port the pipeline to $\sim 10.5$ million
-reconstructed vehicle trips over April~2023 \cite{ma2026xuancheng}. Because
-no real dataset comes with sat-navigation adoption labels, we use a
-time-of-day behavioural proxy (rush-hour vs.\ off-peak) and introduce an
-OD-rebalancing step that subsamples each regime to share the same
-$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ distribution. This
-controls the population-mix confound and shows that most of the apparent
-proxy contrast is OD-mix, not routing choice (\cref{sec:phase5-xuancheng}).
+\item \textbf{Diagnostic audits separating per-row chain recovery from
+aggregate-AUC effects.} A contrast-correlation diagnostic at branching
+states (per-row Pearson and per-state cosine of $\Delta_{\mathrm{fit}}$
+against $\Delta_{\mathrm{emp}}$) that tells the user whether a high
+detection AUC reflects correct chain recovery or merely aggregate
+bias. This is the most important trust signal the filter emits: it
+flagged the seed-dependence of the AUC lift in (3) and motivates the
+filter's recommended reporting protocol.
+
+\item \textbf{Controlled SUMO validation of the full filter under
+labelled rerouting.} A bigger-bbox SUMO scenario
+($n = 2{,}405$ edges) in which an identical population of vehicles is
+simulated twice, once with no sat-navigation rerouting (static unguided
+routing) and once with full sat-navigation rerouting. This is the only
+tier in which the filter's regime labels are ground-truth; it answers
+whether the designed pipeline works end-to-end when the detection
+problem is correctly posed.
+
+\item \textbf{An empirical higher-order memory audit.} A fitting-free
+$2$-step detector --- counting $(x_{t-1}, x_t)\to x_{t+1}$ triples on the
+same trajectories --- used to test whether a parametric $2$-step
+extension is the obvious next filter lever. It does \emph{not} improve
+over the $1$-step empirical reference
+($\AUC_{2\text{-step}} = 0.666 < \AUC_{1\text{-step}} = 0.685$), so a
+parametric $2$-step extension is deprioritised; richer destination-aware
+or hierarchical higher-order models remain open.
+
+\item \textbf{A real-world Xuancheng stress test under OD-mix
+confounding.} The filter is ported to $\sim 10.5$ million reconstructed
+vehicle trips over April~2023 \cite{ma2026xuancheng} with a time-of-day
+behavioural proxy (rush-hour vs.\ off-peak) substituting for absent
+sat-navigation labels, and an OD-rebalancing pre-step subsamples each
+regime to share a common
+$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ distribution. The
+fitted $1$-step filter does not recover the rush-vs-off-peak contrast at
+any zone granularity tested ($K \in \{8, 16, 32, 64\}$, every bootstrap
+CI straddling chance), even though the full-observation reference weakly
+carries it --- a granularity-robust honest negative result on this
+behavioural proxy (\cref{sec:phase5-xuancheng}).
+\end{enumerate}
+
 A single CLI runs all three tiers via a \code{--dataset \{sumo,xuancheng\}}
 flag; the repository structure is documented in \cref{app:repo}.
-\end{enumerate}
 
 \subsection{Roadmap}
 \label{sec:roadmap}
 
 \cref{sec:background} situates the work in relevant prior literature.
-\cref{sec:methodology} presents the mathematical framework and the three
-extensions (real features, $2$-step diagnostic, OD-rebalancing) in detail.
+\cref{sec:methodology} specifies the filter design end-to-end --- objective,
+inputs, estimator, scoring rule, decision output, and diagnostic audits ---
+together with the three estimator-level extensions (real features,
+$2$-step diagnostic, OD-rebalancing).
 \cref{sec:phase1-synthetic,sec:phase4-sumo,sec:phase5-xuancheng}
-present the three validation tiers in turn, each one with its own
-honest discussion of what does and does not transfer. \cref{sec:discussion}
-draws cross-tier conclusions and limitations. \cref{sec:reflection}
-addresses project management and personal-development reflection per the
-module's \emph{Reflection} learning outcome \cite{markscheme}.
+report the three experimental tiers, each framed as a validation of one
+or more filter design choices: Tier~1 validates the inverse-MC estimator
+inside the filter, Tier~2 controls the full filter against labelled
+rerouting, Tier~3 stress-tests it against real-world OD-mix confounding.
+\cref{sec:discussion} draws cross-tier conclusions and limitations.
+\cref{sec:reflection} addresses project management and personal-development
+reflection per the module's \emph{Reflection} learning outcome
+\cite{markscheme}.

@@ -1,16 +1,22 @@
-\section{Tier 2: Simulated Validation on SUMO}
+\section{Tier 2: Controlled validation of the filter in SUMO}
 \label{sec:phase4-sumo}
 
-This tier is the controlled validation: an identical population of
-vehicles is simulated once with sat-navigation rerouting turned off and
-once with it turned on, producing a labelled comparison
-against which the inverse-MC detector can be benchmarked. We construct
-the scenario at city-block scale ($n = 2{,}405$ edges), apply real edge
-features as global priors, probe whether higher-order memory is an
-obvious missing lever with the $2$-step empirical diagnostic, and quantify
-the lift due to trajectory length via a $T$-sweep. We close with a
-documented infeasibility of the hitting-rate ($f+g$) extension at this
-scale.
+This tier is the controlled, end-to-end validation of the
+partial-observation routing-influence filter (Algorithm~\ref{alg:filter})
+in the only setting that supplies ground-truth regime labels: an
+identical population of vehicles is simulated once with sat-navigation
+rerouting turned off and once with it turned on. Every component of the
+filter is exercised at city-block scale ($n = 2{,}405$ edges): the
+inverse-MC estimator is fitted per regime, the log-likelihood-ratio
+scorer is applied to held-out trajectories, the feature-regularised
+filter variant is tested against a no-features baseline, and the
+filter's diagnostic suite (per-row Pearson/cosine, multistart basin
+check, empirical $2$-step memory audit) is run on the resulting fits.
+A trajectory-length sweep traces how the scoring window $T$ shifts both
+the empirical reference and the fitted detector together, and we close
+with a documented infeasibility of the hitting-rate ($f+g$) extension at
+this scale --- a design-relevant failure mode for the filter's optional
+$\gobs$ input.
 
 A note on terminology used throughout this section. We refer to the
 no-rerouting regime as ``static unguided routing'': SUMO routes those

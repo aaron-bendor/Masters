@@ -1,72 +1,81 @@
-\contentsline {section}{\numberline {1}Notation}{4}{section.1}%
-\contentsline {section}{\numberline {2}Introduction}{4}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Context: urban traffic and the external-influence problem}{4}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Inverse Markov-chain methods and the Morimura framework}{5}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Contributions}{5}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Roadmap}{6}{subsection.2.4}%
-\contentsline {section}{\numberline {3}Background and Related Work}{6}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Inverse problems on Markov chains}{6}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Route choice as a softmax-parametric Markov chain}{7}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}The Morimura inverse-MC framework}{7}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Re-routing detection and external traffic influence}{7}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Microscopic traffic simulation: SUMO}{8}{subsection.3.5}%
-\contentsline {subsection}{\numberline {3.6}Real-world traffic from Automatic Vehicle Identification}{8}{subsection.3.6}%
-\contentsline {section}{\numberline {4}Methodology}{8}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Parametric chain and observation model}{8}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Regularised loss and analytic gradients}{9}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Extension 1: real edge features from the network topology}{9}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Extension 2: empirical 2-step Markov diagnostic}{10}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Extension 3: OD-rebalancing for real-world regime contrast}{10}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}The detector and per-row diagnostic}{11}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}Design rationale: each extension targets a specific failure mode}{11}{subsection.4.7}%
-\contentsline {section}{\numberline {5}Tier 1: Synthetic Reproduction of the Morimura Benchmark}{11}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Experimental setup}{12}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Results}{12}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Implementation gotcha: prediction rescaling}{13}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Gradient verification}{13}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}Headline outcome}{13}{subsection.5.5}%
-\contentsline {section}{\numberline {6}Tier 2: Simulated Validation on SUMO}{13}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Scenario construction}{14}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Single-seed result: features and the inverse fit}{14}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Multi-seed validation: chain recovery is robust, detection AUC is not}{16}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Multistart basin check: the low basin is not an initialisation artefact}{17}{subsection.6.4}%
-\contentsline {subsection}{\numberline {6.5}Higher-order memory diagnostic: the empirical 2-step detector does not improve the reference}{18}{subsection.6.5}%
-\contentsline {subsection}{\numberline {6.6}Trajectory-length sweep: lifting the ceiling and the detector together}{18}{subsection.6.6}%
-\contentsline {subsection}{\numberline {6.7}The $f+g$ extension at scale: documented infeasibility}{19}{subsection.6.7}%
-\contentsline {section}{\numberline {7}Tier 3: Real-World Validation on Xuancheng AVI Data}{20}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Dataset choice}{20}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Verification: route legality and time-of-day distribution}{21}{subsection.7.2}%
-\contentsline {paragraph}{Route legality.}{21}{paragraph*.13}%
-\contentsline {paragraph}{Time-of-day distribution.}{21}{paragraph*.14}%
-\contentsline {subsection}{\numberline {7.3}The fundamental real-world gap: no ground-truth sat-nav label}{21}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Results}{21}{subsection.7.4}%
-\contentsline {subsection}{\numberline {7.5}Honest reading}{23}{subsection.7.5}%
-\contentsline {paragraph}{The OD-mix dominates the un-matched signal.}{23}{paragraph*.17}%
-\contentsline {paragraph}{The within-OD routing contrast is below detectability.}{23}{paragraph*.18}%
-\contentsline {paragraph}{The OD-matching conclusion is reported at a single zone granularity.}{23}{paragraph*.19}%
-\contentsline {paragraph}{The features=real basin failure repeats post-matching --- and multistart resolves it.}{23}{paragraph*.20}%
-\contentsline {subsection}{\numberline {7.6}Multistart on \texttt {features=real}: the ceiling violation is an optimiser artefact}{24}{subsection.7.6}%
-\contentsline {subsection}{\numberline {7.7}Bottom line for Tier 3}{25}{subsection.7.7}%
-\contentsline {section}{\numberline {8}Discussion}{25}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Cross-tier read: what generalises}{25}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Limits of the chosen approach}{26}{subsection.8.2}%
-\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{26}{paragraph*.23}%
-\contentsline {paragraph}{L-BFGS basin selection on \texttt {features=real} --- now resolved.}{26}{paragraph*.24}%
-\contentsline {paragraph}{The hitting-rate ($f+g$) extension does not transfer to SUMO scale.}{26}{paragraph*.25}%
-\contentsline {subsection}{\numberline {8.3}Social, environmental, technological implications}{27}{subsection.8.3}%
-\contentsline {paragraph}{Transport-policy modelling.}{27}{paragraph*.26}%
-\contentsline {paragraph}{Privacy and data access.}{27}{paragraph*.27}%
-\contentsline {paragraph}{Sat-navigation regulation.}{27}{paragraph*.28}%
-\contentsline {subsection}{\numberline {8.4}Future work}{27}{subsection.8.4}%
-\contentsline {section}{\numberline {9}Conclusion}{28}{section.9}%
-\contentsline {paragraph}{What was built.}{28}{paragraph*.29}%
-\contentsline {paragraph}{What worked.}{28}{paragraph*.30}%
-\contentsline {paragraph}{What failed or was limited.}{28}{paragraph*.31}%
-\contentsline {paragraph}{Strongest defensible claim.}{28}{paragraph*.32}%
-\contentsline {paragraph}{Contribution.}{28}{paragraph*.33}%
-\contentsline {section}{\numberline {10}Project Management and Reflection}{29}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Project structure and milestone management}{29}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Personal skill development}{30}{subsection.10.2}%
-\contentsline {section}{\numberline {A}Repository structure and reproducibility}{32}{appendix.A}%
-\contentsline {section}{\numberline {B}Use of generative AI}{32}{appendix.B}%
-\contentsline {section}{\numberline {C}Build and reproducibility}{32}{appendix.C}%
+\contentsline {section}{\numberline {1}Notation}{5}{section.1}%
+\contentsline {section}{\numberline {2}Introduction}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Context: urban traffic and the external-influence problem}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}This work: a partial-observation routing-influence filter}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Contributions}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Roadmap}{7}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Background and Related Work}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Inverse problems on Markov chains}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Route choice as a softmax-parametric Markov chain}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}The Morimura inverse-MC framework}{8}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Re-routing detection and external traffic influence}{9}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Microscopic traffic simulation: SUMO}{9}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Real-world traffic from Automatic Vehicle Identification}{9}{subsection.3.6}%
+\contentsline {section}{\numberline {4}Methodology}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Filter design overview}{10}{subsection.4.1}%
+\contentsline {paragraph}{Objective.}{10}{paragraph*.2}%
+\contentsline {paragraph}{Inputs.}{10}{paragraph*.3}%
+\contentsline {paragraph}{Estimator.}{10}{paragraph*.4}%
+\contentsline {paragraph}{Scoring rule.}{10}{paragraph*.5}%
+\contentsline {paragraph}{Decision output.}{10}{paragraph*.6}%
+\contentsline {paragraph}{Diagnostic audits.}{10}{paragraph*.7}%
+\contentsline {paragraph}{Failure and confound checks.}{11}{paragraph*.8}%
+\contentsline {subsection}{\numberline {4.2}Parametric chain and observation model}{12}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Regularised loss and analytic gradients}{13}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Extension 1: real edge features from the network topology}{13}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Extension 2: empirical 2-step Markov diagnostic}{14}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Extension 3: OD-rebalancing for real-world regime contrast}{14}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Filter scoring rule and diagnostic audits}{15}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Design rationale: each extension targets a specific failure mode}{15}{subsection.4.8}%
+\contentsline {section}{\numberline {5}Tier 1: Validating the inverse-MC estimator inside the filter}{15}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Experimental setup}{16}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Results}{16}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Implementation gotcha: prediction rescaling}{17}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Gradient verification}{17}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Headline outcome}{17}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Tier 2: Controlled validation of the filter in SUMO}{17}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Scenario construction}{18}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Single-seed result: features and the inverse fit}{19}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Multi-seed validation: chain recovery is robust, detection AUC is not}{20}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Multistart basin check: the low basin is not an initialisation artefact}{21}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Higher-order memory diagnostic: the empirical 2-step detector does not improve the reference}{22}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Trajectory-length sweep: lifting the ceiling and the detector together}{23}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}The $f+g$ extension at scale: documented infeasibility}{24}{subsection.6.7}%
+\contentsline {section}{\numberline {7}Tier 3: Real-world stress test of the filter under OD confounding}{24}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Dataset choice}{24}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Verification: route legality and time-of-day distribution}{25}{subsection.7.2}%
+\contentsline {paragraph}{Route legality.}{25}{paragraph*.21}%
+\contentsline {paragraph}{Time-of-day distribution.}{25}{paragraph*.22}%
+\contentsline {subsection}{\numberline {7.3}The fundamental real-world gap: no ground-truth sat-nav label}{25}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Results}{26}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Honest reading}{27}{subsection.7.5}%
+\contentsline {paragraph}{The OD-mix attribution is not robust to zone granularity.}{27}{paragraph*.26}%
+\contentsline {paragraph}{The fitted $1$-step detector does not recover the contrast at any granularity.}{28}{paragraph*.27}%
+\contentsline {paragraph}{The features=real basin failure repeats post-matching --- and multistart resolves it.}{28}{paragraph*.28}%
+\contentsline {subsection}{\numberline {7.6}Multistart on \texttt {features=real}: the ceiling violation is an optimiser artefact}{28}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Bottom line for Tier 3}{29}{subsection.7.7}%
+\contentsline {section}{\numberline {8}Discussion}{30}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Cross-tier read: what generalises}{30}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Limits of the chosen approach}{31}{subsection.8.2}%
+\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{31}{paragraph*.31}%
+\contentsline {paragraph}{L-BFGS basin selection on \texttt {features=real} --- now resolved.}{31}{paragraph*.32}%
+\contentsline {paragraph}{The hitting-rate ($f+g$) extension does not transfer to SUMO scale.}{31}{paragraph*.33}%
+\contentsline {subsection}{\numberline {8.3}Social, environmental, technological implications}{31}{subsection.8.3}%
+\contentsline {paragraph}{Transport-policy modelling.}{31}{paragraph*.34}%
+\contentsline {paragraph}{Privacy and data access.}{31}{paragraph*.35}%
+\contentsline {paragraph}{Sat-navigation regulation.}{32}{paragraph*.36}%
+\contentsline {subsection}{\numberline {8.4}Future work}{32}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Conclusion}{32}{section.9}%
+\contentsline {paragraph}{What was designed.}{32}{paragraph*.37}%
+\contentsline {paragraph}{How it works.}{33}{paragraph*.38}%
+\contentsline {paragraph}{What worked.}{33}{paragraph*.39}%
+\contentsline {paragraph}{What failed or was limited.}{33}{paragraph*.40}%
+\contentsline {paragraph}{Where the filter is reliable.}{33}{paragraph*.41}%
+\contentsline {paragraph}{Where the filter is not reliable.}{33}{paragraph*.42}%
+\contentsline {paragraph}{Contribution.}{34}{paragraph*.43}%
+\contentsline {section}{\numberline {10}Project Management and Reflection}{34}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Project structure and milestone management}{34}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Personal skill development}{35}{subsection.10.2}%
+\contentsline {section}{\numberline {A}Repository structure and reproducibility}{37}{appendix.A}%
+\contentsline {section}{\numberline {B}Use of generative AI}{37}{appendix.B}%
+\contentsline {section}{\numberline {C}Build and reproducibility}{37}{appendix.C}%

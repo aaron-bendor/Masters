@@ -1,11 +1,15 @@
-\section{Tier 1: Synthetic Reproduction of the Morimura Benchmark}
+\section{Tier 1: Validating the inverse-MC estimator inside the filter}
 \label{sec:phase1-synthetic}
 
-This tier establishes that our implementation of the inverter is a
-faithful reference. We replicate the $\S 6.1$ synthetic experiment of
-\citet{morimura2013} end-to-end and verify that we reach the published
-RMAE curve to within $\sim 0.05$ across observation fractions in
-$[0.10, 0.90]$.
+This tier validates the \emph{estimator component} of the filter
+(\cref{fig:filter-schematic}, \textsc{InverseMC-Fit}) in isolation,
+before either the scoring rule or the regime-detection layer is
+attached. If the inverter cannot reproduce the published recovery curve
+on its native synthetic benchmark, no downstream filter result on SUMO
+or Xuancheng is trustworthy. We therefore replicate the $\S 6.1$
+synthetic experiment of \citet{morimura2013} end-to-end and verify that
+we reach the published RMAE curve to within $\sim 0.05$ across
+observation fractions in $[0.10, 0.90]$.
 
 \subsection{Experimental setup}
 

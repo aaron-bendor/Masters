@@ -1,43 +1,9 @@
 \begin{abstract}
-\noindent Satellite-navigation systems and live traffic services reroute their
-users around congestion, so observed urban traffic increasingly reflects a
-mixture of drivers' intrinsic route preferences and externally-influenced
-routing. Recovering a route-choice transition kernel from partial network
-observations is the inverse problem of Morimura, Osogami and
-Id\'e~\cite{morimura2013}, who introduced a softmax-parametric Markov-chain
-inverter that fits the kernel to observed stationary distributions and
-hitting rates at a small subset of observation states. We adapt that framework
-into a two-regime \emph{detection} pipeline and evaluate it across three
-tiers: a synthetic reproduction of the original benchmark, a controlled SUMO
-simulation comparing static unguided routing against sat-navigation
-rerouting, and a real-world Automatic-Vehicle-Identification (AVI) dataset
-from Xuancheng, China~\cite{ma2026xuancheng} ($\sim 10.5$M reconstructed
-vehicle trips over April~2023) using rush-hour versus off-peak travel as a
-behavioural proxy. Three findings stand out. First, wiring SUMO-derived edge
-attributes (road class, speed, lanes, turn geometry) into the inverter as
-global features robustly improves \emph{per-row chain recovery} across a
-five-seed sweep --- the stacked Pearson correlation between fitted and
-full-observation empirical regime contrasts rises on all five seeds (mean
-$+0.050 \pm 0.023$, paired $p \approx 0.008$) --- whereas the aggregate
-detection-AUC lift is seed-dependent and not statistically robust
-($+0.024 \pm 0.026$, reversing on one of five seeds). Second, an empirical
-$2$-step detector built from the same trajectories does not improve over the
-$1$-step empirical reference ($0.666 < 0.685$), which weakens the case for a
-parametric $2$-step extension as the immediate next lever, though it does not
-rule out richer destination-aware or hierarchical higher-order models. Third,
-on the real AVI data --- where no ground-truth sat-navigation labels exist ---
-an OD-rebalancing step shows that roughly three-quarters of the apparent
-rush-versus-off-peak chain difference in raw pooled data is attributable to
-OD-mix between commuter and discretionary trip populations rather than to
-routing choice: the full-observation empirical $1$-step reference AUC falls
-from $0.573$ on the un-matched pool to $0.518$ on the OD-matched pool, leaving
-a within-OD routing contrast only $0.018$ above chance --- not detectable
-under this proxy, model class, and data split. The same inverse-MC scoring
-core is reused across tiers, while the loader, regime definition, and
-OD-control logic differ by tier. The contribution is therefore both
-constructive and limiting: the method works as a regime detector under
-controlled labelled simulation, but real-world sat-navigation detection
-remains constrained by the absence of labels, by OD-mix confounding, and by
-the $1$-step model class. The work establishes both the potential and the
-limits of $1$-step inverse-Markov-chain methods under partial observation.
+\noindent Satellite-navigation systems and live traffic services reroute their users around congestion, so observed urban traffic increasingly reflects a mixture of drivers' intrinsic route preferences and externally-influenced routing. This matters because demand estimation, route-choice inference, congestion pricing, and infrastructure-investment decisions all rest on the assumption that observed traffic reveals what drivers actually prefer; when a significant share of trips is steered by an external recommender that itself reacts to congestion, that assumption breaks, and any downstream policy or modelling decision built on it is systematically biased. A practical tool that can distinguish externally-influenced trips from intrinsic ones, even approximately, is therefore a prerequisite for trustworthy inference on modern urban data.
+
+This dissertation designs, validates, and stress-tests a \emph{partial-observation routing-influence filter}: a pipeline that takes a road graph, a small number of observation stations, and two snapshots of traffic taken under different conditions, fits a route-choice model to each snapshot, and scores individual trips by how likely each one is under one model versus the other. The filter is built for partial observation because urban networks contain thousands of road segments while real sensing infrastructure (loop detectors, automatic-vehicle-identification gantries, fixed cameras) typically covers only a few percent of them; any deployable tool must therefore infer behaviour over the whole network from counts at a sparse subset of locations. The inverse-Markov-chain method of Morimura, Osogami and Id\'e~\cite{morimura2013} is the route-choice estimator inside the filter, chosen because it was specifically formulated to recover a chain from such partial observations.
+
+Existing route-choice and demand-estimation methods, from discrete-choice and recursive-logit models to inverse-reinforcement-learning approaches, are formulated for a single homogeneous behavioural regime and require either full trajectory data or strong assumptions about how to fill in unobserved segments. None of them provide a trip-level mechanism for distinguishing intrinsic routing from externally-influenced routing under sparse observation. The novel contribution of this work is to combine a partial-observation inverse-chain estimator with a trip-level log-likelihood-ratio scoring rule and a diagnostic suite that separates genuine route-choice recovery from misleading aggregate effects, producing a complete two-regime filter rather than a single-chain estimator. Three experimental settings justify and audit the design: a synthetic reproduction of the original benchmark, a controlled traffic-simulator study (SUMO~\cite{lopez2018}) in which sat-navigation rerouting is turned on and off for an identical population of vehicles, and a real-world dataset of about 10.5 million reconstructed vehicle trips from Xuancheng, China~\cite{ma2026xuancheng} using rush-hour versus off-peak travel as a behavioural stand-in for sat-navigation use. A second filter variant adds road-network attributes (road class, speed limit, lane count, turn geometry) as shared regularising priors.
+
+The simulator study shows that the filter works end-to-end when ground-truth labels exist: the trip-level score reaches an area under the ROC curve of $0.708$ on a long-trajectory test, against a best-possible value of $0.801$ for any model of this class on the same data. The feature-regularised variant robustly improves how closely the fitted route-choice changes match the true ones at junctions, with the improvement holding across all five repeat simulations tested. Two design choices are ruled out as immediate next steps: a count-based two-step memory model does not improve on the one-step version, and the optional hitting-rate input of the original method does not scale to a real road network in our experiments. On the real-world dataset, the filter's diagnostic suite correctly reports a negative result: once population differences between rush-hour and off-peak drivers are controlled, the filter cannot tell the two groups apart at any spatial resolution we tested, even though a full-observation reference weakly can. The contribution is therefore a designed and audited filter, together with a clear account of where it can be trusted (controlled simulation with labels) and where it currently cannot (real-world data without ground-truth labels for who is following a sat-nav).
 \end{abstract}

@@ -2,6 +2,11 @@
 # Oversized SUMO sweep artefacts (exceeds GitHub's 100MB hard limit).
 # Local-only; regeneratable from routes.xml + the SUMO seed if needed.
 sumo_validation/vehroutes.satnav.bigbox.p0.25.xml
+sumo_validation/vehroutes.d0.3.r1.0.seed7.xml
+sumo_validation/vehroutes.d0.3.r1.0.seed23.xml
+sumo_validation/vehroutes.d0.3.r1.0.seed42.xml
+sumo_validation/vehroutes.d0.3.r1.0.seed101.xml
+sumo_validation/vehroutes.d0.3.r1.0.seed2024.xml
 
 # Oversized Xuancheng AVI trip files (each 150-226MB, exceeds GitHub's 100MB limit).
 # Source: Ma et al. 2026, Figshare deposit 29925824.

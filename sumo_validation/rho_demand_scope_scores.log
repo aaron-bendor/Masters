@@ -1,0 +1,26 @@
+==== pure_congestion  (d0.3.r0.0.seed42  vs  d0.8.r0.0.seed42) ====
+    L-BFGS: success=False, nit=1500, final_loss=356.4, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=371.3, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+RESULT  tag_a=d0.3.r0.0.seed42  tag_b=d0.8.r0.0.seed42  T=20  N_test=300  |X_o|=601  n=2405  beta=0.963  features=none  d_T=0  d_psi=0  empirical=0.506  fitted_f=0.541  gap_closed= 667.0%
+
+==== satnav_only_offpeak  (d0.8.r0.0.seed42  vs  d0.8.r1.0.seed42) ====
+    L-BFGS: success=False, nit=1500, final_loss=99.56, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=104.1, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+RESULT  tag_a=d0.8.r0.0.seed42  tag_b=d0.8.r1.0.seed42  T=20  N_test=300  |X_o|=601  n=2405  beta=0.969  features=none  d_T=0  d_psi=0  empirical=0.578  fitted_f=0.561  gap_closed=  78.4%
+
+==== satnav_only_peak  (d0.3.r0.0.seed42  vs  d0.3.r1.0.seed42) ====
+    L-BFGS: success=False, nit=1500, final_loss=122.8, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=40.72, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+RESULT  tag_a=d0.3.r0.0.seed42  tag_b=d0.3.r1.0.seed42  T=20  N_test=300  |X_o|=601  n=2405  beta=0.990  features=none  d_T=0  d_psi=0  empirical=0.783  fitted_f=0.636  gap_closed=  48.1%
+
+==== proxy_diagonal  (d0.8.r0.0.seed42  vs  d0.3.r1.0.seed42) ====
+    L-BFGS: success=False, nit=1500, final_loss=125.8, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=73.69, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+RESULT  tag_a=d0.8.r0.0.seed42  tag_b=d0.3.r1.0.seed42  T=20  N_test=300  |X_o|=601  n=2405  beta=0.990  features=none  d_T=0  d_psi=0  empirical=0.804  fitted_f=0.686  gap_closed=  61.2%
+
+==== mixed_at_peak  (d0.3.r0.0.seed42  vs  d0.3.r0.5.seed42) ====
+    L-BFGS: success=False, nit=1500, final_loss=105.1, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=131.9, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+RESULT  tag_a=d0.3.r0.0.seed42  tag_b=d0.3.r0.5.seed42  T=20  N_test=300  |X_o|=601  n=2405  beta=0.983  features=none  d_T=0  d_psi=0  empirical=0.632  fitted_f=0.540  gap_closed=  30.7%
+
+==== ALL 5 PAIRS SCORED ====
