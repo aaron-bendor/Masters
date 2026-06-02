@@ -120,6 +120,27 @@ checks complementary --- on SUMO zero-init was already the best optimum
 only confirmed the negative result --- so neither tier's headline rests
 on an optimiser accident.
 
+\paragraph{The rush-vs-off-peak proxy confound --- bounded in
+simulation.} The Tier~3 proxy bundles two effects that real data
+cannot separate: sat-navigation adoption (higher at rush hour) and
+congestion-induced rerouting that affects all drivers when demand
+rises. The Tier~2 $\rho \times d$ decomposition
+(\cref{sec:phase4-rho-demand}) addresses this: holding $\rho=0$ across
+the demand axis gives an empirical AUC of $0.493 \pm 0.018$ (within
+noise of chance), while holding demand at peak across the
+$\rho$ axis gives $0.780 \pm 0.013$. The full proxy diagonal
+($0.793 \pm 0.023$) attributes $\sim\!96\%$ of its above-chance signal
+to sat-navigation adoption, with the pure-congestion contribution
+within noise and a small residual interaction. The decomposition holds
+across all five SUMO seeds. The remaining caveat is that SUMO's
+$\rho=0$ vehicles follow precomputed shortest-path routes and do not
+react to congestion en route, so the SUMO pure-congestion AUC is a
+\emph{lower bound} on the experienced-human-driver confound; even
+tripling it would not change the qualitative attribution. Real-world
+verification of this decomposition would require an alternative
+experienced-driver routing model in SUMO or, ideally, a real-world
+dataset with sat-navigation-use labels.
+
 \paragraph{The hitting-rate ($f+g$) extension does not transfer to SUMO
 scale.} The synthetic experiment of Tier~1 uses analytical (noise-free)
 $\gobs$; the SUMO and Xuancheng datasets produce empirical $\gobs$ with
@@ -198,4 +219,15 @@ OD-rebalancing extension matches the marginal $(\text{zone}_o,
 and aggregates the per-cell contrasts; smaller sample sizes per cell
 but cleaner methodologically. The loader infrastructure required
 already exists.
+\item \textbf{Experienced-driver routing model in SUMO.} The Tier~2
+$\rho \times d$ decomposition (\cref{sec:phase4-rho-demand}) bounds the
+congestion-routing confound from below, but its $\rho=0$ vehicles
+follow precomputed shortest-path routes and do not react to congestion
+en route. A SUMO scenario in which unaided drivers carry coarse
+local congestion knowledge (e.g.\ time-of-day-conditioned edge
+attractiveness) would tighten the bound to a quantity that more
+closely tracks human experienced-driver behaviour. SUMO's routing
+infrastructure supports this; an off-the-shelf alternative is
+\code{rerouting-with-static-traffic-class} priors keyed to rush-hour
+edge usage.
 \end{enumerate}

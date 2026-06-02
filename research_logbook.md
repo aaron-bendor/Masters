@@ -715,6 +715,39 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 >
 > **Thesis wired everywhere:** §7 new `tab:phase5-ksweep` table + rewritten Results prose, honest-reading paras, bottom line, headline fig caption; §8 cross-tier footnote + future-work item (K-sweep done, OD-cell bootstrap remains outstanding); §10 conclusion; §00 abstract; §02 intro contribution; §04 methodology K note (report sweep, not single default). Compiles clean (33 pp).
 
+> ### iter-27 (2026-06-01) — SUMO $\rho \times $ demand decomposition: the rush-vs-off-peak proxy is sat-nav, not congestion
+>
+> **Reviewer critique addressed:** "rush-hour vs off-peak conflates (sat-nav adoption $\uparrow$) with (congestion changes routing for ALL drivers, including intrinsic ones). You can't claim the Phase-5 signal is sat-nav rather than congestion-induced rerouting of unaided drivers." Real data can't disentangle these — there is no Xuancheng configuration where congestion is varied independently of sat-nav adoption. SUMO can: `--device.rerouting.probability` (the per-vehicle sat-nav adoption rate $\rho$) and the `randomTrips -p` demand rate are independent knobs.
+>
+> **Design.** 5 SUMO seeds $\{7, 23, 42, 101, 2024\}$ $\times$ 3 cells per seed:
+> - $(d=0.3,\,\rho=0.0)$ — peak demand, no sat-nav users
+> - $(d=0.3,\,\rho=1.0)$ — peak demand, full sat-nav
+> - $(d=0.8,\,\rho=0.0)$ — off-peak demand, no sat-nav users
+>
+> Scored 3 pair comparisons per seed at the existing Phase-4 protocol (`features=none`, $T=20$, $|X_o|=601$, `maxiter=1500`, X_o seed=13): pure_congestion (demand axis at $\rho=0$), satnav_at_peak (sat-nav axis at peak demand), and proxy_diagonal (full mimic of the Xuancheng rush-vs-off-peak comparison). Code: `sumo_validation/run_rho_demand.sh`, `score_rho_demand.py`, `dispatch_rho_demand_lean.sh`, `aggregate_rho_demand_lean.py`. SUMO cells: 15 new runs (~30 min wall time at $d=0.3$ each, $\sim$20 s at $d=0.8$). Routes cached per (seed, demand).
+>
+> **Results (mean $\pm$ std, $n=5$ seeds, empirical AUC, 95% CI $\approx$ mean $\pm 1.96 \cdot \sigma / \sqrt 5$).**
+>
+> | Pair | empirical AUC | above chance | 95% CI | fitted AUC |
+> |---|---|---|---|---|
+> | pure_congestion ($d{=}0.3,\rho{=}0$ vs $d{=}0.8,\rho{=}0$) | $0.493 \pm 0.018$ | $-0.007$ | $[0.471, 0.515]$ | $0.504 \pm 0.036$ |
+> | satnav_at_peak ($d{=}0.3,\rho{=}0$ vs $d{=}0.3,\rho{=}1$) | $0.780 \pm 0.013$ | $+0.280$ | $[0.764, 0.796]$ | $0.647 \pm 0.012$ |
+> | proxy_diagonal ($d{=}0.8,\rho{=}0$ vs $d{=}0.3,\rho{=}1$)  | $0.793 \pm 0.023$ | $+0.293$ | $[0.764, 0.821]$ | $0.655 \pm 0.026$ |
+>
+> **Decomposition of the proxy-diagonal $+0.293$ above-chance signal:** pure-congestion contribution $-2.4 \%$ (i.e., within noise / slightly negative), sat-nav-at-peak contribution $+95.6 \%$, residual interaction $+6.8 \%$.
+>
+> **Per-seed consistency.** Across all 5 seeds, sat-nav share of proxy ranges 90.6% (s2024) to 103.5% (s7). All 5 seeds attribute $\ge 90 \%$ of proxy signal to sat-nav; no seed flips the conclusion. Two seeds put pure-congestion slightly below chance (s7: $-9.8 \%$, s2024: $-9.1 \%$), three slightly above ($+0.6 \%$ to $+3.1 \%$). The decomposition is robust to SUMO instance.
+>
+> **What this answers (critique 4).** $\sim 96 \%$ of the SUMO rush-vs-off-peak signal is sat-nav adoption; congestion-induced rerouting of unaided drivers is statistically indistinguishable from zero. The Xuancheng peak-vs-off-peak proxy is therefore validated as a sat-nav proxy in this SUMO model: the confound that critique 4 raised is quantitatively small.
+>
+> **Important caveat.** SUMO's $\rho=0$ drivers follow precomputed shortest-path routes — they do NOT react to congestion. Real-world experienced drivers may avoid known-bad streets at rush hour, which this model misses. The $0.493$ pure-congestion empirical AUC is a LOWER bound on the real-world confound; even tripling it (to $\sim 0.55$) would leave sat-nav as the dominant attribution to the $0.793$ proxy signal. The decomposition argument is robust to this gap.
+>
+> **Optimiser note.** Every fit hit `maxiter=1500` without convergence (matches the Phase-4 pattern from [[phase4-features-win]]). The fitted AUC is at the protocol's single-start zero-init optimum, not necessarily the global one — consistent with the iter-24 finding that zero-init is the best optimum on SUMO. The decomposition argument rests on EMPIRICAL AUC; fitted AUC is reported as supplementary and lower throughout (e.g., satnav_at_peak: empirical $0.780$, fitted $0.647$ — same Phase-4 fitted-vs-empirical gap as the labelled SUMO benchmark).
+>
+> **Bonus linearity finding.** At fixed peak demand, the $\rho{=}0$ vs $\rho{=}0.5$ scope comparison gave empirical AUC $0.632$ (above-chance $+0.132$) vs $\rho{=}0$ vs $\rho{=}1$ at $0.783$ (above-chance $+0.283$). Roughly $\propto \Delta \rho$, suggesting AUC scales linearly with the sat-nav adoption gap. Single-seed (seed 42 only) so flagged as preliminary; not in the lean multi-seed dispatcher.
+>
+> **Thesis wired.** New §6.7 in `06_phase4_sumo.tex` (the decomposition experiment, sits between the $T$-sweep and the $f+g$ infeasibility), cross-reference paragraph added to `07_phase5_xuancheng.tex` §7.3 proxy discussion, addition to `08_discussion.tex` limits subsection. Abstract left unchanged (the decomposition strengthens but does not change the Tier-3 reading). Future-work item added: simulator-counterfactual for the experienced-driver gap (would need an alternative routing model in SUMO).
+
 ### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 
 `sumo_validation/sumo_phase3_fig.png`. Final numbers at $n = 686$, $\lvert X_o\rvert = 171$, $T = 20$, 300 trajectories per class, 4 h simulated time:

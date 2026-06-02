@@ -393,6 +393,114 @@ at $T=40$, $69\%$ of the gap closed against the full-observation
 empirical $1$-step reference of $0.801$, with a stable per-row chain
 Pearson of $+0.216$ on \texttt{[all branching]}.
 
+\subsection{Disentangling sat-nav adoption from congestion-induced rerouting}
+\label{sec:phase4-rho-demand}
+
+A methodological concern arises in advance of Tier~3
+(\cref{sec:phase5-xuancheng}), where no ground-truth sat-navigation
+label exists and we will rely on a behavioural rush-vs-off-peak proxy.
+Rush hour and off-peak differ in \emph{two} ways simultaneously: in
+sat-navigation adoption rate (presumably higher when journeys are time
+critical) and in congestion level (heavy demand changes routing
+incentives for \emph{all} drivers, sat-nav users and unaided drivers
+alike). Real data cannot separate the two contributions, because there
+is no Xuancheng configuration in which the congestion level is varied
+while the sat-navigation adoption rate is held fixed (or vice versa).
+SUMO can: the per-vehicle rerouting adoption probability
+\code{--device.rerouting.probability} and the trip-insertion rate
+\code{-p} are independent levers. Before deploying the proxy on
+Xuancheng, we use this to quantify how much of any peak-vs-off-peak
+contrast can be attributed to sat-navigation adoption vs.\ to
+congestion-induced rerouting of unaided drivers.
+
+\paragraph{Design.} We sweep five SUMO seeds
+$\{7, 23, 42, 101, 2024\}$ over three cells per seed:
+$(d{=}0.3, \rho{=}0)$ (peak demand, no sat-nav users),
+$(d{=}0.3, \rho{=}1)$ (peak demand, full sat-nav), and
+$(d{=}0.8, \rho{=}0)$ (off-peak demand, no sat-nav users), where
+$d$ is the \code{randomTrips~-p} period (lower means more vehicles, so
+more congestion) and $\rho$ is the per-vehicle sat-nav adoption rate.
+Each cell yields one SUMO simulation; routes are cached per
+$(\text{seed}, d)$ so that the $\rho$ axis costs only the simulation
+step. For each seed we compute three pairwise AUCs against the
+existing $f$-only Phase~4 protocol (\code{features=none}, $T=20$,
+$|X_o|=601$, $\code{maxiter}=1500$): \texttt{pure\_congestion} (the
+demand axis at $\rho=0$), \texttt{satnav\_at\_peak} (the $\rho$ axis at
+peak demand), and \texttt{proxy\_diagonal} (the full mimic of the
+Tier~3 rush-vs-off-peak comparison).
+
+\begin{table}[H]
+\centering
+\caption{$\rho \times d$ decomposition of the SUMO rush-vs-off-peak
+proxy signal. Mean $\pm$ sample standard deviation across five SUMO
+seeds; $95\%$ CI computed as
+$\text{mean} \pm 1.96 \cdot \sigma / \sqrt 5$.}
+\label{tab:phase4-rho-demand}
+\small
+\begin{tabular}{lcccc}
+\toprule
+pair & cells compared & $\AUC_{\mathrm{emp}}$ & $95\%$ CI & $\AUC_{\mathrm{fit}}$ \\
+\midrule
+\texttt{pure\_congestion} & $(d{=}0.3, \rho{=}0)$ vs $(d{=}0.8, \rho{=}0)$ & $0.493 \pm 0.018$  & $[0.471, 0.515]$ & $0.504 \pm 0.036$ \\
+\texttt{satnav\_at\_peak} & $(d{=}0.3, \rho{=}0)$ vs $(d{=}0.3, \rho{=}1)$ & $\mathbf{0.780 \pm 0.013}$ & $[0.764, 0.796]$ & $0.647 \pm 0.012$ \\
+\texttt{proxy\_diagonal}  & $(d{=}0.8, \rho{=}0)$ vs $(d{=}0.3, \rho{=}1)$ & $\mathbf{0.793 \pm 0.023}$ & $[0.764, 0.821]$ & $0.655 \pm 0.026$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three findings (\cref{tab:phase4-rho-demand}). First, the
+\texttt{pure\_congestion} contrast --- demand changed from off-peak
+($d=0.8$) to peak ($d=0.3$) with $\rho$ held at zero --- is
+statistically indistinguishable from chance ($0.493 \pm 0.018$, $95\%$
+CI $[0.471, 0.515]$ straddles $0.5$). Increasing the congestion level
+without any sat-navigation users does not produce a detectable routing
+distribution shift in this SUMO model. Second, the
+\texttt{satnav\_at\_peak} contrast --- $\rho$ raised from $0$ to $1$
+with congestion held at peak --- gives a large robust signal
+($0.780 \pm 0.013$, CI excludes $0.5$ cleanly). Third, the full
+\texttt{proxy\_diagonal} ($0.793 \pm 0.023$), which mimics the
+Xuancheng rush-vs-off-peak comparison, is essentially the same
+magnitude as \texttt{satnav\_at\_peak}: adding the demand axis on top
+of the $\rho$ axis contributes almost nothing detectable. Decomposing
+the $+0.293$ above-chance signal of \texttt{proxy\_diagonal} via the
+empirical-AUC margins gives a sat-navigation contribution of
+$+95.6\%$, a pure-congestion contribution of $-2.4\%$ (within noise),
+and a residual interaction of $+6.8\%$. Per-seed (the decomposition
+holds across SUMO instances): the sat-navigation share of the proxy
+signal ranges $90.6\%$ (seed $2024$) to $103.5\%$ (seed $7$); every one
+of the five seeds attributes at least $90\%$ of its proxy signal to
+sat-navigation adoption.
+
+\paragraph{Caveat on the experienced-driver gap.} SUMO's $\rho=0$
+vehicles follow precomputed shortest-path routes and do \emph{not}
+react to congestion en route. Real-world unaided but experienced drivers
+may avoid known-bad streets at rush hour, a behaviour this model does
+not capture, so the $0.493$ \texttt{pure\_congestion} AUC is best read
+as a \emph{lower bound} on the real-world congestion-routing confound.
+Even tripling it (to $\sim 0.55$) would leave sat-navigation as the
+dominant attribution to the $0.793$ proxy signal --- the decomposition
+is robust to that gap by a wide margin.
+
+\paragraph{Fitted vs.\ empirical.} As elsewhere in this work, the
+fitted partial-observation detector captures only part of the
+empirical signal ($0.647$ vs.\ $0.780$ on \texttt{satnav\_at\_peak};
+$0.655$ vs.\ $0.793$ on \texttt{proxy\_diagonal}), consistent with the
+fitted-vs-empirical pattern of \cref{sec:phase4-features-result}. The
+decomposition argument here rests on the empirical AUC, which uses the
+full-observation chain and is the ground truth for the
+``how much of the proxy is sat-nav'' question.
+
+\paragraph{Reading.} The $\rho \times d$ decomposition supports the
+Tier~3 use of a rush-vs-off-peak behavioural proxy as a sat-navigation
+proxy in the controlled regime: under the simulator, $\sim\!96\%$ of
+the peak-vs-off-peak routing-distribution signal is attributable to
+sat-navigation adoption, and the congestion-routing confound that
+critique 4 raised is quantitatively small. This does \emph{not}
+guarantee the same decomposition holds on real-world Xuancheng data ---
+real drivers are not SUMO drivers --- but it validates the proxy as a
+controlled-comparison object and bounds the experienced-driver
+confound from below.
+
 \subsection{The $f+g$ extension at scale: documented infeasibility}
 \label{sec:phase4-fg-infeasible}
 

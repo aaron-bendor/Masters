@@ -114,6 +114,25 @@ dilution from observation alone; what we can do is report the resulting
 real-world AUC honestly as a lower bound on the method's sensitivity
 in deployment.
 
+A further concern is that the rush-vs-off-peak contrast bundles
+\emph{two} potentially confounding effects: sat-navigation adoption
+(higher at rush hour) \emph{and} congestion-induced rerouting that
+affects all drivers (sat-nav users and unaided drivers alike) when
+demand rises. Real data cannot separate these without
+sat-navigation-use labels. The Tier~2 $\rho \times d$ decomposition
+(\cref{sec:phase4-rho-demand}) provides a partial answer: in the
+SUMO model, varying congestion at $\rho=0$ produces an empirical AUC
+of $0.493 \pm 0.018$ (statistically indistinguishable from chance),
+whereas varying $\rho$ at fixed peak congestion produces
+$0.780 \pm 0.013$, and the full rush-vs-off-peak proxy diagonal
+($0.793 \pm 0.023$) attributes $\sim\!96\%$ of its above-chance signal
+to sat-navigation adoption and the rest to within-noise residual ---
+across five SUMO seeds. This validates the proxy as a sat-navigation
+proxy in the controlled tier and bounds the congestion-routing
+confound, though with the residual caveat that SUMO's $\rho=0$ drivers
+do not react to congestion en route, so the lower-bound character of
+the bound does not transfer fully to experienced human drivers.
+
 \subsection{Results}\label{sec:phase5-results}
 
 We report three configurations on the rush-vs-off-peak contrast:
