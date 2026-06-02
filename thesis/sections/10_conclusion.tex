@@ -50,13 +50,23 @@ network.
 lift from features is seed-dependent, reversing on one of five seeds,
 so the per-row diagnostic re-classifies features as a chain-recovery
 lever rather than a robust detection lever --- this is exactly the kind
-of design-relevant verdict the audit suite exists to enable. The
-empirical $2$-step audit does not improve over the $1$-step empirical
-reference, weakening the case for a parametric $2$-step extension as
-the immediate next filter lever. The hitting-rate ($f+g$) route is
-computationally infeasible at SUMO scale because the empirical $g$ is
-floor-dominated, so the filter's optional $\gobs$ input is documented
-as not currently usable beyond synthetic. On the real AVI data the
+of design-relevant verdict the audit suite exists to enable. Conversely, a properly regularised
+empirical $2$-step audit (interpolation backoff with count-conditional
+trust) lifts the AUC by $+0.100 \pm 0.009$ across five SUMO seeds, with
+every seed winning --- identifying higher-order routing memory as a
+real signal the $1$-step softmax family cannot capture, and promoting
+a parametric $2$-step Morimura extension to a justified future
+direction. The hitting-rate ($f+g$) route does not naively transfer to full-SUMO
+scale: a sparse-LU rewrite is FD-verified and works, but at $|X_o|
+\approx 600$ the wide gradient solve still favours dense BLAS3 over
+sparse per-column solves by $\sim 80\times$, and a Sherman--Morrison
+amortisation would be the right algorithmic next step. At a sub-network
+scale where the framework is operationally fine, $f+g$ at the
+correctly-tuned loss weight ($\gamma \approx 0.95$) lifts AUC by
+$+0.055$ and matches the full-observation reference on the test
+subgraph within sampling noise; the $\sim 85\%$ floor-dominated
+empirical $g$ persists at every scale we tested and is the
+$\gamma$-tuning constraint. On the real AVI data the
 fitted $1$-step filter does not recover the rush-vs-off-peak contrast
 at any OD-zone granularity tested ($K \in \{8, 16, 32, 64\}$; AUC
 $0.476$--$0.513$, every bootstrap CI straddling chance), even though
@@ -82,10 +92,13 @@ detectable at the $1$-step Markov level under the tested proxy, model
 class, and data split. The filter therefore does \emph{not} support
 real-world sat-navigation detection on the Xuancheng dataset; Tier~3 is
 reported as a confounding audit, not a positive detection result.
-The filter is also not reliable when its $\gobs$ input is required:
-$f+g$ does not transfer to SUMO scale under L-BFGS, and a
-natural-gradient or Levenberg--Marquardt solver would be the
-algorithmic prerequisite for re-enabling that mode.
+The filter's optional $\gobs$ input is fully tractable at the
+sub-network scale where its empirical estimate is informative ---
+where it lifts AUC and recovers the empirical reference within
+sampling noise --- but does not currently transfer to a full city
+network under naive sparse-LU; a Sherman--Morrison factor-sharing
+update (or the paper's natural-gradient descent) is the algorithmic
+prerequisite for re-enabling the $f+g$ mode at city scale.
 
 \paragraph{Contribution.} The contribution is a designed and audited
 filter pipeline, not a fresh estimator. Academically, the work extends
@@ -96,8 +109,8 @@ bias, along with a controlled-simulator decomposition
 confound in the rush-vs-off-peak behavioural proxy used on real-world
 data, documenting where the approach succeeds (controlled simulation
 with labels) and where it does not (real-world proxy without labels,
-OD-mix confounding, $1$-step model class, $f+g$ infeasibility at
-scale). Practically, it shows that quantifying externally-influenced
+OD-mix confounding, $1$-step model class, $f+g$ engineering gap at
+city scale). Practically, it shows that quantifying externally-influenced
 routing on real urban data is gated less by the inverse-MC machinery
 than by the availability of ground-truth adoption labels and by control
 for OD-mix confounding --- a result that directly informs how any

@@ -1,0 +1,16 @@
+=== Sparse f+g timing on SUMO bigger-bbox (seed=42, T=20) ===
+  n=2405  beta=0.972
+  |X_o|=601  (25.0% of n)
+  g_intr   90% at floor
+  g_satnav 84% at floor
+
+  empirical 1-step AUC = 0.685
+
+  --- intrinsic f+g fit, sparse, maxiter=10, gamma=0.5 ---
+    L-BFGS: success=False, nit=10, final_loss=3.15e+05, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    intr fit wall = 1787.0s
+    L-BFGS: success=False, nit=10, final_loss=2.902e+05, d=8392 (n=2405, E=5987, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    satnav fit wall = 1870.3s
+    auc_fg = 0.591  (auc_emp = 0.685)
+
+    Wall time exceeds 1 hr budget; stopping sweep.

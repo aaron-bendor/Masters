@@ -1,6 +1,7 @@
-
-# Oversized SUMO sweep artefacts (exceeds GitHub's 100MB hard limit).
-# Local-only; regeneratable from routes.xml + the SUMO seed if needed.
+# ============================================================
+# Oversized SUMO sweep artefacts (exceed GitHub's 100MB hard limit).
+# Local-only; regeneratable from routes.xml + the SUMO seed.
+# ============================================================
 sumo_validation/vehroutes.satnav.bigbox.p0.25.xml
 sumo_validation/vehroutes.d0.3.r1.0.seed7.xml
 sumo_validation/vehroutes.d0.3.r1.0.seed23.xml
@@ -8,13 +9,43 @@ sumo_validation/vehroutes.d0.3.r1.0.seed42.xml
 sumo_validation/vehroutes.d0.3.r1.0.seed101.xml
 sumo_validation/vehroutes.d0.3.r1.0.seed2024.xml
 
+# ============================================================
 # Oversized Xuancheng AVI trip files (each 150-226MB, exceeds GitHub's 100MB limit).
 # Source: Ma et al. 2026, Figshare deposit 29925824.
+# ============================================================
 real_data/Data/data/Xuancheng/data_2023_04_*_type_filtered.json
 
-# Python cache
+# ============================================================
+# macOS noise
+# ============================================================
+.DS_Store
+**/.DS_Store
+
+# ============================================================
+# Python cache + virtualenv
+# ============================================================
 __pycache__/
 *.pyc
+.venv/
 
+# ============================================================
 # Local Claude Code worktree directory
+# ============================================================
 .claude/worktrees/
+
+# ============================================================
+# LaTeX intermediate artefacts (regenerated on every compile).
+# Note: aux/bbl/log/etc. are already tracked from earlier commits; this
+# block only prevents future fresh-checkout instances from being added.
+# Run `git rm --cached thesis/main.{aux,bbl,blg,fdb_latexmk,fls,log,out,toc}`
+# to untrack them properly. main.pdf is intentionally tracked.
+# ============================================================
+thesis/main.aux
+thesis/main.bbl
+thesis/main.blg
+thesis/main.fdb_latexmk
+thesis/main.fls
+thesis/main.log
+thesis/main.out
+thesis/main.toc
+thesis/sections/*.aux

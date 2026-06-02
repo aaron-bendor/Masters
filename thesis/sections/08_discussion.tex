@@ -141,18 +141,28 @@ verification of this decomposition would require an alternative
 experienced-driver routing model in SUMO or, ideally, a real-world
 dataset with sat-navigation-use labels.
 
-\paragraph{The hitting-rate ($f+g$) extension does not transfer to SUMO
-scale.} The synthetic experiment of Tier~1 uses analytical (noise-free)
-$\gobs$; the SUMO and Xuancheng datasets produce empirical $\gobs$ with
-$84$--$89\%$ of cells at the floor under any reasonable training-data
-size. The L-BFGS optimiser on the corresponding under-constrained
-landscape line-search-backtracks indefinitely. Under
-the simpler $f$-only loss the framework remains tractable. This is
-documented as a real --- and surprising --- limitation: the headline
-feature of the original paper transfers to synthetic but not to
-realistic-scale urban traffic data. The paper's natural-gradient
-optimiser \cite{morimura2013}~$\S 4.1$ is the obvious algorithmic fix
-that we did not pursue here.
+\paragraph{The hitting-rate ($f+g$) extension at scale --- refined
+diagnosis.} An earlier draft of this work reported the $f+g$ extension
+as infeasible at SUMO scale on the strength of a $9.5$-hour dense fit
+that did not terminate. A robust diagnosis
+(\cref{sec:phase4-fg-infeasible}) separates that single claim into
+three: (i)~the engineering bottleneck is real but more subtle than
+``replace dense with sparse'' --- a FD-verified sparse-LU
+implementation now exists, but at SUMO scale ($d \approx 8{,}400$ wide
+gradient RHS) dense LAPACK GETRS still wins by $\sim 80\times$ via
+BLAS3 multi-core kernels; (ii)~the binding sensitivity is
+$\gamma$, not the solver: at $\gamma = 0.5$ the floor-dominated $L_h$
+overwhelms $L_f$ and $f+g$ hurts, while at $\gamma = 0.95$ on a
+$200$-edge Xuancheng subgraph $f+g$ recovers the full-observation
+empirical reference within sampling noise; (iii)~the data-density
+issue ($\sim 85\%$ of $\gobs$ cells at floor) persists at every scale
+we tested, so any future $f+g$ scale-up must operate at high $\gamma$.
+Under the simpler $f$-only loss the framework remains tractable and
+that is what the practical detector in this work uses. The natural
+algorithmic next step is Sherman--Morrison amortisation of the
+$(I - \beta P_T)$ factor across $X_o$ (one factor per L-BFGS iteration
+instead of $|X_o|$) or the paper's natural-gradient descent
+\cite{morimura2013}~$\S 4.1$; both are flagged as future work.
 
 \subsection{Social, environmental, technological implications}
 \label{sec:disc-implications}
@@ -205,20 +215,46 @@ logistic-regression layer on top of $\Lam(\tau)$ that adds those
 features would lift detection AUC further at the cost of a slightly
 weaker chain-recovery claim. Worth doing as a clearly-labelled
 ``deployment-oriented'' extension.
+\item \textbf{Sherman--Morrison factor sharing in $\bm{f+g}$.} The
+sparse-LU implementation (\cref{sec:phase4-fg-infeasible}) is
+FD-verified but slower than dense at SUMO scale because the wide
+gradient RHS $V \in \mathbb{R}^{n \times d}$ benefits from BLAS3
+multi-core kernels. The natural amortisation is to factor
+$(I - \beta P_T)$ \emph{once} per L-BFGS iteration and derive each
+per-state $h_j$ and $\nabla h_j$ via a Sherman--Morrison update
+(rank-1 in the row of $P_T$ being zeroed out), which converts
+$|X_o| = 601$ factor + wide-solve pairs into a single factor and
+a single wide-solve plus $|X_o|$ rank-1 corrections. This is the
+algorithmic step that bridges the engineering gap exposed in the
+subgraph experiment.
+
 \item \textbf{Natural-gradient or LM optimisation.} Per
-\cref{sec:phase4-fg-infeasible}, the $f+g$ infeasibility is an
-optimiser-quality problem, not a method-class problem. The paper's
+\cref{sec:phase4-fg-infeasible}, even with the engineering fix above,
+the $f+g$ loss surface is under-constrained under floor-dominated
+$\gobs$ and benefits from manifold-aware steps. The paper's
 $\S 4.1$ natural-gradient descent or a Levenberg--Marquardt
 formulation against the residual Jacobian (iter-17 of the project
 explored this; abandoned at $d = 8{,}392$ for memory cost) would
-likely restore $f+g$ tractability and enable an $f+g$-with-features
-re-validation.
+combine well with Sherman--Morrison and enable an
+$f+g$-with-features re-validation at city scale.
 \item \textbf{OD-conditional fitting on Xuancheng.} The
 OD-rebalancing extension matches the marginal $(\text{zone}_o,
 \text{zone}_d)$ distribution. A stronger control fits per-cell chains
 and aggregates the per-cell contrasts; smaller sample sizes per cell
 but cleaner methodologically. The loader infrastructure required
 already exists.
+\item \textbf{Parametric 2-step Morimura extension.} The regularised
+2-step empirical of \cref{sec:phase4-2step} lifts AUC by $+0.100 \pm 0.009$
+across five SUMO seeds, decisively above the $1$-step ceiling that the
+features lever could not pass. The natural inverter extension that this
+empirical bound motivates is a parametric softmax on $(x_p, x)$
+contexts. The state-space expansion is significant
+($|X|^2 \approx 5.8\text{M}$ pairs) but only $\sim\!3{,}500$ are
+observed in training, so the parameter count and gradient cost grow as
+the observed-pair count, not as $n^2$. Per-pair softmax parameters
+with feature-sharing across topologically similar pairs would be the
+first design to try.
+
 \item \textbf{Experienced-driver routing model in SUMO.} The Tier~2
 $\rho \times d$ decomposition (\cref{sec:phase4-rho-demand}) bounds the
 congestion-routing confound from below, but its $\rho=0$ vehicles

@@ -1,0 +1,37 @@
+=== sparse f+g on Xuancheng subgraph (K_macro=8, pick_zone=0, day=2023-04-17, T=10) ===
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  rush=105,593  offpeak=109,766  other=114,961
+  total: rush=105,593, offpeak=109,766
+  edges with traffic (rush): 1052/1733
+  edges with traffic (offpeak): 1046/1733
+
+  full graph: n=1733  |E|_dir = 4,393
+  trajs: rush=105,593  offpeak=109,766
+  zone sizes (by edge from-endpoint): [230, 233, 147, 181, 219, 143, 363, 217]
+  zone 0: zone edges=212, SCC count=19, largest SCC size=194
+
+  subgraph (zone 0): n=212  |E|_dir = 392
+  filtering trajectories (rush) ...
+    kept 9,429/105,593 trajectories (8.9%)
+  filtering trajectories (offpeak) ...
+    kept 10,060/109,766 trajectories (9.2%)
+  long-enough subgraph trajectories (>= T+1=11): rush=538  offpeak=584
+  beta (subgraph) = 0.848  N_test = 300/class
+  |X_o| = 53  (25.0% of subgraph)
+  g_rush    88.4% at floor
+  g_offpeak 88.0% at floor
+
+  empirical 1-step AUC on subgraph = 0.563
+
+  --- f-only fit, sparse, maxiter=300 ---
+    L-BFGS: success=False, nit=300, final_loss=1.694, d=586 (n=194, E=392, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=300, final_loss=2.831, d=586 (n=194, E=392, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    f-only wall = 1.4s  auc_f = 0.498
+
+  --- f+g fit, sparse, gamma=0.5, maxiter=300 ---
+    L-BFGS: success=False, nit=300, final_loss=2277, d=586 (n=194, E=392, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=300, final_loss=2089, d=586 (n=194, E=392, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    f+g wall    = 47.5s  auc_fg = 0.488
+
+RESULT  subgraph_zone=0  n_sub=212  |X_o|=53  N_test=300  g_floor_rush=88.4%  g_floor_off=88.0%  auc_emp=0.563  auc_f=0.498  auc_fg=0.488  delta_fg=-0.010  t_f=1.4s  t_fg=47.5s

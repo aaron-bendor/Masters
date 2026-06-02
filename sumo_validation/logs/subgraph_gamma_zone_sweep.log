@@ -1,0 +1,61 @@
+==== zone=0  gamma_fg=0.5 ====
+      f-only wall = 1.4s  auc_f = 0.498
+      f+g wall    = 47.5s  auc_fg = 0.488
+  RESULT  subgraph_zone=0  n_sub=212  |X_o|=53  N_test=300  g_floor_rush=88.4%  g_floor_off=88.0%  auc_emp=0.563  auc_f=0.498  auc_fg=0.488  delta_fg=-0.010  t_f=1.4s  t_fg=47.5s
+
+==== zone=0  gamma_fg=0.7 ====
+      f-only wall = 1.4s  auc_f = 0.498
+      f+g wall    = 47.3s  auc_fg = 0.487
+  RESULT  subgraph_zone=0  n_sub=212  |X_o|=53  N_test=300  g_floor_rush=88.4%  g_floor_off=88.0%  auc_emp=0.563  auc_f=0.498  auc_fg=0.487  delta_fg=-0.010  t_f=1.4s  t_fg=47.3s
+
+==== zone=0  gamma_fg=0.9 ====
+      f-only wall = 1.4s  auc_f = 0.498
+      f+g wall    = 46.7s  auc_fg = 0.521
+  RESULT  subgraph_zone=0  n_sub=212  |X_o|=53  N_test=300  g_floor_rush=88.4%  g_floor_off=88.0%  auc_emp=0.563  auc_f=0.498  auc_fg=0.521  delta_fg=+0.023  t_f=1.4s  t_fg=46.7s
+
+==== zone=0  gamma_fg=0.95 ====
+      f-only wall = 1.4s  auc_f = 0.498
+      f+g wall    = 46.4s  auc_fg = 0.553
+  RESULT  subgraph_zone=0  n_sub=212  |X_o|=53  N_test=300  g_floor_rush=88.4%  g_floor_off=88.0%  auc_emp=0.563  auc_f=0.498  auc_fg=0.553  delta_fg=+0.055  t_f=1.4s  t_fg=46.4s
+
+==== zone=0  gamma_fg=0.99 ====
+      f-only wall = 1.4s  auc_f = 0.498
+      f+g wall    = 51.5s  auc_fg = 0.489
+  RESULT  subgraph_zone=0  n_sub=212  |X_o|=53  N_test=300  g_floor_rush=88.4%  g_floor_off=88.0%  auc_emp=0.563  auc_f=0.498  auc_fg=0.489  delta_fg=-0.009  t_f=1.4s  t_fg=51.5s
+
+==== zone=1  gamma_fg=0.9 ====
+      f-only wall = 1.4s  auc_f = 0.589
+      f+g wall    = 66.8s  auc_fg = 0.480
+  RESULT  subgraph_zone=1  n_sub=208  |X_o|=52  N_test=95  g_floor_rush=86.1%  g_floor_off=84.8%  auc_emp=0.424  auc_f=0.589  auc_fg=0.480  delta_fg=-0.109  t_f=1.4s  t_fg=66.8s
+
+==== zone=2  gamma_fg=0.9 ====
+      f-only wall = 0.9s  auc_f = 0.500
+      f+g wall    = 20.5s  auc_fg = 0.527
+  RESULT  subgraph_zone=2  n_sub=138  |X_o|=34  N_test=16  g_floor_rush=86.7%  g_floor_off=87.2%  auc_emp=0.473  auc_f=0.500  auc_fg=0.527  delta_fg=+0.027  t_f=0.9s  t_fg=20.5s
+
+==== zone=3  gamma_fg=0.9 ====
+      f-only wall = 1.0s  auc_f = 0.500
+      f+g wall    = 26.5s  auc_fg = 0.500
+  RESULT  subgraph_zone=3  n_sub=170  |X_o|=42  N_test=2  g_floor_rush=89.9%  g_floor_off=89.7%  auc_emp=0.500  auc_f=0.500  auc_fg=0.500  delta_fg=+0.000  t_f=1.0s  t_fg=26.5s
+
+==== zone=4  gamma_fg=0.9 ====
+      f-only wall = 1.3s  auc_f = 0.534
+      f+g wall    = 42.7s  auc_fg = 0.588
+  RESULT  subgraph_zone=4  n_sub=205  |X_o|=51  N_test=69  g_floor_rush=88.4%  g_floor_off=88.7%  auc_emp=0.619  auc_f=0.534  auc_fg=0.588  delta_fg=+0.055  t_f=1.3s  t_fg=42.7s
+
+==== zone=5  gamma_fg=0.9 ====
+      f-only wall = 0.9s  auc_f = 0.549
+      f+g wall    = 16.7s  auc_fg = 0.509
+  RESULT  subgraph_zone=5  n_sub=135  |X_o|=33  N_test=175  g_floor_rush=85.3%  g_floor_off=80.3%  auc_emp=0.585  auc_f=0.549  auc_fg=0.509  delta_fg=-0.040  t_f=0.9s  t_fg=16.7s
+
+==== zone=6  gamma_fg=0.9 ====
+      f-only wall = 3.6s  auc_f = 0.464
+      f+g wall    = 367.2s  auc_fg = 0.501
+  RESULT  subgraph_zone=6  n_sub=346  |X_o|=86  N_test=300  g_floor_rush=83.6%  g_floor_off=81.0%  auc_emp=0.491  auc_f=0.464  auc_fg=0.501  delta_fg=+0.037  t_f=3.6s  t_fg=367.2s
+
+==== zone=7  gamma_fg=0.9 ====
+      f-only wall = 1.5s  auc_f = 0.541
+      f+g wall    = 68.7s  auc_fg = 0.594
+  RESULT  subgraph_zone=7  n_sub=200  |X_o|=50  N_test=133  g_floor_rush=90.6%  g_floor_off=88.1%  auc_emp=0.580  auc_f=0.541  auc_fg=0.594  delta_fg=+0.053  t_f=1.5s  t_fg=68.7s
+
+==== ALL DONE ====

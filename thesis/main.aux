@@ -49,9 +49,6 @@
 \newlabel{sec:route-softmax@cref}{{[subsection][2][3]3.2}{[1][8][]8}{}{}{}}
 \newlabel{eq:softmax}{{1}{8}{Route choice as a softmax-parametric Markov chain}{equation.1}{}}
 \newlabel{eq:softmax@cref}{{[equation][1][]1}{[1][8][]8}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}The Morimura inverse-MC framework}{8}{subsection.3.3}\protected@file@percent }
-\newlabel{sec:morimura}{{3.3}{8}{The Morimura inverse-MC framework}{subsection.3.3}{}}
-\newlabel{sec:morimura@cref}{{[subsection][3][3]3.3}{[1][8][]8}{}{}{}}
 \citation{gu2018}
 \citation{thai2016,krichene2018}
 \citation{flotterod2017}
@@ -59,17 +56,20 @@
 \citation{cappi2026}
 \citation{wang2023xuancheng}
 \citation{ma2026xuancheng}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}The Morimura inverse-MC framework}{9}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:morimura}{{3.3}{9}{The Morimura inverse-MC framework}{subsection.3.3}{}}
+\newlabel{sec:morimura@cref}{{[subsection][3][3]3.3}{[1][8][]9}{}{}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Re-routing detection and external traffic influence}{9}{subsection.3.4}\protected@file@percent }
 \newlabel{sec:rerouting-prior}{{3.4}{9}{Re-routing detection and external traffic influence}{subsection.3.4}{}}
 \newlabel{sec:rerouting-prior@cref}{{[subsection][4][3]3.4}{[1][9][]9}{}{}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Microscopic traffic simulation: SUMO}{9}{subsection.3.5}\protected@file@percent }
 \newlabel{sec:sumo}{{3.5}{9}{Microscopic traffic simulation: SUMO}{subsection.3.5}{}}
 \newlabel{sec:sumo@cref}{{[subsection][5][3]3.5}{[1][9][]9}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Real-world traffic from Automatic Vehicle Identification}{9}{subsection.3.6}\protected@file@percent }
-\newlabel{sec:avi-prior}{{3.6}{9}{Real-world traffic from Automatic Vehicle Identification}{subsection.3.6}{}}
-\newlabel{sec:avi-prior@cref}{{[subsection][6][3]3.6}{[1][9][]9}{}{}{}}
 \citation{morimura2013}
 \citation{morimura2013}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Real-world traffic from Automatic Vehicle Identification}{10}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:avi-prior}{{3.6}{10}{Real-world traffic from Automatic Vehicle Identification}{subsection.3.6}{}}
+\newlabel{sec:avi-prior@cref}{{[subsection][6][3]3.6}{[1][9][]10}{}{}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{10}{section.4}\protected@file@percent }
 \newlabel{sec:methodology}{{4}{10}{Methodology}{section.4}{}}
 \newlabel{sec:methodology@cref}{{[section][4][]4}{[1][10][]10}{}{}{}}
@@ -80,7 +80,7 @@
 \@writefile{toc}{\contentsline {paragraph}{Inputs.}{10}{paragraph*.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Estimator.}{10}{paragraph*.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Scoring rule.}{10}{paragraph*.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Decision output.}{10}{paragraph*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Decision output.}{11}{paragraph*.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Diagnostic audits.}{11}{paragraph*.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Failure and confound checks.}{11}{paragraph*.8}\protected@file@percent }
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Partial-observation routing-influence filter}}{11}{algorithm.1}\protected@file@percent }
@@ -163,136 +163,148 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Tier~2 multistart basin check on the two low-basin seeds (\texttt  {features=none}, $K = 5$, $T = 20$). \textbf  {(a)} The val-selected multistart detector ties the zero-init baseline on seed~$7$ and is markedly worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of seeds $\{42, 101, 2024\}$ (dashed). \textbf  {(b)} Every one of the ten random restarts (five per regime) converges to a strictly \emph  {higher} final loss than zero-init --- so zero-init is the best optimum found, and the low basin is not an initialisation artefact.}}{21}{figure.caption.16}\protected@file@percent }
 \newlabel{fig:phase4-multistart}{{5}{21}{Tier~2 multistart basin check on the two low-basin seeds (\code {features=none}, $K = 5$, $T = 20$). \textbf {(a)} The val-selected multistart detector ties the zero-init baseline on seed~$7$ and is markedly worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of seeds $\{42, 101, 2024\}$ (dashed). \textbf {(b)} Every one of the ten random restarts (five per regime) converges to a strictly \emph {higher} final loss than zero-init --- so zero-init is the best optimum found, and the low basin is not an initialisation artefact}{figure.caption.16}{}}
 \newlabel{fig:phase4-multistart@cref}{{[figure][5][]5}{[1][21][]21}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Higher-order memory diagnostic: the empirical 2-step detector does not improve the reference}{22}{subsection.6.5}\protected@file@percent }
-\newlabel{sec:phase4-2step}{{6.5}{22}{Higher-order memory diagnostic: the empirical 2-step detector does not improve the reference}{subsection.6.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{22}{subsection.6.5}\protected@file@percent }
+\newlabel{sec:phase4-2step}{{6.5}{22}{Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{subsection.6.5}{}}
 \newlabel{sec:phase4-2step@cref}{{[subsection][5][6]6.5}{[1][22][]22}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces $2$-step diagnostic on SUMO bigger-bbox, seed=42, $T=20$. $2$-step covers $92.9\%$ of test transitions; the rest fall back to the $1$-step empirical conditional on either the first step or any unseen $(x_{t-1}, x_t)$ context.}}{22}{table.caption.17}\protected@file@percent }
-\newlabel{tab:phase4-2step}{{5}{22}{$2$-step diagnostic on SUMO bigger-bbox, seed=42, $T=20$. $2$-step covers $92.9\%$ of test transitions; the rest fall back to the $1$-step empirical conditional on either the first step or any unseen $(x_{t-1}, x_t)$ context}{table.caption.17}{}}
+\@writefile{toc}{\contentsline {paragraph}{Dirichlet smoothing (toward uniform-over-neighbors).}{22}{paragraph*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Interpolation backoff (toward 1-step empirical).}{22}{paragraph*.18}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces 2-step empirical sweep on SUMO bigger-bbox across 5 SUMO seeds ($T=20$, training/test split as in \cref  {sec:phase4-multiseed}, 1-step empirical baseline mean $0.652 \pm 0.022$ across these seeds). Each row reports the per-method best multi-seed configuration with its mean and standard deviation across the five seeds. The ``single-seed (seed 42)'' row reproduces the result of an earlier draft; the multi-seed rows below are the load-bearing evidence.}}{22}{table.caption.19}\protected@file@percent }
+\newlabel{tab:phase4-2step}{{5}{22}{2-step empirical sweep on SUMO bigger-bbox across 5 SUMO seeds ($T=20$, training/test split as in \cref {sec:phase4-multiseed}, 1-step empirical baseline mean $0.652 \pm 0.022$ across these seeds). Each row reports the per-method best multi-seed configuration with its mean and standard deviation across the five seeds. The ``single-seed (seed 42)'' row reproduces the result of an earlier draft; the multi-seed rows below are the load-bearing evidence}{table.caption.19}{}}
 \newlabel{tab:phase4-2step@cref}{{[table][5][]5}{[1][22][]22}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Reading.}{23}{paragraph*.20}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.6}Trajectory-length sweep: lifting the ceiling and the detector together}{23}{subsection.6.6}\protected@file@percent }
 \newlabel{sec:phase4-tsweep}{{6.6}{23}{Trajectory-length sweep: lifting the ceiling and the detector together}{subsection.6.6}{}}
-\newlabel{sec:phase4-tsweep@cref}{{[subsection][6][6]6.6}{[1][22][]23}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Tier~2 $T$-sweep on SUMO bigger-bbox, seed~$42$, \texttt  {features=real}. The empirical $1$-step Markov ceiling (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes.}}{23}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:phase4-tsweep}{{6}{23}{Tier~2 $T$-sweep on SUMO bigger-bbox, seed~$42$, \code {features=real}. The empirical $1$-step Markov ceiling (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes}{figure.caption.18}{}}
-\newlabel{fig:phase4-tsweep@cref}{{[figure][6][]6}{[1][23][]23}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces $T$-sweep on SUMO bigger-bbox, seed=42, \texttt  {features=real} (\cref  {fig:phase4-tsweep}). The fit itself is $T$-independent --- only the test scoring window changes --- as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs.}}{23}{table.caption.19}\protected@file@percent }
-\newlabel{tab:phase4-tsweep}{{6}{23}{$T$-sweep on SUMO bigger-bbox, seed=42, \code {features=real} (\cref {fig:phase4-tsweep}). The fit itself is $T$-independent --- only the test scoring window changes --- as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs}{table.caption.19}{}}
-\newlabel{tab:phase4-tsweep@cref}{{[table][6][]6}{[1][23][]23}{}{}{}}
+\newlabel{sec:phase4-tsweep@cref}{{[subsection][6][6]6.6}{[1][23][]23}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Tier~2 $T$-sweep on SUMO bigger-bbox, seed~$42$, \texttt  {features=real}. The empirical $1$-step Markov ceiling (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes.}}{24}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:phase4-tsweep}{{6}{24}{Tier~2 $T$-sweep on SUMO bigger-bbox, seed~$42$, \code {features=real}. The empirical $1$-step Markov ceiling (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes}{figure.caption.21}{}}
+\newlabel{fig:phase4-tsweep@cref}{{[figure][6][]6}{[1][23][]24}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces $T$-sweep on SUMO bigger-bbox, seed=42, \texttt  {features=real} (\cref  {fig:phase4-tsweep}). The fit itself is $T$-independent --- only the test scoring window changes --- as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs.}}{24}{table.caption.22}\protected@file@percent }
+\newlabel{tab:phase4-tsweep}{{6}{24}{$T$-sweep on SUMO bigger-bbox, seed=42, \code {features=real} (\cref {fig:phase4-tsweep}). The fit itself is $T$-independent --- only the test scoring window changes --- as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs}{table.caption.22}{}}
+\newlabel{tab:phase4-tsweep@cref}{{[table][6][]6}{[1][24][]24}{}{}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.7}Disentangling sat-nav adoption from congestion-induced rerouting}{24}{subsection.6.7}\protected@file@percent }
 \newlabel{sec:phase4-rho-demand}{{6.7}{24}{Disentangling sat-nav adoption from congestion-induced rerouting}{subsection.6.7}{}}
-\newlabel{sec:phase4-rho-demand@cref}{{[subsection][7][6]6.7}{[1][23][]24}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Design.}{24}{paragraph*.20}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces $\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ CI computed as $\text  {mean} \pm 1.96 \cdot \sigma / \sqrt  5$.}}{24}{table.caption.21}\protected@file@percent }
-\newlabel{tab:phase4-rho-demand}{{7}{24}{$\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ CI computed as $\text {mean} \pm 1.96 \cdot \sigma / \sqrt 5$}{table.caption.21}{}}
-\newlabel{tab:phase4-rho-demand@cref}{{[table][7][]7}{[1][24][]24}{}{}{}}
+\newlabel{sec:phase4-rho-demand@cref}{{[subsection][7][6]6.7}{[1][24][]24}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Design.}{25}{paragraph*.23}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces $\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ CI computed as $\text  {mean} \pm 1.96 \cdot \sigma / \sqrt  5$.}}{25}{table.caption.24}\protected@file@percent }
+\newlabel{tab:phase4-rho-demand}{{7}{25}{$\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ CI computed as $\text {mean} \pm 1.96 \cdot \sigma / \sqrt 5$}{table.caption.24}{}}
+\newlabel{tab:phase4-rho-demand@cref}{{[table][7][]7}{[1][25][]25}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Caveat on the experienced-driver gap.}{25}{paragraph*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Fitted vs.\ empirical.}{26}{paragraph*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Reading.}{26}{paragraph*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}The $f+g$ extension at scale: a refined diagnosis}{26}{subsection.6.8}\protected@file@percent }
+\newlabel{sec:phase4-fg-infeasible}{{6.8}{26}{The $f+g$ extension at scale: a refined diagnosis}{subsection.6.8}{}}
+\newlabel{sec:phase4-fg-infeasible@cref}{{[subsection][8][6]6.8}{[1][26][]26}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Sparse-LU implementation.}{26}{paragraph*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{At SUMO bigger-bbox scale, naive sparse is \emph  {slower} than dense.}{26}{paragraph*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{At Xuancheng subgraph scale, sparse-LU runs in seconds and $f+g$ is tractable.}{27}{paragraph*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The binding sensitivity is $\gamma $.}{27}{paragraph*.31}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces $\gamma $ sweep for f+g on the Xuancheng K=8 zone-0 subgraph ($n=194$, $|X_o|=53$, $T=10$, $\texttt  {maxiter}=300$). The f-only column is the same fit ($\gamma =1$) shown for reference; the empirical 1-step ceiling on this subgraph is $0.563$. f+g \emph  {hurts} at $\gamma =0.5$--$0.7$ (the floor-dominated $L_h$ overwhelms $L_f$) and recovers the empirical reference within sampling noise at $\gamma =0.95$.}}{27}{table.caption.32}\protected@file@percent }
+\newlabel{tab:phase4-fg-gamma}{{8}{27}{$\gamma $ sweep for f+g on the Xuancheng K=8 zone-0 subgraph ($n=194$, $|X_o|=53$, $T=10$, $\code {maxiter}=300$). The f-only column is the same fit ($\gamma =1$) shown for reference; the empirical 1-step ceiling on this subgraph is $0.563$. f+g \emph {hurts} at $\gamma =0.5$--$0.7$ (the floor-dominated $L_h$ overwhelms $L_f$) and recovers the empirical reference within sampling noise at $\gamma =0.95$}{table.caption.32}{}}
+\newlabel{tab:phase4-fg-gamma@cref}{{[table][8][]8}{[1][27][]27}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Zone variability.}{27}{paragraph*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Refined conclusion.}{27}{paragraph*.34}\protected@file@percent }
 \citation{ma2026xuancheng}
-\@writefile{toc}{\contentsline {paragraph}{Caveat on the experienced-driver gap.}{25}{paragraph*.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Fitted vs.\ empirical.}{25}{paragraph*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Reading.}{25}{paragraph*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}The $f+g$ extension at scale: documented infeasibility}{25}{subsection.6.8}\protected@file@percent }
-\newlabel{sec:phase4-fg-infeasible}{{6.8}{25}{The $f+g$ extension at scale: documented infeasibility}{subsection.6.8}{}}
-\newlabel{sec:phase4-fg-infeasible@cref}{{[subsection][8][6]6.8}{[1][25][]25}{}{}{}}
 \citation{cappi2026}
 \citation{wang2023xuancheng}
 \citation{ma2026xuancheng}
 \citation{ma2026xuancheng}
 \citation{ma2026xuancheng}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Tier 3: Real-world stress test of the filter under OD confounding}{26}{section.7}\protected@file@percent }
-\newlabel{sec:phase5-xuancheng}{{7}{26}{Tier 3: Real-world stress test of the filter under OD confounding}{section.7}{}}
-\newlabel{sec:phase5-xuancheng@cref}{{[section][7][]7}{[1][25][]26}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Dataset choice}{26}{subsection.7.1}\protected@file@percent }
-\newlabel{sec:phase5-dataset}{{7.1}{26}{Dataset choice}{subsection.7.1}{}}
-\newlabel{sec:phase5-dataset@cref}{{[subsection][1][7]7.1}{[1][26][]26}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Xuancheng AVI dataset \cite  {ma2026xuancheng} scale, with comparison to the SUMO bigger-bbox setup of Tier~2.}}{26}{table.caption.25}\protected@file@percent }
-\newlabel{tab:phase5-dataset-scale}{{8}{26}{Xuancheng AVI dataset \cite {ma2026xuancheng} scale, with comparison to the SUMO bigger-bbox setup of Tier~2}{table.caption.25}{}}
-\newlabel{tab:phase5-dataset-scale@cref}{{[table][8][]8}{[1][26][]26}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Verification: route legality and time-of-day distribution}{26}{subsection.7.2}\protected@file@percent }
-\newlabel{sec:phase5-verification}{{7.2}{26}{Verification: route legality and time-of-day distribution}{subsection.7.2}{}}
-\newlabel{sec:phase5-verification@cref}{{[subsection][2][7]7.2}{[1][26][]26}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Route legality.}{26}{paragraph*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Time-of-day distribution.}{27}{paragraph*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}The fundamental real-world gap: no ground-truth sat-nav label}{27}{subsection.7.3}\protected@file@percent }
-\newlabel{sec:phase5-proxy}{{7.3}{27}{The fundamental real-world gap: no ground-truth sat-nav label}{subsection.7.3}{}}
-\newlabel{sec:phase5-proxy@cref}{{[subsection][3][7]7.3}{[1][27][]27}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Results}{27}{subsection.7.4}\protected@file@percent }
-\newlabel{sec:phase5-results}{{7.4}{27}{Results}{subsection.7.4}{}}
-\newlabel{sec:phase5-results@cref}{{[subsection][4][7]7.4}{[1][27][]27}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph  {not} stable across zone granularity --- a sweep over $K \in \{8, 16, 32, 64\}$ (\cref  {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$ --- so we do not read the $K=8$ drop as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations.}}{28}{figure.caption.28}\protected@file@percent }
-\newlabel{fig:phase5-headline}{{7}{28}{Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph {not} stable across zone granularity --- a sweep over $K \in \{8, 16, 32, 64\}$ (\cref {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$ --- so we do not read the $K=8$ drop as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations}{figure.caption.28}{}}
-\newlabel{fig:phase5-headline@cref}{{[figure][7][]7}{[1][27][]28}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Xuancheng rush-vs-off-peak detector AUC and chain-recovery metrics on \texttt  {[all branching]} states, three configurations (\cref  {fig:phase5-headline}).}}{28}{table.caption.29}\protected@file@percent }
-\newlabel{tab:phase5-headline}{{9}{28}{Xuancheng rush-vs-off-peak detector AUC and chain-recovery metrics on \texttt {[all branching]} states, three configurations (\cref {fig:phase5-headline})}{table.caption.29}{}}
-\newlabel{tab:phase5-headline@cref}{{[table][9][]9}{[1][28][]28}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces OD-zone granularity sweep on the $5$-day pooled rush-vs-off-peak contrast ($T=10$, \texttt  {features=none}), with stratified vehicle-level bootstrap $95\%$ CIs ($B=2{,}000$ resamples of the test trajectories within each regime). The OD-matched full-observation reference is \emph  {not} stable across $K$: at the coarse $K=8$ it falls to chance, but at $K \ge 16$ it returns to $\sim \!0.55$--$0.58$, statistically above chance and close to the un-matched $0.573$ --- i.e.\ fine-grained OD control removes almost none of the contrast. The fitted $1$-step partial-observation detector, by contrast, straddles chance at \emph  {every} $K$.}}{29}{table.caption.30}\protected@file@percent }
-\newlabel{tab:phase5-ksweep}{{10}{29}{OD-zone granularity sweep on the $5$-day pooled rush-vs-off-peak contrast ($T=10$, \code {features=none}), with stratified vehicle-level bootstrap $95\%$ CIs ($B=2{,}000$ resamples of the test trajectories within each regime). The OD-matched full-observation reference is \emph {not} stable across $K$: at the coarse $K=8$ it falls to chance, but at $K \ge 16$ it returns to $\sim \!0.55$--$0.58$, statistically above chance and close to the un-matched $0.573$ --- i.e.\ fine-grained OD control removes almost none of the contrast. The fitted $1$-step partial-observation detector, by contrast, straddles chance at \emph {every} $K$}{table.caption.30}{}}
-\newlabel{tab:phase5-ksweep@cref}{{[table][10][]10}{[1][28][]29}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Honest reading}{29}{subsection.7.5}\protected@file@percent }
-\newlabel{sec:phase5-reading}{{7.5}{29}{Honest reading}{subsection.7.5}{}}
-\newlabel{sec:phase5-reading@cref}{{[subsection][5][7]7.5}{[1][29][]29}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{The OD-mix attribution is not robust to zone granularity.}{29}{paragraph*.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The fitted $1$-step detector does not recover the contrast at any granularity.}{30}{paragraph*.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The features=real basin failure repeats post-matching --- and multistart resolves it.}{30}{paragraph*.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.6}Multistart on \texttt  {features=real}: the ceiling violation is an optimiser artefact}{30}{subsection.7.6}\protected@file@percent }
-\newlabel{sec:phase5-multistart}{{7.6}{30}{Multistart on \code {features=real}: the ceiling violation is an optimiser artefact}{subsection.7.6}{}}
-\newlabel{sec:phase5-multistart@cref}{{[subsection][6][7]7.6}{[1][30][]30}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Xuancheng OD-matched \texttt  {features=real} multistart ($K=5$). \textbf  {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph  {escapes} the high-loss basin, unlike the SUMO case (\cref  {sec:phase4-multistart}). \textbf  {(b)} Despite the proper fit, $\mathrm  {AUC}_{\mathrm  {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ --- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance.}}{31}{figure.caption.34}\protected@file@percent }
-\newlabel{fig:phase5-multistart}{{8}{31}{Xuancheng OD-matched \code {features=real} multistart ($K=5$). \textbf {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph {escapes} the high-loss basin, unlike the SUMO case (\cref {sec:phase4-multistart}). \textbf {(b)} Despite the proper fit, $\AUC _{\mathrm {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ --- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance}{figure.caption.34}{}}
-\newlabel{fig:phase5-multistart@cref}{{[figure][8][]8}{[1][30][]31}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.7}Bottom line for Tier 3}{31}{subsection.7.7}\protected@file@percent }
-\newlabel{sec:phase5-bottom}{{7.7}{31}{Bottom line for Tier 3}{subsection.7.7}{}}
-\newlabel{sec:phase5-bottom@cref}{{[subsection][7][7]7.7}{[1][31][]31}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Discussion}{32}{section.8}\protected@file@percent }
-\newlabel{sec:discussion}{{8}{32}{Discussion}{section.8}{}}
-\newlabel{sec:discussion@cref}{{[section][8][]8}{[1][32][]32}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Cross-tier read: what generalises}{32}{subsection.8.1}\protected@file@percent }
-\newlabel{sec:disc-cross-tier}{{8.1}{32}{Cross-tier read: what generalises}{subsection.8.1}{}}
-\newlabel{sec:disc-cross-tier@cref}{{[subsection][1][8]8.1}{[1][32][]32}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Cross-tier synthesis of the three validation tiers. The shared inverse-MC scoring core of \cref  {sec:disc-cross-tier} produces every row; the loader, regime definition, and OD-control logic differ by tier. Tier~2 is the representative seed~$42$ at $T=20$ (\cref  {tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at $T=10$ (\cref  {tab:phase5-headline}). Fitted and Pearson cells are \texttt  {none}/\texttt  {real}. $^{\dagger }$Tier~1 is a $\pi $-recovery reproduction scored by RMAE, not a detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the paper's Fig.~2A (\cref  {tab:phase1-rmae}). $^{\ddagger }$The Tier-3 ceiling shown is the un-matched $5$-day pool. OD-matching at $K=8$ lowers it to $0.518$, but a granularity sweep $K \in \{8, 16, 32, 64\}$ returns the matched reference to $\sim \!0.55$--$0.58$ for $K \ge 16$, so no fixed OD-mix fraction is claimed; the fitted detector stays at chance across all $K$ (\cref  {tab:phase5-ksweep}). The Tier-2 Pearson lift is robust across five seeds ($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$, \cref  {sec:phase4-multiseed}).}}{32}{table.caption.35}\protected@file@percent }
-\newlabel{tab:cross-tier}{{11}{32}{Cross-tier synthesis of the three validation tiers. The shared inverse-MC scoring core of \cref {sec:disc-cross-tier} produces every row; the loader, regime definition, and OD-control logic differ by tier. Tier~2 is the representative seed~$42$ at $T=20$ (\cref {tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at $T=10$ (\cref {tab:phase5-headline}). Fitted and Pearson cells are \code {none}/\code {real}. $^{\dagger }$Tier~1 is a $\pi $-recovery reproduction scored by RMAE, not a detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the paper's Fig.~2A (\cref {tab:phase1-rmae}). $^{\ddagger }$The Tier-3 ceiling shown is the un-matched $5$-day pool. OD-matching at $K=8$ lowers it to $0.518$, but a granularity sweep $K \in \{8, 16, 32, 64\}$ returns the matched reference to $\sim \!0.55$--$0.58$ for $K \ge 16$, so no fixed OD-mix fraction is claimed; the fitted detector stays at chance across all $K$ (\cref {tab:phase5-ksweep}). The Tier-2 Pearson lift is robust across five seeds ($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$, \cref {sec:phase4-multiseed})}{table.caption.35}{}}
-\newlabel{tab:cross-tier@cref}{{[table][11][]11}{[1][32][]32}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Tier 3: Real-world stress test of the filter under OD confounding}{28}{section.7}\protected@file@percent }
+\newlabel{sec:phase5-xuancheng}{{7}{28}{Tier 3: Real-world stress test of the filter under OD confounding}{section.7}{}}
+\newlabel{sec:phase5-xuancheng@cref}{{[section][7][]7}{[1][28][]28}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Dataset choice}{28}{subsection.7.1}\protected@file@percent }
+\newlabel{sec:phase5-dataset}{{7.1}{28}{Dataset choice}{subsection.7.1}{}}
+\newlabel{sec:phase5-dataset@cref}{{[subsection][1][7]7.1}{[1][28][]28}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Xuancheng AVI dataset \cite  {ma2026xuancheng} scale, with comparison to the SUMO bigger-bbox setup of Tier~2.}}{28}{table.caption.35}\protected@file@percent }
+\newlabel{tab:phase5-dataset-scale}{{9}{28}{Xuancheng AVI dataset \cite {ma2026xuancheng} scale, with comparison to the SUMO bigger-bbox setup of Tier~2}{table.caption.35}{}}
+\newlabel{tab:phase5-dataset-scale@cref}{{[table][9][]9}{[1][28][]28}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Verification: route legality and time-of-day distribution}{28}{subsection.7.2}\protected@file@percent }
+\newlabel{sec:phase5-verification}{{7.2}{28}{Verification: route legality and time-of-day distribution}{subsection.7.2}{}}
+\newlabel{sec:phase5-verification@cref}{{[subsection][2][7]7.2}{[1][28][]28}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Route legality.}{28}{paragraph*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Time-of-day distribution.}{29}{paragraph*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}The fundamental real-world gap: no ground-truth sat-nav label}{29}{subsection.7.3}\protected@file@percent }
+\newlabel{sec:phase5-proxy}{{7.3}{29}{The fundamental real-world gap: no ground-truth sat-nav label}{subsection.7.3}{}}
+\newlabel{sec:phase5-proxy@cref}{{[subsection][3][7]7.3}{[1][29][]29}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Results}{30}{subsection.7.4}\protected@file@percent }
+\newlabel{sec:phase5-results}{{7.4}{30}{Results}{subsection.7.4}{}}
+\newlabel{sec:phase5-results@cref}{{[subsection][4][7]7.4}{[1][29][]30}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph  {not} stable across zone granularity --- a sweep over $K \in \{8, 16, 32, 64\}$ (\cref  {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$ --- so we do not read the $K=8$ drop as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations.}}{30}{figure.caption.38}\protected@file@percent }
+\newlabel{fig:phase5-headline}{{7}{30}{Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph {not} stable across zone granularity --- a sweep over $K \in \{8, 16, 32, 64\}$ (\cref {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$ --- so we do not read the $K=8$ drop as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations}{figure.caption.38}{}}
+\newlabel{fig:phase5-headline@cref}{{[figure][7][]7}{[1][29][]30}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Xuancheng rush-vs-off-peak detector AUC and chain-recovery metrics on \texttt  {[all branching]} states, three configurations (\cref  {fig:phase5-headline}).}}{30}{table.caption.39}\protected@file@percent }
+\newlabel{tab:phase5-headline}{{10}{30}{Xuancheng rush-vs-off-peak detector AUC and chain-recovery metrics on \texttt {[all branching]} states, three configurations (\cref {fig:phase5-headline})}{table.caption.39}{}}
+\newlabel{tab:phase5-headline@cref}{{[table][10][]10}{[1][30][]30}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces OD-zone granularity sweep on the $5$-day pooled rush-vs-off-peak contrast ($T=10$, \texttt  {features=none}), with stratified vehicle-level bootstrap $95\%$ CIs ($B=2{,}000$ resamples of the test trajectories within each regime). The OD-matched full-observation reference is \emph  {not} stable across $K$: at the coarse $K=8$ it falls to chance, but at $K \ge 16$ it returns to $\sim \!0.55$--$0.58$, statistically above chance and close to the un-matched $0.573$ --- i.e.\ fine-grained OD control removes almost none of the contrast. The fitted $1$-step partial-observation detector, by contrast, straddles chance at \emph  {every} $K$.}}{31}{table.caption.40}\protected@file@percent }
+\newlabel{tab:phase5-ksweep}{{11}{31}{OD-zone granularity sweep on the $5$-day pooled rush-vs-off-peak contrast ($T=10$, \code {features=none}), with stratified vehicle-level bootstrap $95\%$ CIs ($B=2{,}000$ resamples of the test trajectories within each regime). The OD-matched full-observation reference is \emph {not} stable across $K$: at the coarse $K=8$ it falls to chance, but at $K \ge 16$ it returns to $\sim \!0.55$--$0.58$, statistically above chance and close to the un-matched $0.573$ --- i.e.\ fine-grained OD control removes almost none of the contrast. The fitted $1$-step partial-observation detector, by contrast, straddles chance at \emph {every} $K$}{table.caption.40}{}}
+\newlabel{tab:phase5-ksweep@cref}{{[table][11][]11}{[1][30][]31}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Honest reading}{31}{subsection.7.5}\protected@file@percent }
+\newlabel{sec:phase5-reading}{{7.5}{31}{Honest reading}{subsection.7.5}{}}
+\newlabel{sec:phase5-reading@cref}{{[subsection][5][7]7.5}{[1][31][]31}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{The OD-mix attribution is not robust to zone granularity.}{31}{paragraph*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The fitted $1$-step detector does not recover the contrast at any granularity.}{32}{paragraph*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The features=real basin failure repeats post-matching --- and multistart resolves it.}{32}{paragraph*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.6}Multistart on \texttt  {features=real}: the ceiling violation is an optimiser artefact}{32}{subsection.7.6}\protected@file@percent }
+\newlabel{sec:phase5-multistart}{{7.6}{32}{Multistart on \code {features=real}: the ceiling violation is an optimiser artefact}{subsection.7.6}{}}
+\newlabel{sec:phase5-multistart@cref}{{[subsection][6][7]7.6}{[1][32][]32}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Xuancheng OD-matched \texttt  {features=real} multistart ($K=5$). \textbf  {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph  {escapes} the high-loss basin, unlike the SUMO case (\cref  {sec:phase4-multistart}). \textbf  {(b)} Despite the proper fit, $\mathrm  {AUC}_{\mathrm  {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ --- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance.}}{33}{figure.caption.44}\protected@file@percent }
+\newlabel{fig:phase5-multistart}{{8}{33}{Xuancheng OD-matched \code {features=real} multistart ($K=5$). \textbf {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph {escapes} the high-loss basin, unlike the SUMO case (\cref {sec:phase4-multistart}). \textbf {(b)} Despite the proper fit, $\AUC _{\mathrm {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ --- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance}{figure.caption.44}{}}
+\newlabel{fig:phase5-multistart@cref}{{[figure][8][]8}{[1][32][]33}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.7}Bottom line for Tier 3}{33}{subsection.7.7}\protected@file@percent }
+\newlabel{sec:phase5-bottom}{{7.7}{33}{Bottom line for Tier 3}{subsection.7.7}{}}
+\newlabel{sec:phase5-bottom@cref}{{[subsection][7][7]7.7}{[1][33][]33}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Discussion}{34}{section.8}\protected@file@percent }
+\newlabel{sec:discussion}{{8}{34}{Discussion}{section.8}{}}
+\newlabel{sec:discussion@cref}{{[section][8][]8}{[1][34][]34}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Cross-tier read: what generalises}{34}{subsection.8.1}\protected@file@percent }
+\newlabel{sec:disc-cross-tier}{{8.1}{34}{Cross-tier read: what generalises}{subsection.8.1}{}}
+\newlabel{sec:disc-cross-tier@cref}{{[subsection][1][8]8.1}{[1][34][]34}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Cross-tier synthesis of the three validation tiers. The shared inverse-MC scoring core of \cref  {sec:disc-cross-tier} produces every row; the loader, regime definition, and OD-control logic differ by tier. Tier~2 is the representative seed~$42$ at $T=20$ (\cref  {tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at $T=10$ (\cref  {tab:phase5-headline}). Fitted and Pearson cells are \texttt  {none}/\texttt  {real}. $^{\dagger }$Tier~1 is a $\pi $-recovery reproduction scored by RMAE, not a detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the paper's Fig.~2A (\cref  {tab:phase1-rmae}). $^{\ddagger }$The Tier-3 ceiling shown is the un-matched $5$-day pool. OD-matching at $K=8$ lowers it to $0.518$, but a granularity sweep $K \in \{8, 16, 32, 64\}$ returns the matched reference to $\sim \!0.55$--$0.58$ for $K \ge 16$, so no fixed OD-mix fraction is claimed; the fitted detector stays at chance across all $K$ (\cref  {tab:phase5-ksweep}). The Tier-2 Pearson lift is robust across five seeds ($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$, \cref  {sec:phase4-multiseed}).}}{34}{table.caption.45}\protected@file@percent }
+\newlabel{tab:cross-tier}{{12}{34}{Cross-tier synthesis of the three validation tiers. The shared inverse-MC scoring core of \cref {sec:disc-cross-tier} produces every row; the loader, regime definition, and OD-control logic differ by tier. Tier~2 is the representative seed~$42$ at $T=20$ (\cref {tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at $T=10$ (\cref {tab:phase5-headline}). Fitted and Pearson cells are \code {none}/\code {real}. $^{\dagger }$Tier~1 is a $\pi $-recovery reproduction scored by RMAE, not a detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the paper's Fig.~2A (\cref {tab:phase1-rmae}). $^{\ddagger }$The Tier-3 ceiling shown is the un-matched $5$-day pool. OD-matching at $K=8$ lowers it to $0.518$, but a granularity sweep $K \in \{8, 16, 32, 64\}$ returns the matched reference to $\sim \!0.55$--$0.58$ for $K \ge 16$, so no fixed OD-mix fraction is claimed; the fitted detector stays at chance across all $K$ (\cref {tab:phase5-ksweep}). The Tier-2 Pearson lift is robust across five seeds ($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$, \cref {sec:phase4-multiseed})}{table.caption.45}{}}
+\newlabel{tab:cross-tier@cref}{{[table][12][]12}{[1][34][]34}{}{}{}}
 \citation{morimura2013}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Limits of the chosen approach}{33}{subsection.8.2}\protected@file@percent }
-\newlabel{sec:disc-limits}{{8.2}{33}{Limits of the chosen approach}{subsection.8.2}{}}
-\newlabel{sec:disc-limits@cref}{{[subsection][2][8]8.2}{[1][32][]33}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{33}{paragraph*.36}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{L-BFGS basin selection on \texttt  {features=real} --- now resolved.}{33}{paragraph*.37}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The rush-vs-off-peak proxy confound --- bounded in simulation.}{33}{paragraph*.38}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The hitting-rate ($f+g$) extension does not transfer to SUMO scale.}{33}{paragraph*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Limits of the chosen approach}{35}{subsection.8.2}\protected@file@percent }
+\newlabel{sec:disc-limits}{{8.2}{35}{Limits of the chosen approach}{subsection.8.2}{}}
+\newlabel{sec:disc-limits@cref}{{[subsection][2][8]8.2}{[1][34][]35}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{35}{paragraph*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{L-BFGS basin selection on \texttt  {features=real} --- now resolved.}{35}{paragraph*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The rush-vs-off-peak proxy confound --- bounded in simulation.}{35}{paragraph*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The hitting-rate ($f+g$) extension at scale --- refined diagnosis.}{35}{paragraph*.49}\protected@file@percent }
 \citation{cappi2026}
 \citation{ma2026xuancheng}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Social, environmental, technological implications}{34}{subsection.8.3}\protected@file@percent }
-\newlabel{sec:disc-implications}{{8.3}{34}{Social, environmental, technological implications}{subsection.8.3}{}}
-\newlabel{sec:disc-implications@cref}{{[subsection][3][8]8.3}{[1][34][]34}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Transport-policy modelling.}{34}{paragraph*.40}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Privacy and data access.}{34}{paragraph*.41}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Sat-navigation regulation.}{34}{paragraph*.42}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Future work}{34}{subsection.8.4}\protected@file@percent }
-\newlabel{sec:disc-future}{{8.4}{34}{Future work}{subsection.8.4}{}}
-\newlabel{sec:disc-future@cref}{{[subsection][4][8]8.4}{[1][34][]34}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Social, environmental, technological implications}{36}{subsection.8.3}\protected@file@percent }
+\newlabel{sec:disc-implications}{{8.3}{36}{Social, environmental, technological implications}{subsection.8.3}{}}
+\newlabel{sec:disc-implications@cref}{{[subsection][3][8]8.3}{[1][36][]36}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Transport-policy modelling.}{36}{paragraph*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Privacy and data access.}{36}{paragraph*.51}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Sat-navigation regulation.}{36}{paragraph*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Future work}{36}{subsection.8.4}\protected@file@percent }
+\newlabel{sec:disc-future}{{8.4}{36}{Future work}{subsection.8.4}{}}
+\newlabel{sec:disc-future@cref}{{[subsection][4][8]8.4}{[1][36][]36}{}{}{}}
 \citation{morimura2013}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{37}{section.9}\protected@file@percent }
+\newlabel{sec:conclusion}{{9}{37}{Conclusion}{section.9}{}}
+\newlabel{sec:conclusion@cref}{{[section][9][]9}{[1][37][]37}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{What was designed.}{37}{paragraph*.53}\protected@file@percent }
 \citation{morimura2013}
-\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{35}{section.9}\protected@file@percent }
-\newlabel{sec:conclusion}{{9}{35}{Conclusion}{section.9}{}}
-\newlabel{sec:conclusion@cref}{{[section][9][]9}{[1][35][]35}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{What was designed.}{35}{paragraph*.43}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{How it works.}{35}{paragraph*.44}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{What worked.}{35}{paragraph*.45}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{What failed or was limited.}{35}{paragraph*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{How it works.}{38}{paragraph*.54}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What worked.}{38}{paragraph*.55}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What failed or was limited.}{38}{paragraph*.56}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Where the filter is reliable.}{38}{paragraph*.57}\protected@file@percent }
 \citation{markscheme}
 \citation{morimura2013}
-\@writefile{toc}{\contentsline {paragraph}{Where the filter is reliable.}{36}{paragraph*.47}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Where the filter is not reliable.}{36}{paragraph*.48}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Contribution.}{36}{paragraph*.49}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {10}Project Management and Reflection}{36}{section.10}\protected@file@percent }
-\newlabel{sec:reflection}{{10}{36}{Project Management and Reflection}{section.10}{}}
-\newlabel{sec:reflection@cref}{{[section][10][]10}{[1][36][]36}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}Project structure and milestone management}{36}{subsection.10.1}\protected@file@percent }
-\newlabel{sec:reflect-pm}{{10.1}{36}{Project structure and milestone management}{subsection.10.1}{}}
-\newlabel{sec:reflect-pm@cref}{{[subsection][1][10]10.1}{[1][36][]36}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Where the filter is not reliable.}{39}{paragraph*.58}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Contribution.}{39}{paragraph*.59}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Project Management and Reflection}{39}{section.10}\protected@file@percent }
+\newlabel{sec:reflection}{{10}{39}{Project Management and Reflection}{section.10}{}}
+\newlabel{sec:reflection@cref}{{[section][10][]10}{[1][39][]39}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}Project structure and milestone management}{39}{subsection.10.1}\protected@file@percent }
+\newlabel{sec:reflect-pm}{{10.1}{39}{Project structure and milestone management}{subsection.10.1}{}}
+\newlabel{sec:reflect-pm@cref}{{[subsection][1][10]10.1}{[1][39][]39}{}{}{}}
 \citation{markscheme}
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}Personal skill development}{37}{subsection.10.2}\protected@file@percent }
-\newlabel{sec:reflect-skills}{{10.2}{37}{Personal skill development}{subsection.10.2}{}}
-\newlabel{sec:reflect-skills@cref}{{[subsection][2][10]10.2}{[1][37][]37}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}Personal skill development}{40}{subsection.10.2}\protected@file@percent }
+\newlabel{sec:reflect-skills}{{10.2}{40}{Personal skill development}{subsection.10.2}{}}
+\newlabel{sec:reflect-skills@cref}{{[subsection][2][10]10.2}{[1][40][]40}{}{}{}}
 \bibdata{references}
 \bibcite{morimura2013}{{1}{}{{}}{{}}}
 \bibcite{lopez2018}{{2}{}{{}}{{}}}
@@ -310,13 +322,13 @@
 \bibcite{wang2023xuancheng}{{14}{}{{}}{{}}}
 \citation{ma2026xuancheng}
 \providecommand\NAT@force@numbers{}\NAT@force@numbers
-\@writefile{toc}{\contentsline {section}{\numberline {A}Repository structure and reproducibility}{40}{appendix.A}\protected@file@percent }
-\newlabel{app:repo}{{A}{40}{Repository structure and reproducibility}{appendix.A}{}}
-\newlabel{app:repo@cref}{{[section][1][]A}{[1][39][]40}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Use of generative AI}{40}{appendix.B}\protected@file@percent }
-\newlabel{app:ai}{{B}{40}{Use of generative AI}{appendix.B}{}}
-\newlabel{app:ai@cref}{{[section][2][]B}{[1][40][]40}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Build and reproducibility}{40}{appendix.C}\protected@file@percent }
-\newlabel{app:build}{{C}{40}{Build and reproducibility}{appendix.C}{}}
-\newlabel{app:build@cref}{{[section][3][]C}{[1][40][]40}{}{}{}}
-\gdef \@abspage@last{40}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Repository structure and reproducibility}{43}{appendix.A}\protected@file@percent }
+\newlabel{app:repo}{{A}{43}{Repository structure and reproducibility}{appendix.A}{}}
+\newlabel{app:repo@cref}{{[section][1][]A}{[1][42][]43}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Use of generative AI}{43}{appendix.B}\protected@file@percent }
+\newlabel{app:ai}{{B}{43}{Use of generative AI}{appendix.B}{}}
+\newlabel{app:ai@cref}{{[section][2][]B}{[1][43][]43}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Build and reproducibility}{43}{appendix.C}\protected@file@percent }
+\newlabel{app:build}{{C}{43}{Build and reproducibility}{appendix.C}{}}
+\newlabel{app:build@cref}{{[section][3][]C}{[1][43][]43}{}{}{}}
+\gdef \@abspage@last{43}

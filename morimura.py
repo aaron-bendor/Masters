@@ -37,6 +37,7 @@ import scipy.linalg as sla
 import scipy.optimize as sopt
 import scipy.sparse as ssp
 import scipy.sparse.csgraph as sgr
+import scipy.sparse.linalg as ssp_linalg
 import matplotlib.pyplot as plt
 
 
@@ -107,6 +108,37 @@ def hitting_pack(PT, beta, j):
     return np.clip(h, 1e-15, 1.0), lu, piv
 
 
+def hitting_pack_sparse(PT, beta, j):
+    """Sparse counterpart to ``hitting_pack``.
+
+    Builds (I - beta * P_j) as a CSC sparse matrix directly from the nonzero
+    entries of ``PT`` (with row ``j`` zeroed out) and factorises with
+    ``scipy.sparse.linalg.splu``. For a road-network ``PT`` with average
+    out-degree ~3, this drops the per-call cost from O(n^3) dense LU to
+    roughly O(n^1.5) sparse LU.
+
+    Returns ``(h_clipped, splu_factor)``. The caller passes ``splu_factor``
+    in place of the ``(lu, piv)`` tuple to a sparse-aware ``grad_log_h``.
+    """
+    n = PT.shape[0]
+    rows, cols = np.nonzero(PT)
+    mask = rows != j  # zero out row j of P
+    rows = rows[mask]
+    cols = cols[mask]
+    vals = PT[rows, cols]
+    # A = I - beta * P_j (in COO form, then to CSC for splu)
+    diag_idx = np.arange(n)
+    A_rows = np.concatenate([diag_idx, rows])
+    A_cols = np.concatenate([diag_idx, cols])
+    A_vals = np.concatenate([np.ones(n), -beta * vals])
+    A = ssp.csc_matrix((A_vals, (A_rows, A_cols)), shape=(n, n))
+    splu_fact = ssp_linalg.splu(A)
+    e = np.zeros(n)
+    e[j] = 1.0
+    h = splu_fact.solve(e)
+    return np.clip(h, 1e-15, 1.0), splu_fact
+
+
 # ===============================================================
 #  Inverse solver  (paper Sections 3-4)
 # ===============================================================
@@ -124,12 +156,15 @@ class Inverter:
     reduces exactly to the local-only configuration."""
 
     def __init__(self, adj_out, beta, gamma=0.1, lam=1e-3,
-                 phi_T=None, psi=None):
+                 phi_T=None, psi=None, solver="dense"):
         self.n = len(adj_out)
         self.adj_out = adj_out
         self.beta = beta
         self.gamma = gamma
         self.lam = lam
+        if solver not in ("dense", "sparse"):
+            raise ValueError(f"solver must be 'dense' or 'sparse', got {solver!r}")
+        self.solver = solver
         self.edges = [(x, y) for x, ys in enumerate(adj_out) for y in ys]
         self.E = len(self.edges)
         self.edge_idx = {e: i for i, e in enumerate(self.edges)}
@@ -219,7 +254,7 @@ class Inverter:
         return MV / pi[:, None]
 
     # ----- Jacobian of log h_theta(j) wrt theta  (Eq. 15) -----
-    def grad_log_h(self, PT, h_j, lu, piv, j):
+    def grad_log_h(self, PT, h_j, solve_fn, j):
         n, d, b = self.n, self.d, self.beta
         E, dT, dpsi = self.E, self.d_T, self.d_psi
         V = np.zeros((n, d))
@@ -258,7 +293,7 @@ class Inverter:
             V_glo2 = V_first_h - bar_psi * r[:, None]
             V_glo2[j, :] = 0
             V[:, n + E + dT :] = V_glo2
-        MV = sla.lu_solve((lu, piv), V)
+        MV = solve_fn(V)
         return b * MV / h_j[:, None]
 
     # ----- combined loss + gradient  (Eqs. 7-9) -----
@@ -284,11 +319,17 @@ class Inverter:
         grad_h = np.zeros(d)
         if self.gamma < 1.0 and log_g is not None:
             for kj, j in enumerate(X_o):
-                h_j, lu, piv = hitting_pack(PT, self.beta, j)
+                if self.solver == "sparse":
+                    h_j, splu_fact = hitting_pack_sparse(PT, self.beta, j)
+                    solve_fn = splu_fact.solve
+                else:
+                    h_j, lu, piv = hitting_pack(PT, self.beta, j)
+                    solve_fn = lambda V, _lu=lu, _piv=piv: sla.lu_solve(
+                        (_lu, _piv), V)
                 log_h = np.log(h_j)
                 r = log_h[X_o] - log_g[:, kj]   # log h(j|i) - log g(i, j)
                 L_h += 0.5 * (r ** 2).sum()
-                Jh = self.grad_log_h(PT, h_j, lu, piv, j)
+                Jh = self.grad_log_h(PT, h_j, solve_fn, j)
                 grad_h += r @ Jh[X_o]
 
         # ridge regulariser  R(theta) = 1/2 ||theta||^2  ->  grad = theta

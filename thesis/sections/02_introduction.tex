@@ -128,11 +128,17 @@ problem is correctly posed.
 \item \textbf{An empirical higher-order memory audit.} A fitting-free
 $2$-step detector --- counting $(x_{t-1}, x_t)\to x_{t+1}$ triples on the
 same trajectories --- used to test whether a parametric $2$-step
-extension is the obvious next filter lever. It does \emph{not} improve
-over the $1$-step empirical reference
-($\AUC_{2\text{-step}} = 0.666 < \AUC_{1\text{-step}} = 0.685$), so a
-parametric $2$-step extension is deprioritised; richer destination-aware
-or hierarchical higher-order models remain open.
+extension is a justified next filter lever. The headline finding is
+positive: a properly regularised $2$-step empirical (interpolation
+backoff toward the $1$-step reference, with count-conditional trust
+$\lambda(x_p,x) = N/(N+\kappa)$) lifts the AUC by
+$+0.100 \pm 0.009$ across five SUMO seeds, with every seed winning
+($\AUC_{\mathrm{2step,backoff}} = 0.752 \pm 0.015$ vs
+$\AUC_{1\text{-step}} = 0.652 \pm 0.022$).
+This identifies higher-order routing memory as a real design lever
+that the $1$-step softmax family cannot express, and motivates a
+parametric $2$-step Morimura extension as a justified future
+direction (\cref{sec:phase4-2step}).
 
 \item \textbf{A simulator decomposition of the rush-vs-off-peak
 proxy.} A $\rho \times d$ grid in SUMO that varies sat-navigation

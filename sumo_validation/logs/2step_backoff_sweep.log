@@ -1,0 +1,153 @@
+=== FIXED LAMBDA SWEEP ===
+==== seed=7  lam_fixed=0.0 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.0  auc_1step=0.646  auc_2step_backoff=0.646  delta=+0.000  fallback_rate=0.068
+
+==== seed=7  lam_fixed=0.25 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.25  auc_1step=0.646  auc_2step_backoff=0.740  delta=+0.095  fallback_rate=0.068
+
+==== seed=7  lam_fixed=0.5 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.5  auc_1step=0.646  auc_2step_backoff=0.746  delta=+0.100  fallback_rate=0.068
+
+==== seed=7  lam_fixed=0.75 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.75  auc_1step=0.646  auc_2step_backoff=0.751  delta=+0.106  fallback_rate=0.068
+
+==== seed=7  lam_fixed=0.9 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.9  auc_1step=0.646  auc_2step_backoff=0.755  delta=+0.109  fallback_rate=0.068
+
+==== seed=7  lam_fixed=1.0 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=1.0  auc_1step=0.646  auc_2step_backoff=0.753  delta=+0.108  fallback_rate=0.068
+
+==== seed=23  lam_fixed=0.0 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.0  auc_1step=0.659  auc_2step_backoff=0.659  delta=+0.000  fallback_rate=0.070
+
+==== seed=23  lam_fixed=0.25 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.25  auc_1step=0.659  auc_2step_backoff=0.745  delta=+0.086  fallback_rate=0.070
+
+==== seed=23  lam_fixed=0.5 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.5  auc_1step=0.659  auc_2step_backoff=0.746  delta=+0.088  fallback_rate=0.070
+
+==== seed=23  lam_fixed=0.75 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.75  auc_1step=0.659  auc_2step_backoff=0.745  delta=+0.086  fallback_rate=0.070
+
+==== seed=23  lam_fixed=0.9 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.9  auc_1step=0.659  auc_2step_backoff=0.744  delta=+0.086  fallback_rate=0.070
+
+==== seed=23  lam_fixed=1.0 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=1.0  auc_1step=0.659  auc_2step_backoff=0.740  delta=+0.081  fallback_rate=0.070
+
+==== seed=42  lam_fixed=0.0 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=fixed  lam_fixed=0.0  auc_1step=0.685  auc_2step_backoff=0.685  delta=+0.000  fallback_rate=0.071
+
+==== seed=42  lam_fixed=0.25 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=fixed  lam_fixed=0.25  auc_1step=0.685  auc_2step_backoff=0.764  delta=+0.079  fallback_rate=0.071
+
+==== seed=42  lam_fixed=0.5 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=fixed  lam_fixed=0.5  auc_1step=0.685  auc_2step_backoff=0.764  delta=+0.079  fallback_rate=0.071
+
+==== seed=42  lam_fixed=0.75 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=fixed  lam_fixed=0.75  auc_1step=0.685  auc_2step_backoff=0.764  delta=+0.079  fallback_rate=0.071
+
+==== seed=42  lam_fixed=0.9 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=fixed  lam_fixed=0.9  auc_1step=0.685  auc_2step_backoff=0.763  delta=+0.078  fallback_rate=0.071
+
+==== seed=42  lam_fixed=1.0 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=fixed  lam_fixed=1.0  auc_1step=0.685  auc_2step_backoff=0.762  delta=+0.077  fallback_rate=0.071
+
+==== seed=101  lam_fixed=0.0 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.0  auc_1step=0.631  auc_2step_backoff=0.631  delta=+0.000  fallback_rate=0.069
+
+==== seed=101  lam_fixed=0.25 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.25  auc_1step=0.631  auc_2step_backoff=0.726  delta=+0.095  fallback_rate=0.069
+
+==== seed=101  lam_fixed=0.5 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.5  auc_1step=0.631  auc_2step_backoff=0.732  delta=+0.101  fallback_rate=0.069
+
+==== seed=101  lam_fixed=0.75 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.75  auc_1step=0.631  auc_2step_backoff=0.737  delta=+0.106  fallback_rate=0.069
+
+==== seed=101  lam_fixed=0.9 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.9  auc_1step=0.631  auc_2step_backoff=0.740  delta=+0.109  fallback_rate=0.069
+
+==== seed=101  lam_fixed=1.0 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=1.0  auc_1step=0.631  auc_2step_backoff=0.737  delta=+0.106  fallback_rate=0.069
+
+==== seed=2024  lam_fixed=0.0 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.0  auc_1step=0.638  auc_2step_backoff=0.638  delta=-0.000  fallback_rate=0.067
+
+==== seed=2024  lam_fixed=0.25 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.25  auc_1step=0.638  auc_2step_backoff=0.725  delta=+0.087  fallback_rate=0.067
+
+==== seed=2024  lam_fixed=0.5 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.5  auc_1step=0.638  auc_2step_backoff=0.730  delta=+0.091  fallback_rate=0.067
+
+==== seed=2024  lam_fixed=0.75 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.75  auc_1step=0.638  auc_2step_backoff=0.732  delta=+0.094  fallback_rate=0.067
+
+==== seed=2024  lam_fixed=0.9 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=0.9  auc_1step=0.638  auc_2step_backoff=0.733  delta=+0.095  fallback_rate=0.067
+
+==== seed=2024  lam_fixed=1.0 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=fixed  lam_fixed=1.0  auc_1step=0.638  auc_2step_backoff=0.731  delta=+0.093  fallback_rate=0.067
+
+=== COUNT-CONDITIONAL KAPPA SWEEP ===
+==== seed=7  kappa=1 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1.0  auc_1step=0.646  auc_2step_backoff=0.757  delta=+0.111  fallback_rate=0.068
+
+==== seed=7  kappa=10 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=10.0  auc_1step=0.646  auc_2step_backoff=0.757  delta=+0.111  fallback_rate=0.068
+
+==== seed=7  kappa=100 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=100.0  auc_1step=0.646  auc_2step_backoff=0.753  delta=+0.108  fallback_rate=0.068
+
+==== seed=7  kappa=1000 ====
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1000.0  auc_1step=0.646  auc_2step_backoff=0.746  delta=+0.100  fallback_rate=0.068
+
+==== seed=23  kappa=1 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1.0  auc_1step=0.659  auc_2step_backoff=0.743  delta=+0.085  fallback_rate=0.070
+
+==== seed=23  kappa=10 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=10.0  auc_1step=0.659  auc_2step_backoff=0.746  delta=+0.088  fallback_rate=0.070
+
+==== seed=23  kappa=100 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=100.0  auc_1step=0.659  auc_2step_backoff=0.753  delta=+0.094  fallback_rate=0.070
+
+==== seed=23  kappa=1000 ====
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1000.0  auc_1step=0.659  auc_2step_backoff=0.753  delta=+0.094  fallback_rate=0.070
+
+==== seed=42  kappa=1 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=count  kappa=1.0  auc_1step=0.685  auc_2step_backoff=0.763  delta=+0.077  fallback_rate=0.071
+
+==== seed=42  kappa=10 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=count  kappa=10.0  auc_1step=0.685  auc_2step_backoff=0.766  delta=+0.081  fallback_rate=0.071
+
+==== seed=42  kappa=100 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=count  kappa=100.0  auc_1step=0.685  auc_2step_backoff=0.775  delta=+0.090  fallback_rate=0.071
+
+==== seed=42  kappa=1000 ====
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  backoff_mode=count  kappa=1000.0  auc_1step=0.685  auc_2step_backoff=0.779  delta=+0.093  fallback_rate=0.071
+
+==== seed=101  kappa=1 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1.0  auc_1step=0.631  auc_2step_backoff=0.738  delta=+0.107  fallback_rate=0.069
+
+==== seed=101  kappa=10 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=10.0  auc_1step=0.631  auc_2step_backoff=0.741  delta=+0.110  fallback_rate=0.069
+
+==== seed=101  kappa=100 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=100.0  auc_1step=0.631  auc_2step_backoff=0.741  delta=+0.110  fallback_rate=0.069
+
+==== seed=101  kappa=1000 ====
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1000.0  auc_1step=0.631  auc_2step_backoff=0.734  delta=+0.103  fallback_rate=0.069
+
+==== seed=2024  kappa=1 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1.0  auc_1step=0.638  auc_2step_backoff=0.732  delta=+0.093  fallback_rate=0.067
+
+==== seed=2024  kappa=10 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=10.0  auc_1step=0.638  auc_2step_backoff=0.733  delta=+0.095  fallback_rate=0.067
+
+==== seed=2024  kappa=100 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=100.0  auc_1step=0.638  auc_2step_backoff=0.737  delta=+0.099  fallback_rate=0.067
+
+==== seed=2024  kappa=1000 ====
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  backoff_mode=count  kappa=1000.0  auc_1step=0.638  auc_2step_backoff=0.734  delta=+0.096  fallback_rate=0.067
+
+=== ALL DONE  total=69s ===

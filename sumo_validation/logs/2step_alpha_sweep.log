@@ -1,0 +1,121 @@
+==== seed=7  alpha=0.001 ====
+    1-step fallback rate on test transitions: 6.8%
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  auc_1step=0.646  auc_2step=0.694  delta=+0.048  fallback_rate=0.068
+
+==== seed=7  alpha=0.01 ====
+    1-step fallback rate on test transitions: 6.8%
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  auc_1step=0.646  auc_2step=0.692  delta=+0.046  fallback_rate=0.068
+
+==== seed=7  alpha=0.1 ====
+    1-step fallback rate on test transitions: 6.8%
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  auc_1step=0.646  auc_2step=0.685  delta=+0.039  fallback_rate=0.068
+
+==== seed=7  alpha=1.0 ====
+    1-step fallback rate on test transitions: 6.8%
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  auc_1step=0.653  auc_2step=0.563  delta=-0.089  fallback_rate=0.068
+
+==== seed=7  alpha=10.0 ====
+    1-step fallback rate on test transitions: 6.8%
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  auc_1step=0.656  auc_2step=0.466  delta=-0.189  fallback_rate=0.068
+
+==== seed=7  alpha=100.0 ====
+    1-step fallback rate on test transitions: 6.8%
+  RESULT  seed=7  T=20  N_test=300  beta=0.971  auc_1step=0.631  auc_2step=0.503  delta=-0.128  fallback_rate=0.068
+
+==== seed=23  alpha=0.001 ====
+    1-step fallback rate on test transitions: 7.0%
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  auc_1step=0.659  auc_2step=0.667  delta=+0.008  fallback_rate=0.070
+
+==== seed=23  alpha=0.01 ====
+    1-step fallback rate on test transitions: 7.0%
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  auc_1step=0.659  auc_2step=0.665  delta=+0.006  fallback_rate=0.070
+
+==== seed=23  alpha=0.1 ====
+    1-step fallback rate on test transitions: 7.0%
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  auc_1step=0.659  auc_2step=0.655  delta=-0.004  fallback_rate=0.070
+
+==== seed=23  alpha=1.0 ====
+    1-step fallback rate on test transitions: 7.0%
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  auc_1step=0.664  auc_2step=0.532  delta=-0.133  fallback_rate=0.070
+
+==== seed=23  alpha=10.0 ====
+    1-step fallback rate on test transitions: 7.0%
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  auc_1step=0.665  auc_2step=0.451  delta=-0.215  fallback_rate=0.070
+
+==== seed=23  alpha=100.0 ====
+    1-step fallback rate on test transitions: 7.0%
+  RESULT  seed=23  T=20  N_test=300  beta=0.971  auc_1step=0.635  auc_2step=0.483  delta=-0.152  fallback_rate=0.070
+
+==== seed=42  alpha=0.001 ====
+    1-step fallback rate on test transitions: 7.1%
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.685  auc_2step=0.666  delta=-0.019  fallback_rate=0.071
+
+==== seed=42  alpha=0.01 ====
+    1-step fallback rate on test transitions: 7.1%
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.685  auc_2step=0.666  delta=-0.020  fallback_rate=0.071
+
+==== seed=42  alpha=0.1 ====
+    1-step fallback rate on test transitions: 7.1%
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.687  auc_2step=0.658  delta=-0.029  fallback_rate=0.071
+
+==== seed=42  alpha=1.0 ====
+    1-step fallback rate on test transitions: 7.1%
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.696  auc_2step=0.536  delta=-0.160  fallback_rate=0.071
+
+==== seed=42  alpha=10.0 ====
+    1-step fallback rate on test transitions: 7.1%
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.708  auc_2step=0.481  delta=-0.227  fallback_rate=0.071
+
+==== seed=42  alpha=100.0 ====
+    1-step fallback rate on test transitions: 7.1%
+  RESULT  seed=42  T=20  N_test=300  beta=0.972  auc_1step=0.657  auc_2step=0.517  delta=-0.140  fallback_rate=0.071
+
+==== seed=101  alpha=0.001 ====
+    1-step fallback rate on test transitions: 6.9%
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  auc_1step=0.631  auc_2step=0.667  delta=+0.036  fallback_rate=0.069
+
+==== seed=101  alpha=0.01 ====
+    1-step fallback rate on test transitions: 6.9%
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  auc_1step=0.631  auc_2step=0.667  delta=+0.036  fallback_rate=0.069
+
+==== seed=101  alpha=0.1 ====
+    1-step fallback rate on test transitions: 6.9%
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  auc_1step=0.633  auc_2step=0.662  delta=+0.029  fallback_rate=0.069
+
+==== seed=101  alpha=1.0 ====
+    1-step fallback rate on test transitions: 6.9%
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  auc_1step=0.642  auc_2step=0.546  delta=-0.096  fallback_rate=0.069
+
+==== seed=101  alpha=10.0 ====
+    1-step fallback rate on test transitions: 6.9%
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  auc_1step=0.644  auc_2step=0.480  delta=-0.164  fallback_rate=0.069
+
+==== seed=101  alpha=100.0 ====
+    1-step fallback rate on test transitions: 6.9%
+  RESULT  seed=101  T=20  N_test=300  beta=0.971  auc_1step=0.607  auc_2step=0.484  delta=-0.123  fallback_rate=0.069
+
+==== seed=2024  alpha=0.001 ====
+    1-step fallback rate on test transitions: 6.7%
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  auc_1step=0.638  auc_2step=0.669  delta=+0.031  fallback_rate=0.067
+
+==== seed=2024  alpha=0.01 ====
+    1-step fallback rate on test transitions: 6.7%
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  auc_1step=0.638  auc_2step=0.669  delta=+0.031  fallback_rate=0.067
+
+==== seed=2024  alpha=0.1 ====
+    1-step fallback rate on test transitions: 6.7%
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  auc_1step=0.639  auc_2step=0.661  delta=+0.023  fallback_rate=0.067
+
+==== seed=2024  alpha=1.0 ====
+    1-step fallback rate on test transitions: 6.7%
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  auc_1step=0.643  auc_2step=0.566  delta=-0.077  fallback_rate=0.067
+
+==== seed=2024  alpha=10.0 ====
+    1-step fallback rate on test transitions: 6.7%
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  auc_1step=0.656  auc_2step=0.489  delta=-0.167  fallback_rate=0.067
+
+==== seed=2024  alpha=100.0 ====
+    1-step fallback rate on test transitions: 6.7%
+  RESULT  seed=2024  T=20  N_test=300  beta=0.971  auc_1step=0.630  auc_2step=0.528  delta=-0.102  fallback_rate=0.067
+
+==== ALL DONE  total=42s ====

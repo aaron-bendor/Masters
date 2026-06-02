@@ -102,17 +102,21 @@ def satnav_pT(adj_out, PT_intr, pI, beta, alpha,
 # ===============================================================
 
 def fit_chain(adj, beta, X_o, f_obs, g_obs=None, gamma=None,
-              lam=1e-3, maxiter=300, phi_T=None, psi=None):
+              lam=1e-3, maxiter=300, phi_T=None, psi=None, solver="dense"):
     """Fit pT (and pI) to observations at X_o via the Morimura inverter.
     g_obs is the |X_o| x |X_o| hitting-rate matrix; pass None for an
     f-only fit. gamma defaults to 1.0 when g_obs is None and 0.1 when
     g_obs is given (matches the Phase 1 paper choice). phi_T (n x d_T)
     and psi (E x d_psi) enable the paper's omega-global terms in Eq. 17;
-    either or both may be omitted. Returns the fitted pI, pT and the
-    resulting stationary."""
+    either or both may be omitted. ``solver='sparse'`` routes the
+    hitting-rate LU through ``scipy.sparse.linalg.splu`` and is the
+    practical choice when the f+g extension is exercised on city-scale
+    road networks; ``solver='dense'`` matches the historical Phase-1
+    behaviour. Returns the fitted pI, pT and the resulting stationary."""
     if gamma is None:
         gamma = 1.0 if g_obs is None else 0.1
-    inv = Inverter(adj, beta, gamma=gamma, lam=lam, phi_T=phi_T, psi=psi)
+    inv = Inverter(adj, beta, gamma=gamma, lam=lam, phi_T=phi_T, psi=psi,
+                   solver=solver)
     theta, res = inv.fit(X_o, f_obs, g_obs, maxiter=maxiter)
     print(f"    L-BFGS: success={res.success}, nit={res.nit}, "
           f"final_loss={res.fun:.4g}, d={inv.d} "
