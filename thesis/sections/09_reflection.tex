@@ -16,10 +16,10 @@ validation locks before downstream tiers depend on it) gave a clean
 de-risking order.
 
 Internal milestone management was driven by a running
-\code{research\_logbook.md} file that holds twenty
-``iter-$N$'' entries spanning the full project. Each iter
-documents one experimental cycle: hypothesis, setup, result, honest
-read, and next action. Two practices that worked particularly well:
+\code{research\_logbook.md} file with twenty experimental-cycle entries
+spanning the full project. Each entry documents one cycle: hypothesis,
+setup, result, interpretation, and next action. Two practices that worked
+particularly well:
 \begin{itemize}
 \item \textbf{The auto-memory file as an \emph{epistemic} index.}
 A separate file (\code{MEMORY.md} with links to per-finding markdown
@@ -27,18 +27,18 @@ records) was used for ``things I now believe and the evidence for them''
 as opposed to ``things I did and when''. Concretely, the file
 records statements such as ``empirical $g$ on SUMO is sparse to the
 point of being uninformative for the optimiser'' with a pointer to the
-specific iter that established it. This separation made it possible to
+specific experimental entry that established it. This separation made it possible to
 quickly distinguish ``a working assumption that was right when I made
 it but might now be stale'' from ``a finding I have evidence for''.
-\item \textbf{Audit-before-extend.} A guiding rule, learned from
-iter-9's retraction of an earlier headline number, was to audit
+\item \textbf{Audit-before-extend.} A guiding rule, learned from an
+early retraction of a headline number, was to audit
 the upstream implementation before extending it. Two specific audits
 saved time: (i) the gradient finite-difference check at $\sim 10^{-9}$
 relative error confirmed the analytic gradient derivation before any
 sweep was run on features, avoiding the trap of attributing fit
-behaviour to a buggy derivative; (ii) the iter-18 contrast-correlation
+behaviour to a buggy derivative; (ii) the contrast-correlation
 diagnostic established that AUC alone is an unreliable signal of
-chain quality, which materially altered how the Phase~4 result was
+chain quality, which materially altered how the Tier~2 result was
 framed.
 \end{itemize}
 
@@ -56,9 +56,9 @@ sweep at unfamiliar configuration.
 \item \textbf{Late identification of the OD-mix confound.} The Tier-3
 rush-vs-off-peak proxy was scoped before the methodological cost of
 the OD-mix confound was clearly understood. The OD-rebalancing
-extension --- the methodologically correct fix --- was added late in the
+extension, the methodologically correct fix, was added late in the
 project, and the matched-pool result it produced
-(\cref{sec:phase5-reading}) materially changed the Tier-3 reading.
+(\cref{sec:phase5-interpretation}) materially changed the Tier-3 interpretation.
 Earlier scoping would have caught this; the lesson is that
 ``proxy weakness'' should be a structured pre-experiment audit item,
 not an ad-hoc discussion item.
@@ -70,9 +70,9 @@ foreground are: contextual investigation (a critical engagement with
 three real-world AVI datasets, only one of which is actually usable
 for per-trajectory work, and an explicit positioning against the
 source paper and rerouting-detection prior art); validation
-(three independent validation tiers, each with its own honest caveats
+(three independent validation tiers, each with its own stated assumptions
 and a quantified ceiling); and reflection (this section, and the
-honest framing of the $f+g$ infeasibility, plus the basin-selection
+reframed $f+g$ infeasibility claim, plus the basin-selection
 question chased to resolution on both tiers via multistart rather than
 left as a hand-wave). The weaknesses are: the single day-pool on Tier~3
 (no multi-pool replication, in contrast to the five-seed Tier-2
@@ -93,18 +93,18 @@ unsuccessful experimental cycles in enough detail that I could
 critique my own past decisions a month later.
 
 The non-technical skill I would name as the one that most shaped the
-project's outcome is \emph{honest framing of negative results}. The
+project's outcome is \emph{disciplined treatment of negative results}. The
 project did not produce the headline ``real-world detector with a
 high AUC and clean chain recovery'' that the SUMO Tier-2 result would
 have predicted. Instead it produced: a controlled-validation result
 ($\sim 0.71$ AUC, $69\%$ gap closure on labelled SUMO), a model-class
-diagnostic (the empirical $2$-step detector does not improve the
-$1$-step reference, weakening the case for a parametric $2$-step
-extension), and an honest real-world result ($\sim 0.53$ AUC on a
+diagnostic (the empirical $2$-step detector improves the $1$-step
+reference, strengthening the case for a parametric $2$-step
+extension), and a real-world result ($\sim 0.53$ AUC on a
 behavioural proxy without ground-truth labels) that quantifies the gap
 between simulated and real-world detectability. Each of these is a
 methodologically useful result, in part because they were framed
-honestly --- but the temptation in week~30 of the project
+accurately. The temptation late in the project
 to switch the real-world contrast to a stronger but methodologically
 incorrect proxy (holiday-vs-normal) had to be resisted. Resisting that
 temptation in real time, against the prospect of a higher headline

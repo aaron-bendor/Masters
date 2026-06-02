@@ -1,11 +1,11 @@
-% Master's thesis — Aaron Bendor — Imperial College London
+% Master's thesis - Aaron Bendor - Imperial College London
 % Design Engineering Master's Project (MEng)
 % Build: pdflatex -> bibtex -> pdflatex -> pdflatex
 % (VS Code LaTeX Workshop uses this recipe automatically.)
 
 \documentclass[11pt,a4paper]{article}
 
-% ----------------- Page geometry & typography ---------------------------------
+% Page geometry & typography
 \usepackage[a4paper, margin=1in]{geometry}
 \usepackage{setspace}
 \setstretch{1.1}
@@ -15,17 +15,17 @@
 \usepackage[utf8]{inputenc}
 \usepackage{titlesec}
 
-% ----------------- Math & symbols ---------------------------------------------
+% Math & symbols
 \usepackage{amsmath,amssymb,amsthm,bm}
 \usepackage{mathtools}
 
-% ----------------- Algorithm boxes & TikZ schematics --------------------------
+% Algorithm boxes & TikZ schematics
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, shapes.geometric, fit}
 
-% ----------------- Tables, figures, lists -------------------------------------
+% Tables, figures, lists
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{graphicx}
@@ -37,7 +37,7 @@
 \usepackage{enumitem}
 \setlist{nosep}
 
-% ----------------- Code & verbatim --------------------------------------------
+% Code & verbatim
 \usepackage{listings}
 \usepackage{xcolor}
 \definecolor{kw}{HTML}{2255AA}
@@ -52,21 +52,21 @@
   showstringspaces=false,
 }
 
-% ----------------- Cross-refs & hyperlinks ------------------------------------
+% Cross-refs & hyperlinks
 \usepackage[hidelinks,colorlinks=false]{hyperref}
 \usepackage{cleveref}
 
-% ----------------- Bibliography -----------------------------------------------
+% Bibliography
 % IEEEtran numeric style (matches the example thesis convention).
 \usepackage[numbers,sort&compress]{natbib}
 \bibliographystyle{IEEEtran}
 
-% ----------------- Section spacing --------------------------------------------
+% Section spacing
 \titlespacing*{\section}{0pt}{2ex}{1ex}
 \titlespacing*{\subsection}{0pt}{1.5ex}{0.6ex}
 \titlespacing*{\subsubsection}{0pt}{1.2ex}{0.4ex}
 
-% ----------------- Custom macros ----------------------------------------------
+% Custom macros
 \newcommand{\Xo}{X_{\!o}}      % observed-state subset
 \newcommand{\pT}{p_{\!T}}      % transition kernel
 \newcommand{\pI}{p_{\!I}}      % initial / teleport distribution
@@ -79,7 +79,7 @@
 \newcommand{\KL}{\mathrm{KL}}
 \newcommand{\code}[1]{\texttt{#1}}
 
-% ----------------- Title block ------------------------------------------------
+% Title block
 \title{\bfseries
   Detection of Externally-Influenced Routing\\
   via Inverse Markov-Chain Methods
@@ -89,7 +89,7 @@
   \texttt{aaron.bendor22@imperial.ac.uk}
   \and
   Imperial College London\\
-  MEng Design Engineering --- Master's Project
+  MEng Design Engineering, Master's Project
 }
 \date{\today}
 
@@ -106,13 +106,7 @@
 \tableofcontents
 
 \newpage
-\input{sections/01_notation}
-
 \input{sections/02_introduction}
-
-\input{sections/03_background}
-
-\input{sections/04_methodology}
 
 \input{sections/05_phase1_synthetic}
 
@@ -126,11 +120,11 @@
 
 \input{sections/09_reflection}
 
-% ----------------- References -------------------------------------------------
+% References
 \newpage
 \bibliography{references}
 
-% ----------------- Appendices -------------------------------------------------
+% Appendices
 \appendix
 \input{sections/A_appendix}
 

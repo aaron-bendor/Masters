@@ -1,0 +1,161 @@
+=== Xuancheng holiday-vs-normal sweep ===
+POOL=all
+DAYS=2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21
+T=10  B=2000  MAXITER=1500
+
+######## unmatched ########
+Matplotlib is building the font cache; this may take a moment.
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-05  raw_trips=264,347  legal_frac=76.3%  sub_trajs=307,826  holiday=307,826  normal=     0  other=     0
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,532,664, normal=3,021,791
+  edges with traffic (holiday): 1067/1733
+  edges with traffic (normal): 1074/1733
+    L-BFGS: success=False, nit=1500, final_loss=1033, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=963.8, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+BOOTSTRAP  dataset=xuancheng  seed_or_day=2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  T=10  N_test_per_class=300  |X_o|=433  features=none  od_match=None  B=2000
+  empirical point=0.508  95% CI=[0.460, 0.555]  (straddles 0.5)  P(AUC>0.5)=0.621
+  fitted_f  point=0.511  95% CI=[0.466, 0.557]  (straddles 0.5)  P(AUC>0.5)=0.704
+
+######## OD-matched K=8 ########
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-05  raw_trips=264,347  legal_frac=76.3%  sub_trajs=307,826  holiday=307,826  normal=     0  other=     0
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,532,664, normal=3,021,791
+  edges with traffic (holiday): 1067/1733
+  edges with traffic (normal): 1074/1733
+  OD-matching: clustering junctions into K=8 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 57 shared cells (of 59 unique OD pairs)
+  od-match: holiday 1,532,664 → 1,532,576 (dropped 1 in non-shared cells, plus per-cell excess)
+  od-match: normal 3,021,791 → 1,532,576 (dropped 1 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (holiday): 1067/1733, (normal): 1074/1733
+    L-BFGS: success=False, nit=1500, final_loss=1033, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=953.2, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+BOOTSTRAP  dataset=xuancheng  seed_or_day=2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  T=10  N_test_per_class=300  |X_o|=433  features=none  od_match=8  B=2000
+  empirical point=0.500  95% CI=[0.453, 0.546]  (straddles 0.5)  P(AUC>0.5)=0.490
+  fitted_f  point=0.484  95% CI=[0.439, 0.531]  (straddles 0.5)  P(AUC>0.5)=0.249
+
+######## OD-matched K=16 ########
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-05  raw_trips=264,347  legal_frac=76.3%  sub_trajs=307,826  holiday=307,826  normal=     0  other=     0
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,532,664, normal=3,021,791
+  edges with traffic (holiday): 1067/1733
+  edges with traffic (normal): 1074/1733
+  OD-matching: clustering junctions into K=16 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 165 shared cells (of 173 unique OD pairs)
+  od-match: holiday 1,532,664 → 1,532,429 (dropped 0 in non-shared cells, plus per-cell excess)
+  od-match: normal 3,021,791 → 1,532,429 (dropped 8 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (holiday): 1067/1733, (normal): 1073/1733
+    L-BFGS: success=False, nit=1500, final_loss=13.91, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=11.58, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+BOOTSTRAP  dataset=xuancheng  seed_or_day=2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  T=10  N_test_per_class=300  |X_o|=433  features=none  od_match=16  B=2000
+  empirical point=0.530  95% CI=[0.485, 0.577]  (straddles 0.5)  P(AUC>0.5)=0.913
+  fitted_f  point=0.487  95% CI=[0.440, 0.535]  (straddles 0.5)  P(AUC>0.5)=0.293
+
+######## OD-matched K=32 ########
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-05  raw_trips=264,347  legal_frac=76.3%  sub_trajs=307,826  holiday=307,826  normal=     0  other=     0
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,532,664, normal=3,021,791
+  edges with traffic (holiday): 1067/1733
+  edges with traffic (normal): 1074/1733
+  OD-matching: clustering junctions into K=32 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 565 shared cells (of 593 unique OD pairs)
+  od-match: holiday 1,532,664 → 1,530,785 (dropped 8 in non-shared cells, plus per-cell excess)
+  od-match: normal 3,021,791 → 1,530,785 (dropped 48 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (holiday): 1067/1733, (normal): 1073/1733
+    L-BFGS: success=False, nit=1500, final_loss=1033, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=998.7, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+BOOTSTRAP  dataset=xuancheng  seed_or_day=2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  T=10  N_test_per_class=300  |X_o|=433  features=none  od_match=32  B=2000
+  empirical point=0.524  95% CI=[0.476, 0.570]  (straddles 0.5)  P(AUC>0.5)=0.845
+  fitted_f  point=0.534  95% CI=[0.487, 0.578]  (straddles 0.5)  P(AUC>0.5)=0.932
+
+######## OD-matched K=64 ########
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-05  raw_trips=264,347  legal_frac=76.3%  sub_trajs=307,826  holiday=307,826  normal=     0  other=     0
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,532,664, normal=3,021,791
+  edges with traffic (holiday): 1067/1733
+  edges with traffic (normal): 1074/1733
+  OD-matching: clustering junctions into K=64 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 1655 shared cells (of 1830 unique OD pairs)
+  od-match: holiday 1,532,664 → 1,529,640 (dropped 60 in non-shared cells, plus per-cell excess)
+  od-match: normal 3,021,791 → 1,529,640 (dropped 260 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (holiday): 1067/1733, (normal): 1074/1733
+    L-BFGS: success=False, nit=1500, final_loss=1032, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=945.4, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+BOOTSTRAP  dataset=xuancheng  seed_or_day=2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  T=10  N_test_per_class=300  |X_o|=433  features=none  od_match=64  B=2000
+  empirical point=0.533  95% CI=[0.488, 0.578]  (straddles 0.5)  P(AUC>0.5)=0.926
+  fitted_f  point=0.519  95% CI=[0.470, 0.565]  (straddles 0.5)  P(AUC>0.5)=0.787
+
+=== Optional diagnostics ===
+Run the strongest empirical K through contrast_correlation.py, e.g.:
+  ../.venv/bin/python contrast_correlation.py --dataset xuancheng --day "2023-04-05,2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21" --regime_split holiday_normal --od_match 32 --features none --T 10 --maxiter 1500
+If fitted_f beats the rush/off-peak result, follow with features=real + multistart as a basin check.
+=== ALL DONE ===

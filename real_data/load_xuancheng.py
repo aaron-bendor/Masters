@@ -185,8 +185,10 @@ _HOLIDAY_DATES = {
     datetime.date(2023, 4, 29),
     datetime.date(2023, 4, 30),  # Labour Day
 }
+# Apr 10 is deliberately excluded: the audit found startTime extending to
+# ~165k seconds, suggesting a concatenated/misaligned file.
 _NORMAL_DATES = {
-    datetime.date(2023, 4, d) for d in (10, 11, 12, 13, 14, 17, 18, 19, 20, 21)
+    datetime.date(2023, 4, d) for d in (11, 12, 13, 14, 17, 18, 19, 20, 21)
 }
 
 

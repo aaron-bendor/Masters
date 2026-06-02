@@ -1,186 +1,127 @@
 \section{Introduction}\label{sec:introduction}
 
-\subsection{Context: urban traffic and the external-influence problem}
-\label{sec:context}
+\subsection{Context and research gap}
+\label{sec:context}\label{sec:background}
 
-The widespread adoption of satellite-navigation applications such as Google
-Maps, Waze, and TomTom has structurally altered how vehicles use urban road
-networks. These systems no longer merely report a single shortest path:
-they reroute users in real time around observed congestion, redistributing
-traffic across alternative arteries on time-scales of minutes to hours.
-The consequence is that any traffic observation aggregating across modern
-drivers reflects a \emph{mixture} of two distinct routing rules: the
-intrinsic preferences a driver would express in the absence of guidance
-(habit, scenic preference, fuel-cost optimisation, familiarity), and the
-external recommendations of a sat-navigation system reacting to live
-network state.
+Satellite-navigation and live-traffic services have become part of the
+route-choice system rather than passive map displays. Travel information
+changes route-choice behaviour in congested networks
+\cite{yang2001atis,ramos2020information}, and routing-app shortest-path
+guidance can redistribute traffic in ways that affect wider network
+performance and residential cut-through traffic
+\cite{thai2016,cabannes2018gps,krichene2018}. This creates a measurement
+problem. Traffic counts and trajectories no longer necessarily reveal
+only the preferences of unaided drivers; they may also encode the
+recommendations of external routing systems reacting to congestion and to
+other guided vehicles.
 
-This mixture creates a problem for downstream traffic models. Demand
-estimation, route-choice inference, transport-policy evaluation, and
-infrastructure-investment decisions all rely on revealed-preference data
-that is assumed to encode \emph{driver} preferences. When a sizeable
-fraction of observed trips are guided by an external recommender that
-itself responds to congestion (and thereby to other guided trips), the
-revealed data encodes a partially synthetic, congestion-coupled signal
-that the underlying driver population would not have produced unaided.
-Identifying and filtering this externally-influenced traffic, or at minimum
-quantifying its presence, has therefore become a methodological
-prerequisite for any inference about driver behaviour in modern urban
-environments.
+This matters because route-choice inference, demand estimation, pricing
+and infrastructure appraisal rely on revealed-preference data. If a
+substantial fraction of observed trips is externally guided, downstream
+models may mistake recommender-induced behaviour for intrinsic driver
+preference. The problem addressed here is therefore detection: given only
+sparse observation of a road network, can we distinguish trajectories
+that look intrinsic from trajectories that look externally influenced?
 
-\subsection{This work: a partial-observation routing-influence filter}
-\label{sec:intro-filter}
+\subsection{Related work and novelty}
+\label{sec:inverse-mc}\label{sec:route-softmax}\label{sec:partial-route-prior}\label{sec:rerouting-prior}
 
-The central artefact of this dissertation is a designed pipeline ---
-called here the \emph{partial-observation routing-influence filter} ---
-that ingests a road graph, a small subset of observation stations $\Xo$
-(loop detectors, AVI gantries, or simulated counts), and two
-regime-labelled flow snapshots (e.g.\ rerouting on / rerouting off,
-rush-hour / off-peak), fits one inverse-Markov-chain model per regime,
-and emits a per-trajectory log-likelihood-ratio score together with a
-suite of trust diagnostics. The pipeline is the deliverable; the
-inverse-Markov-chain estimator is the component inside it, and the
-three experimental tiers reported in this dissertation exist to justify,
-parameterise, and stress-test the filter's design choices.
+Route choice is often represented as a sequence of link-level decisions.
+Multinomial-logit and recursive-logit models parameterise the probability
+of taking the next road edge from the current edge
+\cite{ben-akiva1985,frejinger2007,fosgerau2013route,mai2015nested}. In a
+one-step Markov-chain (MC) form, with road edges as states, the transition
+probability is
+\begin{equation}
+\pT(x'\mid x) =
+\frac{\exp(s(x,x'))}{\sum_{x'' \in \mathrm{adj}(x)} \exp(s(x,x''))},
+\label{eq:softmax}
+\end{equation}
+where $\mathrm{adj}(x)$ is the set of legal successors of edge $x$ and
+$s(x,x')$ is a feature-based score. Related work also estimates
+route-choice models from incomplete trips, sparse sensor observations or
+inverse preference learning \cite{vanoijen2020sensor,mai2023incomplete,ziebart2008maxent}.
+Those papers address important adjacent estimation problems, but they
+are normally framed as single-behavioural-model estimation rather than
+two-regime trajectory detection.
 
-A long line of work models route choice as a Markov chain over road
-network edges, in which each driver, conditional on their current edge,
-selects a next edge with probabilities determined by local and global
-features of the network. \citet{morimura2013} introduced an
-\emph{inverse} formulation that fits the parameters of such a chain
-from only partial observations of the network --- specifically, from
-vehicle counts at a small subset $\Xo$ and optionally from pairwise
-hitting rates between those stations. Their softmax-parametric chain
-admits an analytic gradient of the regularised log-ratio loss, enabling
-reliable fitting on networks of several thousand edges with
-$20\text{--}90\%$ observation coverage. This is the estimator we adopt
-inside the filter. The original method is presented as a
-\emph{single-chain recovery} procedure and was validated by its authors
-on synthetic data and one Nairobi case study; turning it into a
-trajectory-level \emph{detector and filter} for one routing regime against
-another, audited for the failure modes that show up only at urban scale,
-is the work this dissertation does on top of it.
+Morimura, Osogami and Id\'e introduced an inverse Markov-chain method for
+recovering a softmax-parametric chain from partial observations
+\cite{morimura2013}. Their method fits a chain using counts at a subset
+of observed states $\Xo$ and, optionally, hitting rates between observed
+states. It is the estimator used in this dissertation. The contribution
+here is not a new inverse-chain estimator. It is a two-regime
+partial-observation filter that fits one chain per regime, scores each
+trajectory with a log-likelihood ratio and reports diagnostics that
+separate transition-level chain recovery from aggregate confounds such as
+origin-destination (OD) mix, optimiser basins and model-order
+misspecification.
 
-\subsection{Contributions}
-\label{sec:contributions}
+\subsection{Filter specification and assumptions}
+\label{sec:intro-filter}\label{sec:methodology}\label{sec:filter-design}
+\label{sec:morimura}\label{sec:morimura-formulation}\label{sec:loss-gradients}
 
-The contributions of this work are design-led. Each item below is a
-component of the filter, a design decision audited by experiment, or a
-diagnostic that establishes when the filter can or cannot be trusted.
+The filter takes a directed road graph $\mathcal{X}$, an observed subset
+$\Xo \subseteq \mathcal{X}$, regime-labelled station counts
+$\fobs_A,\fobs_B$ and held-out trajectories. For each regime it fits a
+softmax-parametric MC by minimising Morimura et al.'s regularised
+log-ratio loss. The fitted chains $\hat{P}_A$ and $\hat{P}_B$ then define
+a log-likelihood-ratio (LLR) score
+\[
+\Lam(\tau)=\sum_t \left[\log \hat{p}_B(x_{t+1}\mid x_t)
+-\log \hat{p}_A(x_{t+1}\mid x_t)\right],
+\]
+and validation reports the area under the receiver-operating-characteristic
+curve (AUC) over possible decision thresholds.
 
-\begin{enumerate}
-\item \textbf{A partial-observation filter for externally-influenced
-routing.} A pipeline that maps a road graph plus regime-labelled partial
-observations to a per-trajectory log-likelihood-ratio score and a filter
-decision. The architecture is specified end-to-end in
-\cref{sec:filter-design} (objective, inputs, estimator, scoring rule,
-decision output, diagnostic audits) and codified as Algorithm~\ref{alg:filter},
-with a schematic in \cref{fig:filter-schematic}.
+The Morimura estimator carries assumptions that are used later in the
+report. First, it assumes a one-step MC: the next edge depends on the
+current edge, not the full previous path. Second, its count term treats
+$\fobs$ as a sample from a stationary distribution, and its optional
+hitting-rate term treats $\gobs$ as stationary first-passage evidence.
+Third, the softmax form restricts recoverable behaviour to the chosen
+feature and parameter family. In the SUMO and Xuancheng tiers the data
+come from finite, time-varying traffic windows, so the fitted chain is a
+time-aggregated surrogate for that window rather than behavioural ground
+truth. The empirical full-observation transition matrix used for
+comparison is also a finite-data reference, not an oracle.
 
-\item \textbf{An inverse-MC estimation engine validated through Morimura
-reproduction.} A faithful, FD-verified re-implementation of the
-softmax-parametric inverter --- including the omega-global gradients the
-paper states but does not derive in full --- whose recovery curve
-reproduces $\S 6.1$ of \citet{morimura2013} closely for observation
-fractions $\Xo/n \ge 0.10$. Tier~1 (\cref{sec:phase1-synthetic})
-validates the estimator that sits inside the filter, not the filter as a
-whole.
+\paragraph{Diagnostics.}\label{sec:detector}
+The scalar AUC is reported with transition-level diagnostics. At
+branching states, the fitted regime contrast
+$\Delta_{\mathrm{fit}}=\hat{P}_B-\hat{P}_A$ is compared with the
+full-observation empirical contrast $\Delta_{\mathrm{emp}}$ using stacked
+Pearson correlation and per-state cosine similarity. A high AUC with a
+near-zero transition contrast indicates aggregate-bias-driven detection,
+whereas positive contrast correlation supports a chain-recovery claim.
 
-\item \textbf{A feature-regularised filter variant using road-network
-attributes.} A version of the filter in which the estimator's global
-score terms ingest real per-edge attributes from the SUMO network's
-\code{.net.xml} (road class, speed limit, lane count, turn angle, speed
-ratio): $10$ shared parameters that let edges of the same class borrow
-strength across the chain. Across a five-seed SUMO sweep this variant
-robustly improves per-row chain recovery (stacked Pearson
-$+0.050 \pm 0.023$, $p \approx 0.008$, positive on all five seeds), while
-its aggregate detection-AUC lift is seed-dependent
-($+0.024 \pm 0.026$, reversing on one of five seeds) and not claimed as
-robust.
+\paragraph{Extensions.}\label{sec:features}\label{sec:2step-diag}\label{sec:od-rebal}
+Three extensions are evaluated in the tiers. The feature-regularised
+variant adds road class, speed, lane and turn-geometry features as shared
+parameters. The empirical two-step test checks whether
+$(x_{t-1},x_t)$-conditional routing memory improves over the one-step
+reference before a parametric two-step inverse-MC model is attempted.
+The OD-rebalancing step matches real-world regime pools by
+$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ before comparing
+rush-hour and off-peak routing.
 
-\item \textbf{A trajectory log-likelihood-ratio scoring rule.} A
-per-trip detection score $\Lam(\tau) = \sum_t [\log \hat
-p_B(x_{t+1}\!\mid\!x_t) - \log \hat p_A(x_{t+1}\!\mid\!x_t)]$ derived
-from the two fitted regime kernels, with a tunable decision threshold
-$\eta$. On the representative SUMO seed the score reaches
-$\AUC = 0.644$ at $T=20$ against a full-observation empirical $1$-step
-reference of $0.685$, rising to $\AUC = 0.708$ at $T=40$ against a
-reference of $0.801$ as the scoring window widens.
+\paragraph{Validation split.}
+Test trajectories are withheld from the empirical transition matrix and
+from the empirical-reference LLR scorer. The inverse-MC fit uses aggregate
+station counts for the whole regime window, not counts recomputed after
+removing held-out vehicles. The reported AUCs are therefore held out at
+the trajectory-scoring level, not a fully out-of-sample sensor-count
+experiment.
 
-\item \textbf{Diagnostic audits separating per-row chain recovery from
-aggregate-AUC effects.} A contrast-correlation diagnostic at branching
-states (per-row Pearson and per-state cosine of $\Delta_{\mathrm{fit}}$
-against $\Delta_{\mathrm{emp}}$) that tells the user whether a high
-detection AUC reflects correct chain recovery or merely aggregate
-bias. This is the most important trust signal the filter emits: it
-flagged the seed-dependence of the AUC lift in (3) and motivates the
-filter's recommended reporting protocol.
+\subsection{Experimental structure}
+\label{sec:roadmap}\label{sec:sumo}\label{sec:avi-prior}
 
-\item \textbf{Controlled SUMO validation of the full filter under
-labelled rerouting.} A bigger-bbox SUMO scenario
-($n = 2{,}405$ edges) in which an identical population of vehicles is
-simulated twice, once with no sat-navigation rerouting (static unguided
-routing) and once with full sat-navigation rerouting. This is the only
-tier in which the filter's regime labels are ground-truth; it answers
-whether the designed pipeline works end-to-end when the detection
-problem is correctly posed.
-
-\item \textbf{An empirical higher-order memory audit.} A fitting-free
-$2$-step detector --- counting $(x_{t-1}, x_t)\to x_{t+1}$ triples on the
-same trajectories --- used to test whether a parametric $2$-step
-extension is a justified next filter lever. The headline finding is
-positive: a properly regularised $2$-step empirical (interpolation
-backoff toward the $1$-step reference, with count-conditional trust
-$\lambda(x_p,x) = N/(N+\kappa)$) lifts the AUC by
-$+0.100 \pm 0.009$ across five SUMO seeds, with every seed winning
-($\AUC_{\mathrm{2step,backoff}} = 0.752 \pm 0.015$ vs
-$\AUC_{1\text{-step}} = 0.652 \pm 0.022$).
-This identifies higher-order routing memory as a real design lever
-that the $1$-step softmax family cannot express, and motivates a
-parametric $2$-step Morimura extension as a justified future
-direction (\cref{sec:phase4-2step}).
-
-\item \textbf{A simulator decomposition of the rush-vs-off-peak
-proxy.} A $\rho \times d$ grid in SUMO that varies sat-navigation
-adoption $\rho$ and demand $d$ independently across five repeat
-seeds, separating the two effects that the Tier~3 behavioural proxy
-otherwise bundles. The decomposition attributes $\sim\!96\%$ of the
-peak-vs-off-peak routing signal to sat-navigation adoption and a
-pure-congestion contribution within noise, bounding the
-congestion-rerouting confound from below in the controlled regime
-(\cref{sec:phase4-rho-demand}).
-
-\item \textbf{A real-world Xuancheng stress test under OD-mix
-confounding.} The filter is ported to $\sim 10.5$ million reconstructed
-vehicle trips over April~2023 \cite{ma2026xuancheng} with a time-of-day
-behavioural proxy (rush-hour vs.\ off-peak) substituting for absent
-sat-navigation labels, and an OD-rebalancing pre-step subsamples each
-regime to share a common
-$(\mathrm{origin\ zone},\mathrm{destination\ zone})$ distribution. The
-fitted $1$-step filter does not recover the rush-vs-off-peak contrast at
-any zone granularity tested ($K \in \{8, 16, 32, 64\}$, every bootstrap
-CI straddling chance), even though the full-observation reference weakly
-carries it --- a granularity-robust honest negative result on this
-behavioural proxy (\cref{sec:phase5-xuancheng}).
-\end{enumerate}
-
-A single CLI runs all three tiers via a \code{--dataset \{sumo,xuancheng\}}
-flag; the repository structure is documented in \cref{app:repo}.
-
-\subsection{Roadmap}
-\label{sec:roadmap}
-
-\cref{sec:background} situates the work in relevant prior literature.
-\cref{sec:methodology} specifies the filter design end-to-end --- objective,
-inputs, estimator, scoring rule, decision output, and diagnostic audits ---
-together with the three estimator-level extensions (real features,
-$2$-step diagnostic, OD-rebalancing).
-\cref{sec:phase1-synthetic,sec:phase4-sumo,sec:phase5-xuancheng}
-report the three experimental tiers, each framed as a validation of one
-or more filter design choices: Tier~1 validates the inverse-MC estimator
-inside the filter, Tier~2 controls the full filter against labelled
-rerouting, Tier~3 stress-tests it against real-world OD-mix confounding.
-\cref{sec:discussion} draws cross-tier conclusions and limitations.
-\cref{sec:reflection} addresses project management and personal-development
-reflection per the module's \emph{Reflection} learning outcome
-\cite{markscheme}.
+The report follows the experimental tiers directly. Tier~1 validates the
+inverse-MC estimator against Morimura et al.'s synthetic benchmark.
+Tier~2 uses Simulation of Urban MObility (SUMO) to test the full filter
+under labelled sat-navigation rerouting. Tier~3 applies the same filter
+to automatic vehicle identification (AVI) data from Xuancheng, China,
+where rush-hour versus off-peak travel is used as an unlabelled proxy for
+external routing influence. The Discussion compares what generalises
+across tiers, the Conclusion states the supported claims, and the final
+section covers project management and reflection.

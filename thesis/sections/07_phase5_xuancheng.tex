@@ -2,14 +2,15 @@
 \label{sec:phase5-xuancheng}
 
 This tier stress-tests the partial-observation routing-influence filter
-(Algorithm~\ref{alg:filter}) against a real-world urban AVI dataset
-from Xuancheng, China \cite{ma2026xuancheng}, with the OD-rebalancing
-audit (\cref{sec:od-rebal}) activated. The estimator, the scoring rule,
-and the per-row diagnostic are reused unchanged from Tier~2; what
-changes are the loader, the regime definition, and the OD-control
-logic. Because no real dataset carries ground-truth sat-navigation
-adoption labels, this tier cannot directly validate sat-navigation
-detection: it is best read as a real-world \emph{confounding audit}
+(defined in \cref{sec:intro-filter}) against a real-world urban
+automatic vehicle identification (AVI) dataset from Xuancheng, China
+\cite{ma2026xuancheng}, with the OD-rebalancing audit
+(\cref{sec:od-rebal}) activated. The estimator, the scoring rule, and
+the per-row diagnostic are reused unchanged from Tier~2; what changes are
+the loader, the regime definition, and the OD-control logic. Because no
+real dataset carries ground-truth sat-navigation adoption labels, this
+tier cannot directly validate sat-navigation detection. It is a
+real-world \emph{confounding audit}
 that asks whether a plausible behavioural proxy (rush-hour vs.\
 off-peak travel) contains a within-OD route-choice signal once the
 population-mix confound is controlled, and whether the filter survives
@@ -17,7 +18,7 @@ that confounding. As the results below show, under the tested proxy the
 within-OD contrast is not recovered. The absence of a ground-truth
 label is the defining methodological constraint of this tier, and the
 filter's OD-rebalancing and multistart audits exist precisely so that
-this constraint can be reported honestly rather than masked by a
+this constraint can be reported directly rather than masked by a
 spurious AUC.
 
 \subsection{Dataset choice}\label{sec:phase5-dataset}
@@ -29,7 +30,7 @@ are stripped at the source pipeline for privacy and cannot be
 reconstructed downstream. The Wang \emph{et al.}\ Xuancheng deposit
 \cite{wang2023xuancheng} explicitly restricts raw trajectory access
 behind a supervised-interactive interface. The
-\citet{ma2026xuancheng} Xuancheng release, by contrast, publishes
+Ma et al.~\cite{ma2026xuancheng} Xuancheng release, by contrast, publishes
 joinable entry/exit tables with anonymised vehicle identifiers from
 which complete per-vehicle trajectories can be reconstructed downstream;
 this is the dataset we use. \cref{tab:phase5-dataset-scale} summarises
@@ -71,8 +72,15 @@ CityFlow's connectivity graph rather than the SUMO net's. The loader
 handles this by \emph{splitting trips at illegal boundaries} into
 legal-only sub-trajectories rather than dropping the trip wholesale:
 a $15$-edge raw trip with one illegal jump becomes two sub-trajectories.
-Mean sub-trajectory length is $8.2$ edges, which caps the practical
-test-window $T$ at $\le 10$.
+This is the conservative choice because the inverse-MC scorer assigns
+likelihood only to legal successors in $\mathrm{adj}(x)$; treating
+source-pipeline repair jumps as real road transitions would contaminate
+the fitted chain with edges that do not exist in the analysed network.
+The cost is that Tier~3 is a test on legalised sub-trajectories rather
+than raw AVI trips. Mean sub-trajectory length is $8.2$ edges, and the
+$T=10$ experiments therefore draw their test set from the subset of
+sub-trajectories with at least $11$ edges, selecting the longer and
+cleaner fragments of the reconstructed data.
 
 \paragraph{Time-of-day distribution.} Across all $30$ daily files, the
 trip \code{startTime} field is seconds-since-midnight in $[0, 86400]$
@@ -111,7 +119,7 @@ even the routing-choice signal is diluted by the unguided fraction.
 We address the OD-mix confound directly via the OD-rebalancing
 extension of \cref{sec:od-rebal}. We cannot address the lower-adoption
 dilution from observation alone; what we can do is report the resulting
-real-world AUC honestly as a lower bound on the method's sensitivity
+real-world AUC as a lower bound on the method's sensitivity
 in deployment.
 
 A further concern is that the rush-vs-off-peak contrast bundles
@@ -126,7 +134,7 @@ of $0.493 \pm 0.018$ (statistically indistinguishable from chance),
 whereas varying $\rho$ at fixed peak congestion produces
 $0.780 \pm 0.013$, and the full rush-vs-off-peak proxy diagonal
 ($0.793 \pm 0.023$) attributes $\sim\!96\%$ of its above-chance signal
-to sat-navigation adoption and the rest to within-noise residual ---
+to sat-navigation adoption, with the rest as within-noise residual
 across five SUMO seeds. This validates the proxy as a sat-navigation
 proxy in the controlled tier and bounds the congestion-routing
 confound, though with the residual caveat that SUMO's $\rho=0$ drivers
@@ -145,10 +153,10 @@ single-day, $5$-day pooled, and $5$-day pooled with $K=8$ OD-rebalancing.
 configurations. The full-observation empirical $1$-step reference (grey)
 is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and
 $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The
-apparent crash at $K=8$ is \emph{not} stable across zone granularity ---
+apparent crash at $K=8$ is \emph{not} stable across zone granularity:
 a sweep over $K \in \{8, 16, 32, 64\}$ (\cref{tab:phase5-ksweep}) shows
-the matched reference returning to $\sim\!0.55$--$0.58$ for $K \ge 16$ ---
-so we do not read the $K=8$ drop as a fixed OD-mix fraction. Fitted
+the matched reference returning to $\sim\!0.55$--$0.58$ for $K \ge 16$.
+We therefore do not treat the $K=8$ drop as a fixed OD-mix fraction. Fitted
 detectors (blue bars) sit at or below chance in all three
 configurations.}
 \label{fig:phase5-headline}
@@ -178,7 +186,7 @@ shared $(\text{zone}_o, \text{zone}_d)$ cells (only $1$ OD cell of $56$
 was rush- or off-peak-only, discarded). At this granularity the
 full-observation reference drops from $0.573$ to $0.518$. Taken in
 isolation, that drop would attribute $\sim\!75\%$ of the above-chance
-contrast to OD-mix --- but \emph{this attribution does not survive a
+contrast to OD-mix, but \emph{this attribution does not survive a
 zone-granularity sweep} (\cref{tab:phase5-ksweep}), so we do not report
 it as a stable decomposition.
 
@@ -186,12 +194,13 @@ it as a stable decomposition.
 \centering
 \caption{OD-zone granularity sweep on the $5$-day pooled
 rush-vs-off-peak contrast ($T=10$, \code{features=none}), with
-stratified vehicle-level bootstrap $95\%$ CIs ($B=2{,}000$ resamples of
+stratified vehicle-level bootstrap $95\%$ confidence intervals (CIs)
+($B=2{,}000$ resamples of
 the test trajectories within each regime). The OD-matched
 full-observation reference is \emph{not} stable across $K$: at the
 coarse $K=8$ it falls to chance, but at $K \ge 16$ it returns to
 $\sim\!0.55$--$0.58$, statistically above chance and close to the
-un-matched $0.573$ --- i.e.\ fine-grained OD control removes almost none
+un-matched $0.573$, so fine-grained OD control removes almost none
 of the contrast. The fitted $1$-step partial-observation detector, by
 contrast, straddles chance at \emph{every} $K$.}
 \label{tab:phase5-ksweep}
@@ -200,7 +209,7 @@ contrast, straddles chance at \emph{every} $K$.}
 \toprule
 $K$ zones & shared cells & $\AUC_{\mathrm{emp}}$ (95\% CI) & $\AUC_{\mathrm{fit}}$ (95\% CI) \\
 \midrule
-un-matched & ---       & $0.573$                  & $0.524$ \\
+un-matched & --       & $0.573$                  & $0.524$ \\
 $8$        & $55$      & $0.518$ $[0.471, 0.567]$ & $0.476$ $[0.429, 0.524]$ \\
 $16$       & $157$     & $0.562$ $[0.516, 0.605]$ & $0.486$ $[0.439, 0.530]$ \\
 $32$       & $520$     & $0.553$ $[0.507, 0.602]$ & $0.513$ $[0.467, 0.560]$ \\
@@ -209,19 +218,20 @@ $64$       & $1{,}448$ & $0.575$ $[0.530, 0.622]$ & $0.490$ $[0.441, 0.535]$ \\
 \end{tabular}
 \end{table}
 
-Two readings follow. First, the ``$\sim\!75\%$ is OD-mix'' decomposition
+Two conclusions follow. First, the ``$\sim\!75\%$ is OD-mix'' decomposition
 that the $K=8$ row alone would support is \emph{not robust}: the implied
 OD-mix fraction ranges from $\sim\!75\%$ at $K=8$ to $\approx 0\%$ at
 $K=64$, where matching leaves the reference statistically unchanged from
 the un-matched pool. The coarse $K=8$ matching appears to
-\emph{over-correct} --- aggregating heterogeneous sub-flows into $8$
+\emph{over-correct} by aggregating heterogeneous sub-flows into $8$
 macro-zones and equalising them washes out genuine within-OD routing
-contrast along with OD-mix --- whereas at finer resolutions a small but
+contrast along with OD-mix, whereas at finer resolutions a small but
 significant within-OD rush-vs-off-peak contrast survives
 ($\AUC_{\mathrm{emp}} \approx 0.55$--$0.58$, CIs excluding chance at
-$K \ge 16$). We therefore retract the strong ``three-quarters is OD-mix''
-claim as an artefact of a single coarse zone choice. Second --- and this
-is the result that \emph{is} robust --- the fitted $1$-step inverse-MC
+$K \ge 16$). We therefore do not retain the strong ``three-quarters is
+OD-mix'' interpretation; it is an artefact of a single coarse zone choice.
+Second, and this
+is the result that \emph{is} robust, the fitted $1$-step inverse-MC
 detector remains indistinguishable from chance at every $K$
 ($0.476$--$0.513$, every CI straddling $0.50$): the method does not
 recover the within-OD contrast at any tested OD-zone granularity, even
@@ -236,20 +246,20 @@ L-BFGS basin-selection pathology also seen on the un-matched pool
 (rush-fit loss $1397$ at \code{features=real} vs.\ $4.058$ at
 \code{features=none}, a $\sim 340\times$ ratio). A multistart
 $K=5$ run (\cref{sec:phase5-multistart}) confirms it: random
-re-initialisation \emph{escapes} the bad basin --- the rush-chain loss
-drops from $1397$ to $9.186$ at a validation-selected restart --- and the
+re-initialisation \emph{escapes} the bad basin: the rush-chain loss
+drops from $1397$ to $9.186$ at a validation-selected restart, and the
 properly-fit chains then give $\AUC_{\mathrm{fit}} = 0.483$, i.e.\ they
 fall \emph{back to chance} and no longer violate the empirical ceiling.
 The $0.530$ was therefore an optimiser artefact, not a real signal; the
 genuine within-OD routing contrast under correct chain recovery is
 indistinguishable from chance. This strengthens rather than weakens the
 Tier-3 negative result: the apparent ``features help on real data''
-reading was a basin coincidence, and the per-row Pearson on
+interpretation was a basin coincidence, and the per-row Pearson on
 \texttt{[all branching]} of $+0.077$ (real) vs $+0.104$ (none) already
-pointed the same way --- features do not improve chain recovery on this
+pointed the same way: features do not improve chain recovery on this
 real-world loss landscape.
 
-\subsection{Honest reading}\label{sec:phase5-reading}
+\subsection{Interpretation}\label{sec:phase5-interpretation}
 
 Three findings are worth foregrounding from \cref{tab:phase5-headline}.
 
@@ -264,7 +274,7 @@ removes almost none of the contrast. We therefore do \emph{not} claim a
 stable OD-mix fraction. The defensible statements are narrower: coarse
 macro-zone matching can over-correct (washing out within-OD signal along
 with OD-mix), and once zones are fine enough the rush-vs-off-peak
-contrast is largely \emph{not} explained by OD-mix --- consistent with
+contrast is largely \emph{not} explained by OD-mix, consistent with
 rush and off-peak trips sharing very similar fine-grained
 origin-destination patterns (the matched and un-matched pools differ by
 $<25{,}000$ of $\sim\!520{,}000$ trips per regime at $K=64$).
@@ -282,15 +292,20 @@ structure the full-observation chains carry, the $1$-step inverse-MC
 method under partial observation ($|X_o| = 433$ of $1{,}733$) does not
 recover it at any tested OD-zone resolution. The stratified
 vehicle-level bootstrap ($B = 2{,}000$, drawn with replacement within
-each regime) underwrites the chance reading: at $K=8$ the empirical CI
+each regime) supports the chance-level interpretation: at $K=8$ the empirical CI
 is $[0.471, 0.567]$ ($P(\AUC>0.5)=0.78$) and the fitted CI $[0.429,
 0.524]$, and the fitted detector's CI straddles chance at every finer
-$K$ as well. The one outstanding extension is an OD-\emph{cell} bootstrap
-(resampling which cells enter the match and refitting per replicate),
-left to future work for its $\sim\!2{,}000\times$ refit cost.
+$K$ as well. These intervals are conditional on the fitted chains, the
+fixed observation-station set, the fixed OD match, and the fixed
+train/test split; they do not include station-selection or refit
+variance. The outstanding statistical extensions are an
+OD-\emph{cell} bootstrap (resampling which cells enter the match and
+refitting per replicate) and an $X_o$-selection sensitivity sweep, both
+left to future work because they require full refits rather than cheap
+resampling of already-computed trajectory scores.
 
-\paragraph{The features=real basin failure repeats post-matching ---
-and multistart resolves it.} Both the un-matched pool
+\paragraph{The features=real basin failure repeats post-matching, and
+multistart resolves it.} Both the un-matched pool
 (\cref{sec:phase5-results}) and the OD-matched pool show the same pattern:
 the rush-fit \code{features=real} loss is $\sim 350\times$ the
 \code{features=none} loss ($1397$ vs.\ $4.058$ here). The
@@ -299,7 +314,7 @@ suggested a basin-selection artefact rather than a chain-recovery
 improvement. The multistart check of \cref{sec:phase5-multistart}
 confirms exactly this: random restarts escape the high-loss basin (rush
 loss $1397 \rightarrow 9.186$), and the resulting well-fit chains give
-$\AUC_{\mathrm{fit}} = 0.483$ --- chance --- resolving the apparent
+$\AUC_{\mathrm{fit}} = 0.483$, chance-level, resolving the apparent
 ceiling violation.
 
 \subsection{Multistart on \code{features=real}: the ceiling violation is
@@ -320,7 +335,7 @@ the high-loss basin: the rush (intrinsic) chain loss drops from the
 zero-init baseline of $1397$ to $9.186$ at the validation-selected
 restart (restart losses $\{1413, 1844, 273.4, 9.186, 1792\}$, so one
 restart of five found the good basin). But the well-fit chains then give
-$\AUC_{\mathrm{fit}} = 0.483$ --- below chance --- against the
+$\AUC_{\mathrm{fit}} = 0.483$, below chance, against the
 baseline's spurious $0.530$. The per-init paired AUCs
 ($\{0.504, 0.492, 0.497, 0.494, 0.491\}$, mean $0.496$) cluster tightly
 at chance regardless of which basin each restart lands in.
@@ -334,7 +349,7 @@ zero-init baseline ($1{,}397$) to the validation-selected restart
 ($9.186$): random re-initialisation \emph{escapes} the high-loss basin,
 unlike the SUMO case (\cref{sec:phase4-multistart}). \textbf{(b)} Despite
 the proper fit, $\AUC_{\mathrm{fit}}$ falls from the baseline's spurious
-$0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ ---
+$0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ --
 chance. The ceiling violation was an optimiser artefact; under correct
 chain recovery the fitted detector returns to chance.}
 \label{fig:phase5-multistart}
@@ -345,8 +360,8 @@ $\AUC_{\mathrm{fit}} > \AUC_{\mathrm{emp}}$ ``impossible'' result was
 indeed a basin artefact: a high-loss chain that drifted into a direction
 producing a marginally favourable aggregate-bias signal. Once the
 optimiser reaches the genuine optimum, that spurious signal disappears
-and the detector returns to chance. Second --- and this is the
-load-bearing scientific point --- the correctly-fit \code{features=real}
+and the detector returns to chance. Second, and this is the
+load-bearing scientific point, the correctly-fit \code{features=real}
 chains \emph{confirm} the central Tier-3 finding rather than overturning
 it: the within-OD rush-vs-off-peak routing contrast is not detectable
 at the $1$-step Markov level under this proxy and data split, not merely

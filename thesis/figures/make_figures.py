@@ -12,6 +12,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -44,12 +46,12 @@ C_CHANCE    = "#cc6666"
 HERE = Path(__file__).resolve().parent
 
 # =============================================================================
-# Figure 1: Phase 1 RMAE reproduction vs. paper Fig 2A
+# Figure 1: Tier 1 RMAE reproduction vs. paper Fig 2A
 # =============================================================================
 def fig_phase1_rmae():
     # |X_o| values
     Xo = np.array([5, 10, 20, 35, 50, 70, 90])
-    # Our numbers from research_logbook.md iter-18 table (mean over 10 trials)
+    # Our numbers from the locked result table (mean over 10 trials)
     ours_fg   = np.array([0.97, 0.49, 0.37, 0.26, 0.21, 0.19, np.nan])  # 90 not in our table
     ours_fg_sd = np.array([0.28, 0.13, 0.07, 0.06, 0.07, 0.07, np.nan])
     ours_f_only = np.array([1.08, 0.69, 0.75, 0.44, 0.46, 0.41, np.nan])
@@ -82,7 +84,7 @@ def fig_phase1_rmae():
 
 
 # =============================================================================
-# Figure 2: Phase 4 SUMO T-sweep — ceiling and fitted AUC vs T
+# Figure 2: Tier 2 SUMO T-sweep -- reference and fitted AUC vs T
 # =============================================================================
 def fig_phase4_t_sweep():
     T   = np.array([20, 30, 40])
@@ -120,7 +122,7 @@ def fig_phase4_t_sweep():
 
 
 # =============================================================================
-# Figure 3: Phase 4 features lift — per-row chain recovery metrics
+# Figure 3: Tier 2 features lift -- per-row chain recovery metrics
 # =============================================================================
 def fig_phase4_features_lift():
     metrics = [
@@ -164,7 +166,7 @@ def fig_phase4_features_lift():
 
 
 # =============================================================================
-# Figure 4: Phase 5 Xuancheng — OD-matched ceiling crash
+# Figure 4: Tier 3 Xuancheng -- OD-matching sensitivity
 # =============================================================================
 def fig_phase5_xuancheng():
     # Three configurations × {emp, fit_none, fit_real}
@@ -194,10 +196,10 @@ def fig_phase5_xuancheng():
                         ha="center", fontsize=8)
 
     ax.axhline(0.5, color=C_CHANCE, linestyle=":", linewidth=1, label="chance (0.5)")
-    # Annotate the ceiling crash
+    # Annotate the coarse-zone drop.
     ax.annotate("", xy=(2 - w, 0.518), xytext=(1 - w, 0.573),
                 arrowprops=dict(arrowstyle="->", color=C_CHANCE, lw=1.4))
-    ax.text(1.55, 0.585, "ceiling crash:\nOD-mix\nsubtracted",
+    ax.text(1.55, 0.585, "coarse K=8 drop:\nnot stable\nacross K",
             color=C_CHANCE, ha="center", va="bottom", fontsize=8,
             fontstyle="italic")
     ax.set_xticks(x)
@@ -205,7 +207,7 @@ def fig_phase5_xuancheng():
     ax.set_ylim(0.40, 0.66)
     ax.set_ylabel("AUC")
     ax.set_title("Tier 3 (Xuancheng, rush vs. off-peak, T=10):\n"
-                 "OD-rebalancing reveals ~75% of un-matched signal was OD-mix")
+                 "OD-matching changes the reference; fitted detector remains near chance")
     ax.legend(loc="lower left", framealpha=0.95)
     fig.tight_layout()
     out = HERE / "fig04_phase5_xuancheng.png"
@@ -215,7 +217,7 @@ def fig_phase5_xuancheng():
 
 
 # =============================================================================
-# Figure 5: Phase 4 multi-seed -- AUC lift is seed-dependent, Pearson lift robust
+# Figure 5: Tier 2 multi-seed -- AUC lift is seed-dependent, Pearson lift robust
 # =============================================================================
 def fig_phase4_multiseed():
     seeds     = ["7", "23", "42", "101", "2024"]
@@ -267,7 +269,7 @@ def fig_phase4_multiseed():
 
 
 # =============================================================================
-# Figure 6: Phase 4 multistart basin check -- random restarts never beat zero-init
+# Figure 6: Tier 2 multistart basin check -- random restarts never beat zero-init
 # =============================================================================
 def fig_phase4_multistart():
     seeds = ["7", "23"]

@@ -1,0 +1,46 @@
+=== contrast-correlation diagnostic (Xuancheng, days=2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21, split=holiday_normal) ===
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,224,838, normal=3,021,791
+  edges with traffic (holiday): 1062/1733
+  edges with traffic (normal): 1074/1733
+  OD-matching: clustering junctions into K=64 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 1625 shared cells (of 1817 unique OD pairs)
+  od-match: holiday 1,224,838 → 1,222,607 (dropped 44 in non-shared cells, plus per-cell excess)
+  od-match: normal 3,021,791 → 1,222,607 (dropped 365 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (holiday): 1062/1733, (normal): 1074/1733
+  dataset=xuancheng  n=1733  |X_o|=433  beta=0.879  T=10  N_test=300  features=none  d_T=0  d_psi=0  fit_mode=f  gamma_fg=0.1  regimes=holiday/normal  od_match=64
+  fitting chains ...
+    L-BFGS: success=False, nit=1500, final_loss=2186, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+    L-BFGS: success=False, nit=1500, final_loss=1920, d=6126 (n=1733, E=4393, d_T=0, d_psi=0), msg='STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT'
+
+  AUC reference: empirical=0.567  fitted_f=0.521  gap_closed= 30.9%
+
+  branching states total: 1318 / 1733
+  branching states in X_o: 371 / 433
+
+  [X_o branching]  (371 branching states, 1146 legal-edge entries)
+    stacked Pearson   = +0.090
+    stacked cosine    = +0.090
+    per-row cosine    mean = +0.145  median = +0.257
+    rows with cosine > 0:  58.8%  (50% = chance)
+
+  [all branching]  (1318 branching states, 3978 legal-edge entries)
+    stacked Pearson   = +0.066
+    stacked cosine    = +0.066
+    per-row cosine    mean = +0.139  median = +0.247
+    rows with cosine > 0:  58.3%  (50% = chance)
+
+RESULT  dataset=xuancheng  seed_or_day=2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  features=none  d_T=0  d_psi=0  fit_mode=f  gamma_fg=0.1  od_match=64  auc_emp=0.567  auc_fit=0.521  gap_closed=30.9%

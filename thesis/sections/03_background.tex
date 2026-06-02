@@ -37,6 +37,11 @@ probability as a softmax over the legal successors of $x$:
 \end{equation}
 where $s(x, x')$ is a real-valued score, typically a linear combination
 of features of the edge $(x, x')$ and of the destination state $x'$.
+Recursive-logit models make this link-level Markov view a full
+route-choice model by adding a downstream value function, avoiding
+explicit enumeration of the traveller's route choice set; nested
+recursive logit further relaxes the substitution limitations of a
+simple logit structure \cite{fosgerau2013route, mai2015nested}.
 This formulation has two important properties for inverse problems.
 First, it is parameter-efficient: one global feature shared across
 many states adds one parameter, regardless of network size. Second, its
@@ -48,7 +53,7 @@ derive in closed form.
 \subsection{The Morimura inverse-MC framework}
 \label{sec:morimura}
 
-\citet{morimura2013} apply the softmax form of \cref{eq:softmax} to the
+Morimura et al.~\cite{morimura2013} apply the softmax form of \cref{eq:softmax} to the
 partial-observation regime in which the modeller observes only a
 small subset $\Xo \subset \mathcal{X}$. They consider two empirical
 observation types:
@@ -83,27 +88,56 @@ not framed as a regime-detection problem: the authors do not split the
 data into two coexisting routing populations and ask whether the chain
 recovery distinguishes them.
 
+\subsection{Route-choice estimation under incomplete observation}
+\label{sec:partial-route-prior}
+
+Several adjacent papers address route-choice estimation when the
+modeller does not observe complete paths. This is important: the novelty
+claim of this dissertation is \emph{not} that route choice under partial
+observation has never been studied. Van Oijen et al.~\cite{vanoijen2020sensor}
+estimate recursive link-based logit models and link flows in a
+sensor-equipped network, explicitly connecting recursive route choice to
+partial sensor observations. Mai et al.~\cite{mai2023incomplete}
+estimate recursive route-choice models from incomplete trip
+observations. Maximum-entropy inverse reinforcement learning
+\cite{ziebart2008maxent} provides another influential trajectory-inference
+route: infer preferences or costs from observed behaviour and then score
+paths by their induced likelihood. These works are close in the sense
+that they infer route-choice structure from incomplete, sparse, or
+trajectory-level evidence. They are different in objective: they fit one
+behavioural model, reconstruct missing path information, or infer a cost
+function, rather than fitting two regime-specific chains from sparse
+station counts and emitting a per-trip likelihood-ratio detector.
+
 \subsection{Re-routing detection and external traffic influence}
 \label{sec:rerouting-prior}
 
-Detecting externally-influenced rerouting is a relatively recent
-research direction. \citet{gu2018} proposed a junction-level
-anomaly-detection approach in which deviations from a learned
-turning-distribution baseline serve as evidence of unusual routing
-behaviour; their setup is restricted to snapshot-level (population-level)
-detection rather than per-trajectory. Active-routing-game analyses
+The external-influence problem is also adjacent to routing-game and
+traveller-information literatures. Active-routing-game analyses
 \cite{thai2016, krichene2018} model the equilibrium effects of
-sat-navigation adoption on aggregate network performance, but assume a
-known navigation rule and focus on welfare bounds rather than detection.
-Closest in spirit to this work is the line of route-choice research
-that combines partially observed counts with route-fragment
-likelihoods \cite{flotterod2017}: this addresses estimation under
-partial observation but does not separate populations.
+routing information on aggregate network performance, while adoption
+models for advanced traveller information systems treat guided and
+unguided users as behaviourally distinct populations \cite{yang2001atis}.
+Those papers motivate the two-regime framing used here, but they assume
+a known behavioural rule or study welfare/equilibrium outcomes rather
+than asking whether the data reveal which regime generated a particular
+trajectory. Gu et al.~\cite{gu2018} are closer to detection: they monitor
+junction-level movement-pattern changes relative to a learned baseline.
+Their unit of evidence is nevertheless a population-level turning
+distribution over a time window, not a single trajectory scored under
+two sparse-observation route-choice models.
 
-To our knowledge no prior work combines the Morimura inverse-MC
-framework with a regime-detection objective, evaluated across both
-controlled simulation and real-world data with an OD-mix-controlled
-contrast. That is the gap this thesis addresses.
+The gap addressed by this thesis is therefore specific. Prior work
+contains recursive route-choice models, partial-sensor estimation,
+incomplete-trip estimation, inverse preference learning, routing-app
+impact analysis, and junction-level movement-change detection. What is
+missing is a complete \emph{two-regime partial-observation filter}: one
+that fits regime-specific route-choice chains from sparse station counts,
+scores individual trajectories by a log-likelihood ratio, and reports
+diagnostics that separate genuine chain recovery from aggregate
+confounds such as OD mix, optimiser basins, station sparsity, and
+model-order misspecification. That narrower gap is the one this
+dissertation claims.
 
 \subsection{Microscopic traffic simulation: SUMO}
 \label{sec:sumo}
@@ -133,7 +167,7 @@ flow statistics and pairwise travel times over $40$ junctions but
 explicitly strips per-vehicle trajectories for privacy; the
 Wang \emph{et al.}\ Xuancheng dataset \cite{wang2023xuancheng}
 similarly restricts raw trajectory access; the
-\citet{ma2026xuancheng} Xuancheng dataset --- used in this thesis ---
+Ma et al.~\cite{ma2026xuancheng} Xuancheng dataset --- used in this thesis ---
 releases joinable entry/exit tables with anonymised vehicle IDs from
 which complete trajectories can be reconstructed, covering
 $\sim 350{,}000$ trips/day across $\sim 1{,}760$ road segments for the

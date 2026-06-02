@@ -20,7 +20,7 @@ to the failure mode it addresses.
 \label{sec:filter-design}
 
 The filter is the designed artefact of this dissertation; the
-inverse-Markov-chain method of \citet{morimura2013} is one component
+inverse-Markov-chain method of Morimura et al.~\cite{morimura2013} is one component
 inside it. We specify the filter as a closed system before fixing any
 notation, so that the experimental tiers in
 \cref{sec:phase1-synthetic,sec:phase4-sumo,sec:phase5-xuancheng} can be
@@ -201,6 +201,15 @@ where $\Pchain^{(\setminus j)}$ zeroes row $j$ to encode absorption.
 The Morimura observation model says we observe noisy $\fobs(x)$ for
 $x \in \Xo$ and noisy $\gobs(x, x')$ for $(x, x') \in \Xo \times \Xo$,
 and we wish to match the model's $\pi$ and $H$ to these observations.
+This is a stationarity approximation. The theory treats $\fobs$ as a
+sample from the chain's stationary distribution and $\gobs$ as stationary
+hitting-rate evidence, whereas the SUMO and Xuancheng experiments observe
+finite time windows with time-varying congestion and regime composition.
+Throughout the dissertation the fitted chain should therefore be read as
+a time-aggregated Markov surrogate for the observed window, not as literal
+behavioural ground truth. The empirical full-observation transition
+matrix used in the diagnostics is likewise a finite-data reference rather
+than an unattainable ``true'' chain.
 
 \subsection{Regularised loss and analytic gradients}
 \label{sec:loss-gradients}
@@ -344,8 +353,8 @@ per-trajectory log-likelihood-ratio detector scores
 \]
 and the AUC of $\Lam$ against the labelled test trajectories
 ($N$ per regime, $T$-edge windows) summarises detection performance.
-Following the iter-18 finding that AUC alone can reflect aggregate
-chain-drift rather than per-row chain accuracy, we additionally report
+Because AUC alone can reflect aggregate chain-drift rather than per-row
+chain accuracy, we additionally report
 a \emph{contrast-correlation} diagnostic at branching states (states
 with out-degree $> 1$): for each such state $x$, we compute
 \[
@@ -363,6 +372,17 @@ fraction of states with positive cosine). A high AUC with low Pearson
 indicates aggregate-bias-driven detection; a high AUC \emph{and} a
 non-trivial Pearson together support the stronger ``chain recovery''
 claim.
+
+\paragraph{Validation split.} In the SUMO and Xuancheng scoring scripts,
+the trajectory-level test set is held out from the empirical transition
+matrix used as $\Delta_{\mathrm{emp}}$ and from the empirical-reference
+LLR scorer. The inverse-MC fit, however, is trained from aggregate station
+counts $\fobs$ for the whole regime window, not from station counts
+recomputed after removing the held-out vehicles. This mirrors the intended
+deployment setting --- sparse counters are available as period aggregates,
+whereas labelled trajectories are only used for validation --- but it
+means the reported AUCs are held-out at the \emph{trajectory-scoring}
+level, not a fully out-of-sample sensor-count experiment.
 
 \subsection{Design rationale: each extension targets a specific failure mode}
 \label{sec:design-rationale}
@@ -389,6 +409,14 @@ SUMO comparison.
 L-BFGS optimiser artefact rather than a property of the data.
 \end{itemize}
 Where AUCs lie close to chance, the honest interpretation also requires
-quantifying sampling noise; we return to this as a limitation
-(\cref{sec:phase5-reading}, \cref{sec:disc-limits}) since the bootstrap
-confidence intervals it calls for were not computed in the time available.
+quantifying sampling noise. In Tier~3 we therefore report stratified
+vehicle-level bootstrap confidence intervals
+(\cref{sec:phase5-reading}, \cref{sec:disc-limits}): after the chains,
+station set $\Xo$, OD matching, and train/test split are fixed, test
+trajectories are resampled with replacement within each regime and the
+AUC is recomputed. These CIs capture test-trajectory sampling noise only.
+They do not include variation from refitting the chains, resampling
+observation stations, changing the OD cells, or redrawing the validation
+split. The remaining open statistical extensions are therefore an
+OD-cell bootstrap and an $X_o$-selection sensitivity sweep, both of which
+require full refits rather than cheap score resampling.

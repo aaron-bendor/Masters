@@ -1,15 +1,14 @@
 \section{Tier 1: Validating the inverse-MC estimator inside the filter}
 \label{sec:phase1-synthetic}
 
-This tier validates the \emph{estimator component} of the filter
-(\cref{fig:filter-schematic}, \textsc{InverseMC-Fit}) in isolation,
-before either the scoring rule or the regime-detection layer is
-attached. If the inverter cannot reproduce the published recovery curve
-on its native synthetic benchmark, no downstream filter result on SUMO
-or Xuancheng is trustworthy. We therefore replicate the $\S 6.1$
-synthetic experiment of \citet{morimura2013} end-to-end and verify that
-we reach the published RMAE curve to within $\sim 0.05$ across
-observation fractions in $[0.10, 0.90]$.
+This tier validates the estimator component of the filter in isolation,
+before either the scoring rule or the regime-detection layer is attached.
+If the inverter cannot reproduce the published recovery curve on its
+native synthetic benchmark, no downstream filter result on SUMO or
+Xuancheng is meaningful. We therefore replicate the $\S 6.1$ synthetic
+experiment of Morimura et al.~\cite{morimura2013} end-to-end and verify
+that we reach the published relative mean absolute error (RMAE) curve to
+within $\sim 0.05$ across observation fractions in $[0.10, 0.90]$.
 
 \subsection{Experimental setup}
 
@@ -35,7 +34,7 @@ The reported metric is the relative mean absolute error
 \end{equation}
 i.e.\ the mean absolute error on unobserved states normalised by the
 average true stationary mass. The recovered $\hat{\pi}$ is rescaled by a
-scale-free convention discussed in \cref{sec:phase1-scaling-gotcha}.
+scale-free convention discussed in \cref{sec:phase1-scaling}.
 Each $|X_o|$ value is repeated for $10$ trials with fresh truth +
 $X_o$ draws, matching the visible error-bar count in the original
 Fig.~2A.
@@ -89,16 +88,16 @@ Nadaraya--Watson kernel-regression baseline (``NWKR'') does not drop
 as steeply as the paper's, which we attribute to a comparator-
 implementation gap rather than a method error.
 
-\subsection{Implementation gotcha: prediction rescaling}
-\label{sec:phase1-scaling-gotcha}
+\subsection{Prediction rescaling convention}
+\label{sec:phase1-scaling}
 
 The paper writes the recovered prediction as $\hat{f}(x) = \hat{c}\,\hat{\pi}(x)$
 with $\hat{c} = \overline{f}_{X_o}$ (their $\S 6.1$). Taken literally
 this collapses every RMAE to $\approx 1$ because \code{stationary()}
 returns a probability summing to $1$ over $n$ states (so
 $\hat{\pi}(x) \sim 1/n$ while $f(x) \sim K/n$), under-scaling by a
-factor of $n$. The operationally correct convention --- and the one
-that yields the paper's reported numbers --- is the scale-free form
+factor of $n$. The operationally correct convention, and the one
+that yields the paper's reported numbers, is the scale-free form
 $\hat{f}(x) = (\sum_{X_o}\!\fobs)\,\hat{\pi}(x) / (\sum_{X_o}\!\hat{\pi})$,
 which reduces to the literal formula when $\sum_{X_o}\!\hat{\pi} = 1$.
 We verified this empirically: applying the literal formula collapses
@@ -111,8 +110,8 @@ Across three random parameter draws including local-only,
 $\phi_T$-only, and $\psi$-only edge-case configurations, the centred
 finite-difference gradient check returns maximum relative error
 $\le 5 \times 10^{-9}$ for every block, confirming the
-analytic derivation. Details of the FD check infrastructure are in
-\cref{sec:methodology} and \code{morimura.py}.
+analytic derivation. Details of the finite-difference (FD) check
+infrastructure are in \code{morimura.py}.
 
 \subsection{Headline outcome}
 
