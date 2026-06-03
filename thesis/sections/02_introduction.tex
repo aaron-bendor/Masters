@@ -13,7 +13,12 @@ performance and residential cut-through traffic
 problem. Traffic counts and trajectories no longer necessarily reveal
 only the preferences of unaided drivers; they may also encode the
 recommendations of external routing systems reacting to congestion and to
-other guided vehicles.
+other guided vehicles. This is a closed-loop data problem: route
+recommendations alter the driver behaviour from which future
+route-choice models may then be estimated
+\cite{epperlein2019recovering}. It motivates looking for changes in local
+vehicular movement patterns, in the spirit of Shorten and co-authors'
+junction-level pattern-identification work \cite{gu2018}.
 
 This matters because route-choice inference, demand estimation, pricing
 and infrastructure appraisal rely on revealed-preference data. If a
@@ -22,6 +27,10 @@ models may mistake recommender-induced behaviour for intrinsic driver
 preference. The problem addressed here is therefore detection: given only
 sparse observation of a road network, can we distinguish trajectories
 that look intrinsic from trajectories that look externally influenced?
+The practical end goal is a filter: flag or remove the externally
+influenced trajectories so that a later analyst can pass a cleaned,
+intrinsic-behaviour dataset to downstream route-choice, demand-estimation
+or policy-appraisal tasks.
 
 \subsection{Related work and novelty}
 \label{sec:inverse-mc}\label{sec:route-softmax}\label{sec:partial-route-prior}\label{sec:rerouting-prior}
@@ -38,7 +47,12 @@ probability is
 \label{eq:softmax}
 \end{equation}
 where $\mathrm{adj}(x)$ is the set of legal successors of edge $x$ and
-$s(x,x')$ is a feature-based score. Related work also estimates
+$s(x,x')$ is a feature-based score (see
+\cref{app:markov-chain-primer,app:softmax-primer} for the Markov-chain
+and softmax definitions used here). Markov-chain road-network dynamics
+have also been used by Shorten and co-authors as a compact representation
+for network-level regulation and control \cite{crisostomi2011google}.
+Related work also estimates
 route-choice models from incomplete trips, sparse sensor observations or
 inverse preference learning \cite{vanoijen2020sensor,mai2023incomplete,ziebart2008maxent}.
 Those papers address important adjacent estimation problems, but they
@@ -64,15 +78,59 @@ misspecification.
 The filter takes a directed road graph $\mathcal{X}$, an observed subset
 $\Xo \subseteq \mathcal{X}$, regime-labelled station counts
 $\fobs_A,\fobs_B$ and held-out trajectories. For each regime it fits a
-softmax-parametric MC by minimising Morimura et al.'s regularised
-log-ratio loss. The fitted chains $\hat{P}_A$ and $\hat{P}_B$ then define
+softmax-parametric MC ($\hat{P}_A$ and $\hat{P}_B$) by minimising Morimura et al.'s regularised
+log-ratio loss~\cite{morimura2013}. In the notation used here, the
+objective is
+\begin{equation}
+\begin{aligned}
+L(\theta) &= \gamma L_d(\theta) + (1-\gamma)L_h(\theta)
+          + \lambda R(\theta), \\
+L_d(\theta) &= \frac{1}{2}\sum_{i,j\in\Xo}
+\left(\log\frac{\pi_i(\theta)}{\pi_j(\theta)}
+-\log\frac{f_i}{f_j}\right)^2, \\
+L_h(\theta) &= \frac{1}{2}\sum_{i,j\in\Xo}
+\left(\log H_{ij}(\theta)-\log g_{ij}\right)^2,
+\qquad
+R(\theta)=\frac{1}{2}\|\theta\|_2^2 .
+\end{aligned}
+\label{eq:morimura-loss}
+\end{equation}
+Here $L_d$ matches observed station-count ratios through the model
+stationary distribution $\pi(\theta)$, $L_h$ matches observed hitting
+rates $g_{ij}$ through the model hitting rates $H_{ij}(\theta)$,
+$\gamma$ controls the count-versus-hitting-rate balance, and $\lambda$
+is ridge regularisation. In the full-network SUMO and Xuancheng fits I
+mainly use the $f$-only setting ($\gamma=1$), because empirical
+$\gobs$ is sparse and floor-dominated at city scale
+(\cref{sec:phase4-fg-infeasible}). All parametric fits use L-BFGS-B
+(\cref{app:lbfgs-primer}), because the objective is smooth, analytic
+gradients are available, and the parameter dimension is large enough that
+a limited-memory quasi-Newton method is a practical compromise between
+first-order gradient descent and full second-order Newton optimisation.
+The fitted chains $\hat{P}_A$ and $\hat{P}_B$ then define
 a log-likelihood-ratio (LLR) score
 \[
 \Lam(\tau)=\sum_t \left[\log \hat{p}_B(x_{t+1}\mid x_t)
 -\log \hat{p}_A(x_{t+1}\mid x_t)\right],
 \]
-and validation reports the area under the receiver-operating-characteristic
-curve (AUC) over possible decision thresholds.
+using the log-likelihood ratio because it is the natural ranking
+statistic for deciding which of two fitted generative models better
+explains a trajectory. Under correctly specified regime models,
+thresholding the likelihood ratio is the optimal binary test in the
+Neyman--Pearson sense~\cite{neyman1933}, and in the Markov setting the
+score decomposes additively into interpretable per-transition evidence.
+Alternative scalar scores were considered but rejected as the primary
+score: posterior probabilities require regime priors and calibration,
+single-chain likelihoods do not directly compare the two hypotheses,
+transition-distance scores discard the full generative path probability,
+and discriminative classifiers require labelled training trajectories
+that the real Xuancheng tier does not have. The LLR therefore gives the
+cleanest common score across the labelled SUMO and unlabelled-proxy
+Xuancheng tiers. Its threshold can be adjusted for a desired
+false-positive/false-negative tradeoff without refitting either chain.
+Validation reports the area under the receiver-operating-characteristic
+curve (AUC) over possible decision thresholds
+(\cref{app:llr-primer,app:auc-primer}).
 
 The Morimura estimator carries assumptions that are used later in the
 report. First, it assumes a one-step MC: the next edge depends on the
@@ -91,7 +149,8 @@ The scalar AUC is reported with transition-level diagnostics. At
 branching states, the fitted regime contrast
 $\Delta_{\mathrm{fit}}=\hat{P}_B-\hat{P}_A$ is compared with the
 full-observation empirical contrast $\Delta_{\mathrm{emp}}$ using stacked
-Pearson correlation and per-state cosine similarity. A high AUC with a
+Pearson correlation and per-state cosine similarity
+(\cref{app:pearson-primer,app:cosine-primer}). A high AUC with a
 near-zero transition contrast indicates aggregate-bias-driven detection,
 whereas positive contrast correlation supports a chain-recovery claim.
 
@@ -101,7 +160,7 @@ variant adds road class, speed, lane and turn-geometry features as shared
 parameters. The empirical two-step test checks whether
 $(x_{t-1},x_t)$-conditional routing memory improves over the one-step
 reference before a parametric two-step inverse-MC model is attempted.
-The OD-rebalancing step matches real-world regime pools by
+The OD-rebalancing step (\cref{app:od-primer}) matches real-world regime pools by
 $(\mathrm{origin\ zone},\mathrm{destination\ zone})$ before comparing
 rush-hour and off-peak routing.
 
@@ -121,7 +180,8 @@ inverse-MC estimator against Morimura et al.'s synthetic benchmark.
 Tier~2 uses Simulation of Urban MObility (SUMO) to test the full filter
 under labelled sat-navigation rerouting. Tier~3 applies the same filter
 to automatic vehicle identification (AVI) data from Xuancheng, China,
-where rush-hour versus off-peak travel is used as an unlabelled proxy for
-external routing influence. The Discussion compares what generalises
+where rush-hour versus off-peak and Labour-Day versus normal travel are
+used as unlabelled behavioural proxies for external routing influence.
+The Discussion compares what generalises
 across tiers, the Conclusion states the supported claims, and the final
 section covers project management and reflection.

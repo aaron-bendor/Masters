@@ -7,8 +7,7 @@
 \providecommand{\BIBentrySTDinterwordspacing}{\spaceskip=0pt\relax}
 \providecommand{\BIBentryALTinterwordstretchfactor}{4}
 \providecommand{\BIBentryALTinterwordspacing}{\spaceskip=\fontdimen2\font plus
-\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
-  \fontdimen4\font\relax}
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus \fontdimen4\font\relax}
 \providecommand{\BIBforeignlanguage}[2]{{%
 \expandafter\ifx\csname l@#1\endcsname\relax
 \typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
@@ -22,92 +21,66 @@
 \BIBdecl
 
 \bibitem{morimura2013}
-T.~Morimura, T.~Osogami, and T.~Id\'{e}, ``Solving inverse problem of {M}arkov
-  chain with partial observations,'' in \emph{Advances in Neural Information
-  Processing Systems 26 (NeurIPS)}, 2013, pp. 1655--1663.
+T.~Morimura, T.~Osogami, and T.~Id\'{e}, ``Solving inverse problem of {M}arkov chain with partial observations,'' in \emph{Advances in Neural Information Processing Systems 26 (NeurIPS)}, 2013, pp. 1655--1663, \url{https://papers.neurips.cc/paper/5122-solving-inverse-problem-of-markov-chain-with-partial-observations}.
 
 \bibitem{yang2001atis}
-H.~Yang and Q.~Meng, ``Modeling user adoption of advanced traveler information
-  systems: Dynamic evolution and stationary equilibrium,'' \emph{Transportation
-  Research Part A: Policy and Practice}, vol.~35, no.~10, pp. 895--912, 2001.
+H.~Yang and Q.~Meng, ``Modeling user adoption of advanced traveler information systems: Dynamic evolution and stationary equilibrium,'' \emph{Transportation Research Part A: Policy and Practice}, vol.~35, no.~10, pp. 895--912, 2001, \url{https://doi.org/10.1016/S0965-8564(00)00030-6}.
 
 \bibitem{ramos2020information}
-G.~d.~M. Ramos, T.~Mai, W.~Daamen, E.~Frejinger, and S.~P. Hoogendoorn, ``Route
-  choice behaviour and travel information in a congested network: Static and
-  dynamic recursive models,'' \emph{Transportation Research Part C: Emerging
-  Technologies}, vol. 114, pp. 681--693, 2020.
+G.~d.~M. Ramos, T.~Mai, W.~Daamen, E.~Frejinger, and S.~P. Hoogendoorn, ``Route choice behaviour and travel information in a congested network: Static and dynamic recursive models,'' \emph{Transportation Research Part C: Emerging Technologies}, vol. 114, pp. 681--693, 2020, \url{https://doi.org/10.1016/j.trc.2020.02.014}.
 
 \bibitem{thai2016}
-J.~Thai, N.~Hariharan, and A.~M. Bayen, ``State-of-the-art routing information
-  and the inefficiency of {N}ash equilibria,'' \emph{arXiv preprint}, 2016.
+J.~Thai, N.~Hariharan, and A.~M. Bayen, ``State-of-the-art routing information and the inefficiency of {N}ash equilibria,'' \emph{arXiv preprint}, 2016, \url{https://arxiv.org/search/?query=State-of-the-Art+Routing+Information+Inefficiency+Nash+Equilibria}.
 
 \bibitem{cabannes2018gps}
-T.~Cabannes, M.~A. Sangiovanni-Vincentelli, A.~Sundt, H.~Signargout, E.~Porter,
-  V.~Fighiera, J.~Ugirumurera, and A.~M. Bayen, ``The impact of {GPS}-enabled
-  shortest path routing on mobility: A game theoretic approach,'' in
-  \emph{Transportation Research Board 97th Annual Meeting}, 2018.
+T.~Cabannes, M.~A. Sangiovanni-Vincentelli, A.~Sundt, H.~Signargout, E.~Porter, V.~Fighiera, J.~Ugirumurera, and A.~M. Bayen, ``The impact of {GPS}-enabled shortest path routing on mobility: A game theoretic approach,'' in \emph{Transportation Research Board 97th Annual Meeting}, 2018, \url{https://escholarship.org/uc/item/8h83s7p5}.
 
 \bibitem{krichene2018}
-W.~Krichene, B.~Drighes, and A.~M. Bayen, ``On the convergence of no-regret
-  learning in selfish routing,'' \emph{Mathematical Programming}, 2018.
+W.~Krichene, B.~Drighes, and A.~M. Bayen, ``On the convergence of no-regret learning in selfish routing,'' in \emph{Proceedings of the 35th International Conference on Machine Learning (ICML)}, ser. Proceedings of Machine Learning Research, vol.~80, 2018, pp. 163--172, \url{https://proceedings.mlr.press/v80/krichene18a.html}.
+
+\bibitem{epperlein2019recovering}
+J.~P. Epperlein, S.~Zhuk, and R.~Shorten, ``Recovering {M}arkov models from closed-loop data,'' \emph{Automatica}, vol. 103, pp. 116--125, 2019, \url{https://doi.org/10.1016/j.automatica.2019.01.022}.
+
+\bibitem{gu2018}
+Y.~Gu, E.~Crisostomi, Y.~Liu, and R.~Shorten, ``Identification of new patterns in urban traffic flows,'' in \emph{2018 IEEE Conference on Control Technology and Applications (CCTA)}, 2018, pp. 1081--1086, \url{https://doi.org/10.1109/CCTA.2018.8511435}.
 
 \bibitem{ben-akiva1985}
-M.~Ben-Akiva and S.~R. Lerman, \emph{Discrete Choice Analysis: Theory and
-  Application to Travel Demand}.\hskip 1em plus 0.5em minus 0.4em\relax MIT
-  Press, 1985.
+M.~Ben-Akiva and S.~R. Lerman, \emph{Discrete Choice Analysis: Theory and Application to Travel Demand}.\hskip 1em plus 0.5em minus 0.4em\relax MIT Press, 1985, \url{https://mitpress.mit.edu/9780262536400/discrete-choice-analysis/}.
 
 \bibitem{frejinger2007}
-E.~Frejinger and M.~Bierlaire, ``Capturing correlation with subnetworks in
-  route choice models,'' \emph{Transportation Research Part B: Methodological},
-  vol.~41, no.~3, pp. 363--378, 2007.
+E.~Frejinger and M.~Bierlaire, ``Capturing correlation with subnetworks in route choice models,'' \emph{Transportation Research Part B: Methodological}, vol.~41, no.~3, pp. 363--378, 2007, \url{https://doi.org/10.1016/j.trb.2006.06.003}.
 
 \bibitem{fosgerau2013route}
-M.~Fosgerau, E.~Frejinger, and A.~Karlstr{\"o}m, ``A link based network route
-  choice model with unrestricted choice set,'' \emph{Transportation Research
-  Part B: Methodological}, vol.~56, pp. 70--80, 2013.
+M.~Fosgerau, E.~Frejinger, and A.~Karlstr{\"o}m, ``A link based network route choice model with unrestricted choice set,'' \emph{Transportation Research Part B: Methodological}, vol.~56, pp. 70--80, 2013, \url{https://doi.org/10.1016/j.trb.2013.07.012}.
 
 \bibitem{mai2015nested}
-T.~Mai, E.~Frejinger, and M.~Fosgerau, ``A nested recursive logit model for
-  route choice analysis,'' \emph{Transportation Research Part B:
-  Methodological}, vol.~75, pp. 100--112, 2015.
+T.~Mai, E.~Frejinger, and M.~Fosgerau, ``A nested recursive logit model for route choice analysis,'' \emph{Transportation Research Part B: Methodological}, vol.~75, pp. 100--112, 2015, \url{https://doi.org/10.1016/j.trb.2015.03.015}.
+
+\bibitem{crisostomi2011google}
+E.~Crisostomi, S.~Kirkland, and R.~Shorten, ``A google-like model of road network dynamics and its application to regulation and control,'' \emph{International Journal of Control}, vol.~84, no.~3, pp. 633--651, 2011, \url{https://doi.org/10.1080/00207179.2011.568005}.
 
 \bibitem{vanoijen2020sensor}
-T.~P. van Oijen, W.~Daamen, and S.~P. Hoogendoorn, ``Estimation of a recursive
-  link-based logit model and link flows in a sensor equipped network,''
-  \emph{Transportation Research Part B: Methodological}, vol. 140, pp.
-  262--281, 2020.
+T.~P. van Oijen, W.~Daamen, and S.~P. Hoogendoorn, ``Estimation of a recursive link-based logit model and link flows in a sensor equipped network,'' \emph{Transportation Research Part B: Methodological}, vol. 140, pp. 262--281, 2020, \url{https://doi.org/10.1016/j.trb.2020.08.003}.
 
 \bibitem{mai2023incomplete}
-T.~Mai, E.~Frejinger, M.~Zimmermann, and F.~Bastin, ``Estimation of recursive
-  route choice models with incomplete trip observations,'' \emph{Transportation
-  Research Part B: Methodological}, vol. 173, pp. 313--331, 2023.
+T.~Mai, E.~Frejinger, M.~Zimmermann, and F.~Bastin, ``Estimation of recursive route choice models with incomplete trip observations,'' \emph{Transportation Research Part B: Methodological}, vol. 173, pp. 313--331, 2023, \url{https://doi.org/10.1016/j.trb.2023.05.004}.
 
 \bibitem{ziebart2008maxent}
-B.~D. Ziebart, A.~L. Maas, J.~A. Bagnell, and A.~K. Dey, ``Maximum entropy
-  inverse reinforcement learning,'' in \emph{Proceedings of the 23rd AAAI
-  Conference on Artificial Intelligence}, 2008, pp. 1433--1438.
+B.~D. Ziebart, A.~L. Maas, J.~A. Bagnell, and A.~K. Dey, ``Maximum entropy inverse reinforcement learning,'' in \emph{Proceedings of the 23rd AAAI Conference on Artificial Intelligence}, 2008, pp. 1433--1438, \url{https://cdn.aaai.org/AAAI/2008/AAAI08-227.pdf}.
+
+\bibitem{neyman1933}
+J.~Neyman and E.~S. Pearson, ``On the problem of the most efficient tests of statistical hypotheses,'' \emph{Philosophical Transactions of the Royal Society of London. Series A}, vol. 231, pp. 289--337, 1933, \url{https://doi.org/10.1098/rsta.1933.0009}.
 
 \bibitem{ma2026xuancheng}
-Q.~Ma, X.~Guo, W.~Zhong, Z.~He, Z.~Su, W.~Ma, and R.~Zhong, ``City-scale
-  high-resolution traffic datasets with refined networks for hierarchical
-  traffic control,'' \emph{Scientific Data}, vol.~12, p. 547, 2026, figshare
-  deposit 29925824.
+Q.~Ma, X.~Guo, W.~Zhong, Z.~He, Z.~Su, W.~Ma, and R.~Zhong, ``City-scale high-resolution traffic datasets with refined networks for hierarchical traffic control,'' \emph{Scientific Data}, vol.~12, p. 547, 2026, figshare deposit 29925824; \url{https://doi.org/10.1038/s41597-026-06892-2}.
 
 \bibitem{cappi2026}
-R.~Cappi, M.~Luca, P.~Fontolan, N.~Navarin, B.~Lepri, and A.~Sperduti, ``A
-  city-scale dataset of traffic flows, travel times, and urban context,''
-  \emph{arXiv preprint arXiv:2605.18782}, 2026.
+R.~Cappi, M.~Luca, P.~Fontolan, N.~Navarin, B.~Lepri, and A.~Sperduti, ``A city-scale dataset of traffic flows, travel times, and urban context,'' \emph{arXiv preprint arXiv:2605.18782}, 2026, \url{https://arxiv.org/abs/2605.18782}.
 
 \bibitem{wang2023xuancheng}
-Y.~Wang, Y.~Chen, G.~Li, Y.~Lu, Z.~He, Z.~Yu, and W.~Sun, ``City-scale
-  holographic traffic flow data based on vehicular trajectory resampling,''
-  \emph{Scientific Data}, vol.~10, p.~57, 2023.
+Y.~Wang, Y.~Chen, G.~Li, Y.~Lu, Z.~He, Z.~Yu, and W.~Sun, ``City-scale holographic traffic flow data based on vehicular trajectory resampling,'' \emph{Scientific Data}, vol.~10, p.~57, 2023, \url{https://doi.org/10.1038/s41597-022-01850-0}.
 
 \bibitem{markscheme}
-{Imperial College London, Dyson School of Design Engineering},
-  ``{Design-Engineering Master's Project: Module Descriptor and Assessment
-  Brief},''
-  \url{https://imperialcollegelondon.github.io/Design-Engineering-Masters-Project/Module_and_assessment/},
-  2025.
+{Imperial College London, Dyson School of Design Engineering}, ``{Design-Engineering Master's Project: Module Descriptor and Assessment Brief},'' \url{https://imperialcollegelondon.github.io/Design-Engineering-Masters-Project/Module_and_assessment/}, 2025, \url{https://imperialcollegelondon.github.io/Design-Engineering-Masters-Project/Module_and_assessment/}.
 
 \end{thebibliography}

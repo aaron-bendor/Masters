@@ -1,75 +1,101 @@
-\contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Context and research gap}{4}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Related work and novelty}{4}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}Filter specification and assumptions}{4}{subsection.1.3}%
-\contentsline {paragraph}{Diagnostics.}{5}{paragraph*.1}%
-\contentsline {paragraph}{Extensions.}{5}{paragraph*.2}%
-\contentsline {paragraph}{Validation split.}{5}{paragraph*.3}%
-\contentsline {subsection}{\numberline {1.4}Experimental structure}{5}{subsection.1.4}%
-\contentsline {section}{\numberline {2}Tier 1: Validating the inverse-MC estimator inside the filter}{5}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Experimental setup}{6}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Results}{6}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Prediction rescaling convention}{7}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Gradient verification}{7}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Headline outcome}{7}{subsection.2.5}%
-\contentsline {section}{\numberline {3}Tier 2: Controlled validation of the filter in SUMO}{7}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Scenario construction}{8}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Single-seed result: features and the inverse fit}{9}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Multi-seed validation: chain recovery is robust, detection AUC is not}{10}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Multistart basin check: the low basin is not an initialisation artefact}{11}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{12}{subsection.3.5}%
-\contentsline {paragraph}{Dirichlet smoothing (toward uniform-over-neighbors).}{13}{paragraph*.11}%
-\contentsline {paragraph}{Interpolation backoff (toward 1-step empirical).}{13}{paragraph*.12}%
-\contentsline {paragraph}{Implication.}{14}{paragraph*.14}%
-\contentsline {subsection}{\numberline {3.6}Trajectory-length sweep: lifting the ceiling and the detector together}{14}{subsection.3.6}%
-\contentsline {subsection}{\numberline {3.7}Disentangling sat-nav adoption from congestion-induced rerouting}{15}{subsection.3.7}%
-\contentsline {paragraph}{Design.}{15}{paragraph*.17}%
-\contentsline {paragraph}{Caveat on the experienced-driver gap.}{16}{paragraph*.19}%
-\contentsline {paragraph}{Fitted vs.\ empirical.}{16}{paragraph*.20}%
-\contentsline {paragraph}{Implication.}{16}{paragraph*.21}%
-\contentsline {subsection}{\numberline {3.8}The $f+g$ extension at scale: a refined diagnosis}{16}{subsection.3.8}%
-\contentsline {paragraph}{Sparse-LU implementation.}{17}{paragraph*.22}%
-\contentsline {paragraph}{At SUMO bigger-bbox scale, naive sparse is \emph {slower} than dense.}{17}{paragraph*.23}%
-\contentsline {paragraph}{At Xuancheng subgraph scale, sparse-LU runs in seconds and $f+g$ is tractable.}{17}{paragraph*.24}%
-\contentsline {paragraph}{The binding sensitivity is $\gamma $.}{17}{paragraph*.25}%
-\contentsline {paragraph}{Zone variability.}{18}{paragraph*.27}%
-\contentsline {paragraph}{Refined conclusion.}{18}{paragraph*.28}%
-\contentsline {section}{\numberline {4}Tier 3: Real-world stress test of the filter under OD confounding}{18}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Dataset choice}{19}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Verification: route legality and time-of-day distribution}{19}{subsection.4.2}%
-\contentsline {paragraph}{Route legality.}{19}{paragraph*.30}%
-\contentsline {paragraph}{Time-of-day distribution.}{19}{paragraph*.31}%
-\contentsline {subsection}{\numberline {4.3}The fundamental real-world gap: no ground-truth sat-nav label}{20}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Results}{20}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Interpretation}{22}{subsection.4.5}%
-\contentsline {paragraph}{The OD-mix attribution is not robust to zone granularity.}{22}{paragraph*.35}%
-\contentsline {paragraph}{The fitted $1$-step detector does not recover the contrast at any granularity.}{23}{paragraph*.36}%
-\contentsline {paragraph}{The features=real basin failure repeats post-matching, and multistart resolves it.}{23}{paragraph*.37}%
-\contentsline {subsection}{\numberline {4.6}Multistart on \texttt {features=real}: the ceiling violation is an optimiser artefact}{23}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}Bottom line for Tier 3}{24}{subsection.4.7}%
-\contentsline {section}{\numberline {5}Discussion}{25}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Cross-tier comparison}{25}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Limits of the chosen approach}{26}{subsection.5.2}%
-\contentsline {paragraph}{Multi-seed Tier 2; single day-pool on Tier 3.}{26}{paragraph*.40}%
-\contentsline {paragraph}{L-BFGS basin selection on \texttt {features=real}.}{26}{paragraph*.41}%
-\contentsline {paragraph}{The rush-vs-off-peak proxy confound, bounded in simulation.}{26}{paragraph*.42}%
-\contentsline {paragraph}{The hitting-rate ($f+g$) extension at scale, refined diagnosis.}{27}{paragraph*.43}%
-\contentsline {subsection}{\numberline {5.3}Social, environmental, technological implications}{27}{subsection.5.3}%
-\contentsline {paragraph}{Transport-policy modelling.}{27}{paragraph*.44}%
-\contentsline {paragraph}{Privacy and data access.}{27}{paragraph*.45}%
-\contentsline {paragraph}{Sat-navigation regulation.}{27}{paragraph*.46}%
-\contentsline {subsection}{\numberline {5.4}Future work}{28}{subsection.5.4}%
-\contentsline {section}{\numberline {6}Conclusion}{29}{section.6}%
-\contentsline {paragraph}{What was designed.}{29}{paragraph*.47}%
-\contentsline {paragraph}{How it works.}{29}{paragraph*.48}%
-\contentsline {paragraph}{What worked.}{29}{paragraph*.49}%
-\contentsline {paragraph}{What failed or was limited.}{29}{paragraph*.50}%
-\contentsline {paragraph}{Where the filter is reliable.}{30}{paragraph*.51}%
-\contentsline {paragraph}{Where the filter is not reliable.}{30}{paragraph*.52}%
-\contentsline {paragraph}{Contribution.}{30}{paragraph*.53}%
-\contentsline {section}{\numberline {7}Project Management and Reflection}{31}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Project structure and milestone management}{31}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Personal skill development}{32}{subsection.7.2}%
-\contentsline {section}{\numberline {A}Repository structure and reproducibility}{34}{appendix.A}%
-\contentsline {section}{\numberline {B}Use of generative AI}{34}{appendix.B}%
-\contentsline {section}{\numberline {C}Build and reproducibility}{34}{appendix.C}%
+\contentsline {section}{\numberline {1}Notation}{5}{section.1}%
+\contentsline {section}{\numberline {2}Introduction}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Context and research gap}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Related work and novelty}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Filter specification and assumptions}{7}{subsection.2.3}%
+\contentsline {paragraph}{Diagnostics.}{8}{paragraph*.2}%
+\contentsline {paragraph}{Extensions.}{8}{paragraph*.3}%
+\contentsline {paragraph}{Validation split.}{8}{paragraph*.4}%
+\contentsline {subsection}{\numberline {2.4}Experimental structure}{8}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Tier 1: Validating the inverse-MC estimator inside the filter}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Motivation}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Method}{9}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Results}{9}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Interpretation}{10}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Prediction rescaling convention}{10}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Gradient verification}{11}{subsubsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.3}Headline outcome}{11}{subsubsection.3.4.3}%
+\contentsline {section}{\numberline {4}Tier 2: Controlled validation of the filter in SUMO}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Motivation}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Method}{12}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Scenario construction}{12}{subsubsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.3}Results}{13}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Single-seed result: features and the inverse fit}{13}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}Multi-seed validation: chain recovery is robust, detection AUC is not}{14}{subsubsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.3}Multistart basin check: the low basin is not an initialisation artefact}{15}{subsubsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.4}Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{16}{subsubsection.4.3.4}%
+\contentsline {paragraph}{Dirichlet smoothing (toward uniform-over-neighbors).}{17}{paragraph*.12}%
+\contentsline {paragraph}{Interpolation backoff (toward 1-step empirical).}{17}{paragraph*.13}%
+\contentsline {paragraph}{Implication.}{18}{paragraph*.15}%
+\contentsline {subsubsection}{\numberline {4.3.5}Trajectory-length sweep: lifting the ceiling and the detector together}{18}{subsubsection.4.3.5}%
+\contentsline {subsubsection}{\numberline {4.3.6}Disentangling sat-nav adoption from congestion-induced rerouting}{19}{subsubsection.4.3.6}%
+\contentsline {paragraph}{Design.}{20}{paragraph*.18}%
+\contentsline {paragraph}{Caveat on the experienced-driver gap.}{21}{paragraph*.20}%
+\contentsline {paragraph}{Fitted vs.\ empirical.}{21}{paragraph*.21}%
+\contentsline {paragraph}{Implication.}{21}{paragraph*.22}%
+\contentsline {subsubsection}{\numberline {4.3.7}The $f+g$ extension at scale: a refined diagnosis}{21}{subsubsection.4.3.7}%
+\contentsline {paragraph}{Sparse-LU implementation.}{21}{paragraph*.23}%
+\contentsline {paragraph}{At SUMO bigger-bbox scale, naive sparse is \emph {slower} than dense.}{22}{paragraph*.24}%
+\contentsline {paragraph}{At Xuancheng subgraph scale, sparse-LU runs in seconds and $f+g$ is tractable.}{22}{paragraph*.25}%
+\contentsline {paragraph}{The binding sensitivity is $\gamma $.}{22}{paragraph*.26}%
+\contentsline {paragraph}{Zone variability.}{23}{paragraph*.28}%
+\contentsline {paragraph}{Refined conclusion.}{23}{paragraph*.29}%
+\contentsline {subsection}{\numberline {4.4}Interpretation}{23}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Tier 3: Real-world stress test of the filter under OD confounding}{24}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Motivation}{24}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Method}{24}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Dataset choice}{24}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Verification: route legality and time-of-day distribution}{25}{subsubsection.5.2.2}%
+\contentsline {paragraph}{Route legality.}{25}{paragraph*.31}%
+\contentsline {paragraph}{Time-of-day distribution.}{25}{paragraph*.32}%
+\contentsline {subsubsection}{\numberline {5.2.3}The fundamental real-world gap: no ground-truth sat-nav label}{25}{subsubsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.3}Results}{26}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Rush-vs-off-peak results}{26}{subsubsection.5.3.1}%
+\contentsline {subsubsection}{\numberline {5.3.2}Stronger-proxy stress test: Labour Day versus normal days}{29}{subsubsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.4}Interpretation}{30}{subsection.5.4}%
+\contentsline {paragraph}{The OD-mix attribution is not robust to zone granularity.}{30}{paragraph*.37}%
+\contentsline {paragraph}{The fitted $1$-step detector does not recover the contrast at any granularity.}{30}{paragraph*.38}%
+\contentsline {paragraph}{The features=real basin failure repeats post-matching, and multistart resolves it.}{31}{paragraph*.39}%
+\contentsline {subsubsection}{\numberline {5.4.1}Multistart on \texttt {features=real}: the ceiling violation is an optimiser artefact}{31}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Bottom line for Tier 3}{32}{subsubsection.5.4.2}%
+\contentsline {section}{\numberline {6}Discussion}{32}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Cross-tier comparison}{32}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Limits of the chosen approach}{34}{subsection.6.2}%
+\contentsline {paragraph}{Multi-seed Tier 2; limited real-world proxy pools on Tier 3.}{34}{paragraph*.42}%
+\contentsline {paragraph}{L-BFGS basin selection on \texttt {features=real}.}{34}{paragraph*.43}%
+\contentsline {paragraph}{The rush-vs-off-peak proxy confound, bounded in simulation.}{35}{paragraph*.44}%
+\contentsline {paragraph}{The hitting-rate ($f+g$) extension at scale, refined diagnosis.}{35}{paragraph*.45}%
+\contentsline {subsection}{\numberline {6.3}Social, environmental, technological implications}{35}{subsection.6.3}%
+\contentsline {paragraph}{Transport-policy modelling.}{35}{paragraph*.46}%
+\contentsline {paragraph}{Privacy and data access.}{36}{paragraph*.47}%
+\contentsline {paragraph}{Sat-navigation regulation.}{36}{paragraph*.48}%
+\contentsline {subsection}{\numberline {6.4}Future work}{36}{subsection.6.4}%
+\contentsline {section}{\numberline {7}Conclusion}{37}{section.7}%
+\contentsline {paragraph}{What was designed.}{38}{paragraph*.49}%
+\contentsline {paragraph}{How it works.}{38}{paragraph*.50}%
+\contentsline {paragraph}{What worked.}{38}{paragraph*.51}%
+\contentsline {paragraph}{What failed or was limited.}{38}{paragraph*.52}%
+\contentsline {paragraph}{Where the filter is reliable.}{39}{paragraph*.53}%
+\contentsline {paragraph}{Where the filter is not reliable.}{39}{paragraph*.54}%
+\contentsline {paragraph}{Contribution.}{40}{paragraph*.56}%
+\contentsline {section}{\numberline {8}Project Management and Reflection}{40}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Project structure and milestone management}{41}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Personal skill development}{42}{subsection.8.2}%
+\contentsline {section}{\numberline {A}Repository structure and reproducibility}{45}{appendix.A}%
+\contentsline {section}{\numberline {B}Use of generative AI}{45}{appendix.B}%
+\contentsline {section}{\numberline {C}Build and reproducibility}{45}{appendix.C}%
+\contentsline {section}{\numberline {D}Metric and method primer}{46}{appendix.D}%
+\contentsline {subsection}{\numberline {D.1}Markov chain and transition kernel}{46}{subsection.D.1}%
+\contentsline {subsection}{\numberline {D.2}Stationary distribution, restart probability and hitting rate}{46}{subsection.D.2}%
+\contentsline {subsection}{\numberline {D.3}Inverse Markov-chain problem}{47}{subsection.D.3}%
+\contentsline {subsection}{\numberline {D.4}Softmax-parametric chain}{47}{subsection.D.4}%
+\contentsline {subsection}{\numberline {D.5}Log-likelihood ratio score}{47}{subsection.D.5}%
+\contentsline {subsection}{\numberline {D.6}ROC curve and AUC}{47}{subsection.D.6}%
+\contentsline {subsection}{\numberline {D.7}Pearson correlation}{48}{subsection.D.7}%
+\contentsline {subsection}{\numberline {D.8}Cosine similarity and collinearity}{48}{subsection.D.8}%
+\contentsline {subsection}{\numberline {D.9}OD matching / OD rebalancing}{48}{subsection.D.9}%
+\contentsline {subsection}{\numberline {D.10}Bootstrap confidence interval}{49}{subsection.D.10}%
+\contentsline {subsection}{\numberline {D.11}L-BFGS-B optimiser, basins and multistart}{49}{subsection.D.11}%
+\contentsline {subsection}{\numberline {D.12}Ridge regularisation and finite-difference gradient checks}{49}{subsection.D.12}%
+\contentsline {subsection}{\numberline {D.13}Gap closed}{49}{subsection.D.13}%
+\contentsline {subsection}{\numberline {D.14}RMAE}{50}{subsection.D.14}%

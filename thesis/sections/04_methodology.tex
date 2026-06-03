@@ -44,7 +44,7 @@ $\{\tau_k\}$; a decision threshold $\eta$.
 softmax-parametric Markov chain (\cref{sec:morimura-formulation}) by
 minimising the regularised log-ratio loss of \cite{morimura2013}
 (\cref{sec:loss-gradients}). The estimator is FD-verified
-(\cref{sec:phase1-synthetic}) and validated against the original
+(\cref{app:regularisation-fd-primer}, \cref{sec:phase1-synthetic}) and validated against the original
 synthetic benchmark before being deployed inside the filter.
 
 \paragraph{Scoring rule.} For each test trajectory $\tau$, compute the
@@ -404,14 +404,16 @@ parametric $2$-step model is built.
 \item \textbf{OD-rebalancing} (\cref{sec:od-rebal}) addresses the
 real-world population-mix confound that has no analogue in the controlled
 SUMO comparison.
-\item \textbf{Multistart / basin checks} (\cref{sec:phase4-multistart},
+\item \textbf{Multistart / basin checks} (\cref{app:lbfgs-primer},
+\cref{sec:phase4-multistart},
 \cref{sec:phase5-multistart}) address the possibility that a result is an
 L-BFGS optimiser artefact rather than a property of the data.
 \end{itemize}
 Where AUCs lie close to chance, the honest interpretation also requires
 quantifying sampling noise. In Tier~3 we therefore report stratified
 vehicle-level bootstrap confidence intervals
-(\cref{sec:phase5-reading}, \cref{sec:disc-limits}): after the chains,
+(\cref{app:bootstrap-primer}, \cref{sec:phase5-reading},
+\cref{sec:disc-limits}): after the chains,
 station set $\Xo$, OD matching, and train/test split are fixed, test
 trajectories are resampled with replacement within each regime and the
 AUC is recomputed. These CIs capture test-trajectory sampling noise only.

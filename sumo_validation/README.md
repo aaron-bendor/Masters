@@ -17,6 +17,7 @@ This directory is one big flat namespace because almost every Python script impo
 | `bootstrap_auc.py` | Vehicle-level stratified bootstrap CIs over a scored test set. K-sweep entry point (iter 26). | manual. |
 | `two_step_empirical.py` | Counts `(x_{t-1}, x_t) → x_{t+1}` triples, scores LR vs 1-step empirical. The 2-step diagnostic. | iter 19C; iter 28 baseline. |
 | `two_step_backoff.py` | Jelinek–Mercer interpolation backoff on 2-step empirical. Best Phase-4 lift (+0.10 AUC, 5/5 seeds). | `dispatch_2step_backoff_sweep.sh` (iter 28). |
+| `xuancheng_2step_backoff.py` | Xuancheng counterpart to `two_step_backoff.py`. Labour K=64 audit: no 2-step lift; best setting is λ=0, equivalent to 1-step empirical. | manual (iter 31). |
 | `fg_xuancheng_subgraph.py` | Restricts to one K-zone subgraph then runs f+g sparse-LU. Used for the γ-sweep that found f+g works at subgraph scale with γ ∈ [0.9, 0.95] (iter 29). | `dispatch_subgraph_gamma_zone_sweep.sh`. |
 
 ## Scripts — sweeps / safety gates
@@ -39,7 +40,7 @@ This directory is one big flat namespace because almost every Python script impo
 
 ## Shell dispatchers
 
-`dispatch_*.sh` scripts iterate over seeds/configs and invoke a Python scorer per cell, piping `RESULT` lines back to stdout. `run_*.sh` scripts run a single seed end-to-end (randomTrips → duarouter → SUMO ×2 → score). All assume `../.venv/bin/python` is the active interpreter and use `set -euo pipefail`.
+`dispatch_*.sh` scripts iterate over seeds/configs and invoke a Python scorer per cell, piping `RESULT` lines back to stdout. `dispatch_xuancheng_holiday_sweep.sh` runs the Xuancheng holiday/Labour stress-test K-sweep via `bootstrap_auc.py`. `run_*.sh` scripts run a single seed end-to-end (randomTrips → duarouter → SUMO ×2 → score). All assume `../.venv/bin/python` is the active interpreter and use `set -euo pipefail`.
 
 ## Data — by name
 
@@ -68,6 +69,8 @@ The vehroutes files for `d0.3.r1.0` are gigabytes each (saturating peak demand w
 - Tier-2 ρ×demand decomposition → `logs/rho_demand_lean.log` here.
 - Tier-3 Xuancheng → `xuancheng_*.log` in repo-root `logs/`.
 - Tier-3 K-sweep RETRACTION → `logs/xuan_Ksweep.log` here.
+- Tier-3 Labour-Day stress test → `logs/xuancheng_holiday_*` here.
+- Tier-3 Labour-Day 2-step audit → `logs/xuancheng_holiday_labour_K64_2step_backoff.log` here.
 - Tier-3 f+g subgraph win → `logs/subgraph_gamma_zone_sweep.log` here.
 
 For full prose context, every iter is logged in `../research_logbook.md`.

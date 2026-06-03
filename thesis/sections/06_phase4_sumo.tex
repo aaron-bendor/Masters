@@ -1,6 +1,8 @@
 \section{Tier 2: Controlled validation of the filter in SUMO}
 \label{sec:phase4-sumo}
 
+\subsection{Motivation}
+
 This tier is the controlled, end-to-end validation of the
 partial-observation routing-influence filter in the only setting that
 supplies ground-truth regime labels: an
@@ -30,7 +32,9 @@ $1$-step detector can do \emph{given this finite data and smoothing}, and
 finite-sample and train/test variation can move it (and occasionally
 produce apparent anomalies, \cref{sec:phase5-multistart}).
 
-\subsection{Scenario construction}\label{sec:phase4-scenario}
+\subsection{Method}
+
+\subsubsection{Scenario construction}\label{sec:phase4-scenario}
 
 A square-kilometre bounding box of central Munich (the ``bigger-bbox''
 network, $\sim 3.7\,\text{km} \times 3.3\,\text{km}$, derived from
@@ -90,7 +94,9 @@ ceiling, and why the per-row contrast diagnostic
 \emph{contrasts} on the same finite data, is the load-bearing
 evidence rather than the absolute AUC.
 
-\subsection{Single-seed result: features and the inverse fit}
+\subsection{Results}
+
+\subsubsection{Single-seed result: features and the inverse fit}
 \label{sec:phase4-features-result}
 
 We compare \code{--features none} (local-only fit, $d = n+E = 8{,}392$)
@@ -159,7 +165,7 @@ the wrong way. This suggests the residual misspecification is
 structural to the $1$-step softmax family. \Cref{sec:phase4-2step}
 tests that hypothesis.
 
-\subsection{Multi-seed validation: chain recovery is robust, detection AUC is not}
+\subsubsection{Multi-seed validation: chain recovery is robust, detection AUC is not}
 \label{sec:phase4-multiseed}
 
 To test whether the seed-42 lift replicates, we re-ran the
@@ -233,14 +239,14 @@ structure observed in repeated SUMO runs: seeds $\{7, 23\}$ cluster
 low ($30$--$34\%$) and seeds $\{42, 101, 2024\}$ cluster high
 ($61$--$62\%$), with nothing in between. The same seeds fall in the same
 clusters as the earlier run, indicating the split is a stable property of
-the L-BFGS basin structure on these instances rather than measurement
+the L-BFGS basin structure (\cref{app:lbfgs-primer}) on these instances rather than measurement
 noise. The \code{features=none} $\AUC_{\mathrm{fit}}$ across seeds is
 $0.575 \pm 0.027$, consistent with the baseline variability. Whether this
 low basin is escapable by multi-start re-initialisation, a question left
 open by the multi-seed sweep, is settled in \cref{sec:phase4-multistart}:
 it is not.
 
-\subsection{Multistart basin check: the low basin is not an initialisation artefact}
+\subsubsection{Multistart basin check: the low basin is not an initialisation artefact}
 \label{sec:phase4-multistart}
 
 The bimodal basin structure of \cref{sec:phase4-multiseed} raises an
@@ -294,7 +300,7 @@ large norm ($\lVert\theta_0\rVert \approx 92$ at $d = 8{,}392$); we have thus
 shown that the \emph{standard} random-restart recipe does not escape the low
 basin, not that the basin is provably global.
 
-\subsection{Higher-order memory diagnostic: a regularised 2-step
+\subsubsection{Higher-order memory diagnostic: a regularised 2-step
 empirical lifts the reference}
 \label{sec:phase4-2step}
 
@@ -422,7 +428,7 @@ performance from above; what it does not do is settle whether the
 parametric inversion route can recover that bound under partial
 observation.
 
-\subsection{Trajectory-length sweep: lifting the ceiling and the detector together}
+\subsubsection{Trajectory-length sweep: lifting the ceiling and the detector together}
 \label{sec:phase4-tsweep}
 
 The $0.685$ ceiling is specific to the chosen test trajectory length
@@ -479,7 +485,7 @@ at $T=40$, $69\%$ of the gap closed against the full-observation
 empirical $1$-step reference of $0.801$, with a stable per-row chain
 Pearson of $+0.216$ on \texttt{[all branching]}.
 
-\subsection{Disentangling sat-nav adoption from congestion-induced rerouting}
+\subsubsection{Disentangling sat-nav adoption from congestion-induced rerouting}
 \label{sec:phase4-rho-demand}
 
 A methodological concern arises in advance of Tier~3
@@ -562,8 +568,8 @@ vehicles follow precomputed shortest-path routes and do \emph{not}
 react to congestion en route. Real-world unaided but experienced drivers
 may avoid known-bad streets at rush hour, a behaviour this model does
 not capture, so the $0.493$ \texttt{pure\_congestion} AUC is best
-interpreted as a \emph{lower bound} on the real-world congestion-routing
-confound.
+interpreted as a conservative simulator estimate that may understate the
+real-world experienced-driver congestion-routing confound.
 Even tripling it (to $\sim 0.55$) would leave sat-navigation as the
 dominant attribution to the $0.793$ proxy signal. The decomposition
 is robust to that gap by a wide margin.
@@ -588,7 +594,7 @@ real drivers are not SUMO drivers. It validates the proxy as a
 controlled-comparison object and bounds the experienced-driver
 confound from below.
 
-\subsection{The $f+g$ extension at scale: a refined diagnosis}
+\subsubsection{The \texorpdfstring{$f+g$}{f+g} extension at scale: a refined diagnosis}
 \label{sec:phase4-fg-infeasible}
 
 A natural-looking extension is to switch the loss from the f-only
@@ -728,3 +734,27 @@ nuanced claim: ``naive sparse-LU does not transfer at city scale;
 $\gamma$ tuning is the binding sensitivity; data sparsity in $g$
 persists at subgraph scale'' is the one the evidence actually
 supports.
+
+\subsection{Interpretation}
+
+Tier~2 is the positive validation tier, but only under the controlled
+conditions that make its labels meaningful. With ground-truth rerouting
+labels and matched OD pairs, the fitted filter discriminates sat-navigation
+from static unguided routing, reaching $\AUC=0.708$ at $T=40$ while
+closing $69\%$ of the gap to the full-observation empirical $1$-step
+reference. The feature-augmented score is useful primarily as a
+chain-recovery lever: it improves per-row Pearson/cosine consistently
+across five seeds, but its aggregate AUC lift is not robust.
+
+The tier also identifies the model-class boundary. A regularised
+empirical $2$-step reference lifts AUC by about $+0.09$--$+0.10$ on every
+SUMO seed, showing that higher-order route memory is a real signal in the
+controlled data and that a parametric $2$-step inverse-MC model is the
+next justified detector design. By contrast, the $f+g$ extension is not
+ready at city scale under the current solver: subgraph tests show that it
+can help when $\gamma$ is tuned near the f-only end, but full-network
+runtime and hitting-rate sparsity keep the deployed Tier~2 detector
+f-only. The defensible claim from this tier is therefore specific:
+the current $1$-step partial-observation filter works as a controlled
+labelled detector, and its diagnostics correctly expose where richer
+model structure is needed.

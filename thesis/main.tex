@@ -3,7 +3,7 @@
 % Build: pdflatex -> bibtex -> pdflatex -> pdflatex
 % (VS Code LaTeX Workshop uses this recipe automatically.)
 
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper]{article}
 
 % Page geometry & typography
 \usepackage[a4paper, margin=1in]{geometry}
@@ -49,17 +49,24 @@
   commentstyle=\color{cm}\itshape,
   stringstyle=\color{st},
   breaklines=true, frame=single, numbers=none,
+  columns=fullflexible, keepspaces=true,
   showstringspaces=false,
 }
-
-% Cross-refs & hyperlinks
-\usepackage[hidelinks,colorlinks=false]{hyperref}
-\usepackage{cleveref}
 
 % Bibliography
 % IEEEtran numeric style (matches the example thesis convention).
 \usepackage[numbers,sort&compress]{natbib}
 \bibliographystyle{IEEEtran}
+
+% Cross-refs & hyperlinks
+% Colour citation markers so each in-text citation is visibly clickable.
+\usepackage[
+  colorlinks=true,
+  linkcolor=blue!55!black,
+  citecolor=blue!55!black,
+  urlcolor=blue!55!black
+]{hyperref}
+\usepackage{cleveref}
 
 % Section spacing
 \titlespacing*{\section}{0pt}{2ex}{1ex}
@@ -85,7 +92,7 @@
   via Inverse Markov-Chain Methods
 }
 \author{
-  Aaron Bendor\\
+  Aaron Bendor - CID: 02024741\\
   \texttt{aaron.bendor22@imperial.ac.uk}
   \and
   Imperial College London\\
@@ -104,6 +111,9 @@
 
 \newpage
 \tableofcontents
+
+\newpage
+\input{sections/01_notation}
 
 \newpage
 \input{sections/02_introduction}

@@ -56,7 +56,13 @@ with every seed winning; the selected count-conditional setting gives
 $+0.100 \pm 0.009$ but is mildly test-tuned. This identifies
 higher-order routing memory as a real signal the $1$-step softmax family
 cannot capture, and promotes a parametric $2$-step Morimura extension to
-a justified future direction. The hitting-rate ($f+g$) route does not naively transfer to full-SUMO
+a justified future direction for controlled labelled settings. The same
+diagnostic on the Xuancheng Labour-Day split does \emph{not} lift the
+empirical reference: non-zero $2$-step interpolation weights reduce AUC
+below the $1$-step reference of $0.567$. So second-order route memory is
+not the missing lever for this real-data proxy; the remaining gap points
+instead to partial-observation identifiability, proxy noise, unobserved
+covariates, and OD/time heterogeneity. The hitting-rate ($f+g$) route does not naively transfer to full-SUMO
 scale: a sparse-LU rewrite is FD-verified and works, but at $|X_o|
 \approx 600$ the wide gradient solve still favours dense BLAS3 over
 sparse per-column solves by $\sim 80\times$, and a Sherman--Morrison
@@ -73,7 +79,14 @@ $0.476$--$0.513$, every bootstrap CI straddling chance), even though
 the full-observation reference weakly carries it
 ($\sim\!0.55$--$0.58$ for $K \ge 16$); the multistart audit confirms
 this is a genuine near-chance outcome rather than an optimiser
-artefact. An OD-mix attribution we initially inferred from the coarse $K=8$
+artefact. A stronger Labour-Day-vs-normal proxy creates a clearer
+within-OD empirical signal ($\AUC_{\mathrm{emp}}=0.567$ at $K=64$), but
+the validation-selected multistart fit still falls to chance
+($\AUC_{\mathrm{fit}}=0.502$), showing that the limitation is not simply
+absence of a real-world behavioural signal; the empirical $2$-step audit
+also rules out simple route memory as an immediate rescue on that split.
+An OD-mix attribution we
+initially inferred from the coarse $K=8$
 match ($\sim\!75\%$) did not survive the granularity sweep and is not
 claimed.
 
@@ -87,9 +100,10 @@ filter as a positive detector.
 
 \paragraph{Where the filter is not reliable.} On a real-world
 behavioural proxy without ground-truth sat-navigation labels, the
-within-OD routing signal, once OD-mix is controlled, is not
-detectable at the $1$-step Markov level under the tested proxy, model
-class, and data split. The filter therefore does \emph{not} support
+within-OD routing signal, once OD-mix is controlled, is not robustly
+recovered by the fitted $1$-step partial-observation model under the
+tested proxies, model class, and data split. The filter therefore does
+\emph{not} support
 real-world sat-navigation detection on the Xuancheng dataset; Tier~3 is
 reported as a confounding audit, not a positive detection result.
 The filter's optional $\gobs$ input is fully tractable at the
@@ -100,6 +114,23 @@ network under naive sparse-LU; a Sherman--Morrison factor-sharing
 update (or the paper's natural-gradient descent) is the algorithmic
 prerequisite for re-enabling the $f+g$ mode at city scale.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{fig08_conclusion_synthesis.png}
+\caption{Cross-tier synthesis of the dissertation's headline results.
+The bars use a normalised summary rather than a single physical metric:
+Tier~1 reports benchmark-reproduction closeness, computed as the mean
+capped ratio between the visual paper RMAE and our RMAE for
+$|\Xo|\ge 10$ (lower RMAE is better); Tiers~2--3 report AUC gap closed,
+$(\AUC_{\mathrm{fit}}-0.5)/(\AUC_{\mathrm{emp}}-0.5)$. The pattern is
+the dissertation's central conclusion: the estimator reproduces its
+synthetic benchmark, the labelled SUMO filter recovers a substantial
+fraction of the empirical $1$-step signal, and the real Xuancheng
+behavioural proxy does not recover under the fitted partial-observation
+model.}
+\label{fig:conclusion-synthesis}
+\end{figure}
+
 \paragraph{Contribution.} The contribution is a designed and audited
 filter pipeline, not a fresh estimator. Academically, the work extends
 the Morimura framework into a trajectory-level regime detector and
@@ -108,9 +139,12 @@ bias, along with a controlled-simulator decomposition
 (\cref{sec:phase4-rho-demand}) that bounds the sat-navigation-vs.-congestion
 confound in the rush-vs-off-peak behavioural proxy used on real-world
 data, documenting where the approach succeeds (controlled simulation
-with labels) and where it does not (real-world proxy without labels,
-OD-mix confounding, $1$-step model class, $f+g$ engineering gap at
-city scale). Practically, it shows that quantifying externally-influenced
+with labels), where richer model classes show promise (SUMO $2$-step
+memory), and where they do not yet explain the real-data failure
+(Xuancheng Labour-Day empirical $2$-step). It also documents where the
+current approach fails: real-world proxy without labels, OD-mix
+confounding, weak partial-observation recovery, and the $f+g$
+engineering gap at city scale. Practically, it shows that quantifying externally-influenced
 routing on real urban data is gated less by the inverse-MC machinery
 than by the availability of ground-truth adoption labels and by control
 for OD-mix confounding, a result that directly informs how any

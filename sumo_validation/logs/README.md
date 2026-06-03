@@ -14,6 +14,11 @@ Same idea as `../logs/` but for sweeps that ran inside `sumo_validation/` (most 
 | `time_fg_sparse_sumo.log` | `time_fg_sparse_sumo.py` | Timing: sparse-LU on SUMO bigger bbox is ~8× SLOWER than dense (wide-RHS solve, not factorisation, is the bottleneck). | iter 29 (B) |
 | `boot_xuan_odmatch.log` | `bootstrap_auc.py` | Vehicle-level bootstrap CIs on the Xuancheng OD-matched run. | iter 26 |
 | `xuan_Ksweep.log` | `bootstrap_auc.py` K-sweep | K ∈ {8,16,32,64} OD-zone granularity sweep. **Retracts the "~75% OD-mix" framing** — K=8 artefact. Robust finding: fitted detector at chance for all K. | iter 26 |
+| `xuancheng_holiday_Ksweep.log` | `dispatch_xuancheng_holiday_sweep.sh` | Pooled holiday (Apr 5 + Apr 28-30) vs normal K-sweep. Empirical ceiling near chance at every K. | iter 30 |
+| `xuancheng_holiday_labour_Ksweep.log` | `POOL=labour dispatch_xuancheng_holiday_sweep.sh` | Labour Day vs normal K-sweep. Empirical signal survives at K=64 (0.567), fitted detector remains near chance. | iter 30 |
+| `xuancheng_holiday_labour_K64_contrast.log` | `contrast_correlation.py --regime_split holiday_normal --od_match 64` | Labour K=64 per-row diagnostic: Pearson +0.066, fitted AUC 0.521 vs empirical 0.567. | iter 30 |
+| `xuancheng_holiday_labour_K64_multistart.log` | `score_seed_big_multistart.py --regime_split holiday_normal --od_match 64 --K 5` | Labour K=64 basin check: validation-selected multistart drops fitted AUC to 0.502. | iter 30 |
+| `xuancheng_holiday_labour_K64_2step_backoff.log` | `xuancheng_2step_backoff.py --regime_split holiday_normal --od_match 64` | Labour K=64 empirical 2-step audit: 1-step AUC 0.567; all non-zero 2-step backoff settings lower AUC, so simple route memory does not rescue Xuancheng. | iter 31 |
 | `sumo.intr.log`, `sumo.satnav.log` | raw SUMO simulator output | Generated when running `sumo -c intr.sumocfg` (or `satnav.sumocfg`) headless. Kept once for sanity-check; not used downstream. | iter 1+ |
 
 Re-creating any of these: cd into `sumo_validation/`, run the matching `dispatch_*.sh` or Python script, redirect to `logs/<name>.log`. Most sweeps take 1 min – 5 h depending on whether they refit chains.

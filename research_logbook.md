@@ -589,7 +589,7 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 > - **Route IDs match SUMO edge IDs 100 %** (1,034 / 1,034 unique IDs in the first 2,000 trips). No ID mapping required.
 > - **`startTime` is seconds since midnight** (range 0..86,400, 1,170 distinct values, canonical AM-rush + PM-rush double-peak histogram). Decided regime-split windows: rush `= [25200, 32400] ∪ [61200, 68400]`, off-peak `= [36000, 57600]`.
 > - **Route legality is 78.4 % at the pair level** — 19.7 % of consecutive edge pairs are Dijkstra-repaired "teleports" from the source data pipeline that don't share a junction in the SUMO net, 1.9 % share a junction but lack a lane connection. Loader splits trips at illegal boundaries into legal sub-trajectories rather than dropping; sub-trajectory mean length is **8.2 edges** (vs 15.1 for raw trips). Effective `T` for Phase-5 experiments is capped at ~5–7.
-> - **Cross-day anomalies:** Apr 8 / Apr 9 trip counts are *identical* (324,441 each) — almost certainly a duplicate file; use one. Apr 10's `startTime` max is 165,071 (≈ 2 days) — file may concatenate; exclude or investigate. Apr 5 (Tomb-Sweeping) and Apr 28-29 (Labour Day) are demand anomalies and provide a natural holiday-vs-normal contrast as in the paper §3.2.
+> - **Cross-day anomalies:** Apr 8 / Apr 9 trip counts are *identical* (324,441 each) — almost certainly a duplicate file; use one. Apr 10's `startTime` max is 165,071 (≈ 2 days) — file may concatenate; exclude or investigate. Apr 5 (Tomb-Sweeping) and Apr 28-30 (Labour Day period) are demand anomalies and provide a natural holiday-vs-normal contrast as in the paper §3.2.
 >
 > **Code shipped this session:**
 > - `real_data/load_xuancheng.py` — full loader with `load_xuancheng_regime(net_path, day_specs, regime_split, label_a, label_b)` returning the same 7-tuple `(edges, adj_out, idx, trajs_a, trajs_b, f_a, f_b)` the existing Phase-4 scripts expect. Smoke-tested on Apr 17: 327k trips → 330k sub-trajectories, 105,593 rush + 109,766 off-peak.
@@ -815,6 +815,56 @@ Phases 1–3 are end-to-end synthetic: chains generated under the framework's ow
 > **Refined conclusion.** f+g is NOT fundamentally infeasible. It works at sub-city subgraph scale ($n \sim 200$) when $\gamma \in [0.9, 0.95]$ and on zones with informative empirical g; on subgraph zone 0 the f+g detector recovers the empirical 1-step reference within sampling noise. It does not currently transfer to full SUMO bigger-bbox scale under naive sparse, but the engineering gap is bridgeable. Data sparsity ($\sim 85\%$ g-floor) persists at any scale tested, so any future scale-up will need careful $\gamma$ tuning and not the paper's intermediate $\gamma$.
 >
 > **Thesis wired (planned).** $\S6.8$ in `06_phase4_sumo.tex` to be substantively rewritten: from "infeasible at scale, framework limit" to "three separable issues, refined diagnosis." $\S8$ limits subsection updated: sparse-LU implementation is in place; the residual gap is the wide-RHS solve, requiring Sherman-Morrison-style amortisation. $\S8$ future-work item on natural gradient kept; new item added on Sherman-Morrison factor sharing.
+
+> ### iter-30 (2026-06-03) — Xuancheng holiday / Labour stress test; stronger real-world signal exists, fitted detector still does not recover it
+>
+> **Motivation.** The rush-vs-off-peak Xuancheng proxy might simply be too weak. Holidays are intuitively more different from normal workdays, and the dataset audit already flagged Apr 5 (Tomb-Sweeping, low demand) and Apr 28--30 (Labour Day period, high demand) as daily-demand anomalies. The question: if the signal is stronger, does the 1-step partial-observation detector finally work?
+>
+> **Setup.** Added `sumo_validation/dispatch_xuancheng_holiday_sweep.sh`, which calls `bootstrap_auc.py` on `--regime_split holiday_normal` for unmatched and OD-matched $K \in \{8,16,32,64\}$. Also patched `real_data/load_xuancheng.py` to exclude Apr 10 from `_NORMAL_DATES` because iter 20 found `startTime` max $\approx 165$k seconds (possible concatenated file). Normal pool: Apr 11--14 and Apr 17--21. Holiday pools: (i) all = Apr 5 + Apr 28--30; (ii) Labour = Apr 28--30; (iii) Tomb = Apr 5 (command prepared; not load-bearing for the writeup).
+>
+> **Pooled holiday result: no stronger signal.** All-holiday pool (`POOL=all`) is near chance:
+>
+> | OD match | empirical AUC (95 % CI) | fitted_f AUC (95 % CI) |
+> |---|---:|---:|
+> | unmatched | 0.508 [0.460, 0.555] | 0.511 [0.466, 0.557] |
+> | K=8 | 0.500 [0.453, 0.546] | 0.484 [0.439, 0.531] |
+> | K=16 | 0.530 [0.485, 0.577] | 0.487 [0.440, 0.535] |
+> | K=32 | 0.524 [0.476, 0.570] | 0.534 [0.487, 0.578] |
+> | K=64 | 0.533 [0.488, 0.578] | 0.519 [0.470, 0.565] |
+>
+> Interpretation: pooled holiday mixes low-demand Tomb-Sweeping with high-demand Labour travel, plausibly cancelling transition-level contrasts. It is not a stronger detector-validation case.
+>
+> **Labour-only result: stronger empirical signal, fitted detector still weak.**
+>
+> | OD match | empirical AUC (95 % CI) | fitted_f AUC (95 % CI) |
+> |---|---:|---:|
+> | unmatched | **0.616 [0.569, 0.661]** | 0.520 [0.472, 0.565] |
+> | K=8 | 0.541 [0.494, 0.587] | 0.508 [0.462, 0.554] |
+> | K=16 | 0.508 [0.463, 0.553] | 0.524 [0.478, 0.569] |
+> | K=32 | 0.529 [0.481, 0.574] | 0.524 [0.477, 0.568] |
+> | K=64 | **0.567 [0.521, 0.610]** | 0.521 [0.477, 0.568] |
+>
+> The unmatched Labour signal is strong (0.616). Some is OD/population mix, but at fine OD matching ($K=64$, 1,625 shared cells; holiday 1,224,838 → 1,222,607, normal 3,021,791 → 1,222,607) the empirical reference remains significantly above chance at 0.567. So this is the first Xuancheng split where full observation shows a clear within-OD 1-step signal. The fitted f-only detector recovers only 30.9 % of the empirical gap (0.521).
+>
+> **Contrast diagnostic at Labour K=64.** `contrast_correlation.py --dataset xuancheng --regime_split holiday_normal --od_match 64 --features none --T 10`: empirical 0.567, fitted_f 0.521, gap_closed 30.9 %. Per-row recovery remains weak: all-branching stacked Pearson +0.066, stacked cosine +0.066, median row cosine +0.247, rows with cosine > 0 = 58.3 %. Interpretation: the fitted chain nudges in the right direction more often than chance, but far too weakly to make a robust classifier.
+>
+> **Multistart basin check at Labour K=64.** `score_seed_big_multistart.py --dataset xuancheng --regime_split holiday_normal --od_match 64 --features none --T 10 --K 5`: baseline empirical 0.5674, baseline fitted_f 0.5208, but validation-selected multistart fitted_f = 0.5022 (gap_closed 3.3 %). Per-init paired AUCs range 0.479--0.545, mean 0.510. The small zero-init lift was not a stable positive result; if anything, validation selection removes it.
+>
+> **Net finding.** This is a useful negative stress test, not a bad experiment. It falsifies the "maybe a stronger intuitive regime split rescues the detector" hypothesis. Labour Day creates a real within-OD transition-level signal under full observation, but the 1-step partial-observation inverse-MC detector does not recover it robustly. The Xuancheng limitation is therefore stronger than "rush/off-peak was too weak": even with a stronger behavioural proxy, partial-observation parametric recovery is too weak on this real dataset.
+>
+> **Files/logs.** `sumo_validation/dispatch_xuancheng_holiday_sweep.sh`; patched `real_data/load_xuancheng.py` Apr 10 normal exclusion. Logs: `sumo_validation/logs/xuancheng_holiday_Ksweep.log`, `xuancheng_holiday_labour_Ksweep.log`, `xuancheng_holiday_labour_K64_contrast.log`, `xuancheng_holiday_labour_K64_multistart.log`. Thesis wired in `07_phase5_xuancheng.tex`, `08_discussion.tex`, `10_conclusion.tex`, abstract, notation/introduction/appendix.
+
+> ### iter-31 (2026-06-03) — Xuancheng Labour K=64 empirical 2-step audit: no route-memory rescue
+>
+> **Motivation.** After iter 30, the desired thesis ending was: the fitted 1-step partial-observation filter is not good enough for real-world Xuancheng, and the next viable filter likely needs richer structure. Since iter 28 showed a large SUMO 2-step backoff lift (+0.10 AUC), the natural check was whether the Xuancheng Labour signal also hides in second-order route memory.
+>
+> **Setup.** Added `sumo_validation/xuancheng_2step_backoff.py`, a real-data counterpart to `two_step_backoff.py`. It loads the same Labour-vs-normal days as iter 30, applies OD matching at K=64, uses the same train/test split convention (300 test trajectories per class, T=10), builds 1-step empirical chains and `(x_{t-1}, x_t) -> x_{t+1}` counts from full-observation training trajectories, then scores the test set across the same fixed/interpolation and count-conditional backoff settings used in the SUMO sweep. This is explicitly fitting-free and full-observation: it diagnoses model class, not partial-observation recovery.
+>
+> **Result.** The 1-step empirical reference reproduces iter 30 exactly: AUC 0.567, CI [0.521, 0.610]. Every non-zero 2-step interpolation weight lowers AUC. Fixed λ: 0.25 -> 0.563, 0.5 -> 0.558, 0.75 -> 0.549, 1.0 -> 0.540. Count-conditional: κ=1 -> 0.541, κ=10 -> 0.541, κ=100 -> 0.542, κ=1000 -> 0.549. The best "2-step" setting is λ=0, i.e. no 2-step contribution at all. Fallback rate is 0.101, mostly the first transition of each test trajectory plus rare unseen contexts; counts are dense enough that sparsity is not the explanation (holiday 7.67M triples over 1,815 context pairs; normal 7.69M over 1,845).
+>
+> **Interpretation.** This is useful because it prevents over-selling the SUMO 2-step result as the Xuancheng answer. SUMO says higher-order route memory can carry signal missed by a 1-step model under controlled labels. Xuancheng Labour K=64 says simple empirical 2-step route memory does not explain the real-data failure. The remaining real-world gap is more likely partial-observation identifiability, proxy noise/no sat-nav labels, unobserved covariates, OD/time heterogeneity, or a richer trajectory-level model rather than a clean 2-step Markov effect.
+>
+> **Files/logs.** Script: `sumo_validation/xuancheng_2step_backoff.py`. Log: `sumo_validation/logs/xuancheng_holiday_labour_K64_2step_backoff.log`. Thesis wired in `07_phase5_xuancheng.tex`, `08_discussion.tex`, `10_conclusion.tex`, and appendix repo map.
 
 ### Current state (iter-8 snapshot — superseded by audit; see Revised current state below)
 

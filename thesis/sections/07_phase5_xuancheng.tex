@@ -1,6 +1,8 @@
 \section{Tier 3: Real-world stress test of the filter under OD confounding}
 \label{sec:phase5-xuancheng}
 
+\subsection{Motivation}
+
 This tier stress-tests the partial-observation routing-influence filter
 (defined in \cref{sec:intro-filter}) against a real-world urban
 automatic vehicle identification (AVI) dataset from Xuancheng, China
@@ -21,7 +23,9 @@ filter's OD-rebalancing and multistart audits exist precisely so that
 this constraint can be reported directly rather than masked by a
 spurious AUC.
 
-\subsection{Dataset choice}\label{sec:phase5-dataset}
+\subsection{Method}
+
+\subsubsection{Dataset choice}\label{sec:phase5-dataset}
 
 Three candidate datasets were evaluated. The Padua AVI deposit
 \cite{cappi2026} releases only aggregated $10$-minute flow statistics
@@ -55,7 +59,7 @@ ground-truth regime label & yes (\code{rerouting} flag) & \emph{no} (proxy requi
 \end{tabular}
 \end{table}
 
-\subsection{Verification: route legality and time-of-day distribution}
+\subsubsection{Verification: route legality and time-of-day distribution}
 \label{sec:phase5-verification}
 
 Two non-obvious data-quality issues affect how the loader processes
@@ -91,12 +95,12 @@ $\text{rush} = [25{,}200, 32{,}400] \cup [61{,}200, 68{,}400]$
 $\text{offpeak} = [36{,}000, 57{,}600]$ (10~AM--4~PM); trips outside
 either window are discarded. Three anomalous days are flagged for
 exclusion or special handling: Apr~5 (Tomb-Sweeping holiday, $264$k
-trips, demand outlier), Apr~28--29 (Labour Day eve, $\sim 425$k trips),
+trips, demand outlier), Apr~28--30 (Labour Day period, $\sim 366$--$426$k trips),
 Apr~10 (\code{startTime} max~$\approx 165$k, suggesting a multi-day
 concatenation), and Apr~8/9 (identical trip counts of $324{,}441$ in both
 files, almost certainly a duplicate).
 
-\subsection{The fundamental real-world gap: no ground-truth sat-nav label}
+\subsubsection{The fundamental real-world gap: no ground-truth sat-nav label}
 \label{sec:phase5-proxy}
 
 Tier~2 used \code{--device.rerouting.probability} as ground truth: every
@@ -119,8 +123,7 @@ even the routing-choice signal is diluted by the unguided fraction.
 We address the OD-mix confound directly via the OD-rebalancing
 extension of \cref{sec:od-rebal}. We cannot address the lower-adoption
 dilution from observation alone; what we can do is report the resulting
-real-world AUC as a lower bound on the method's sensitivity
-in deployment.
+real-world AUC as a proxy-conditioned sensitivity stress test.
 
 A further concern is that the rush-vs-off-peak contrast bundles
 \emph{two} potentially confounding effects: sat-navigation adoption
@@ -141,7 +144,9 @@ confound, though with the residual caveat that SUMO's $\rho=0$ drivers
 do not react to congestion en route, so the lower-bound character of
 the bound does not transfer fully to experienced human drivers.
 
-\subsection{Results}\label{sec:phase5-results}
+\subsection{Results}
+
+\subsubsection{Rush-vs-off-peak results}\label{sec:phase5-results}
 
 We report three configurations on the rush-vs-off-peak contrast:
 single-day, $5$-day pooled, and $5$-day pooled with $K=8$ OD-rebalancing.
@@ -259,6 +264,78 @@ interpretation was a basin coincidence, and the per-row Pearson on
 pointed the same way: features do not improve chain recovery on this
 real-world loss landscape.
 
+\subsubsection{Stronger-proxy stress test: Labour Day versus normal days}
+\label{sec:phase5-labour}
+
+The rush-vs-off-peak proxy may simply be too weak. To test whether the
+detector works when the real-world behavioural contrast is stronger, we
+ran the same pipeline on a holiday split suggested by the dataset audit:
+Labour Day period trips (Apr~28--30) against the same normal midweek pool
+(Apr~11--14 and Apr~17--21). A broader holiday pool that also included
+Tomb-Sweeping Apr~5 was first tested but gave empirical AUCs near chance
+at every OD granularity, consistent with pooling low-demand and
+high-demand holiday regimes that partially cancel. Labour-only is the
+more informative stress test.
+
+\begin{table}[H]
+\centering
+\caption{Xuancheng Labour-Day-versus-normal stress test ($T=10$,
+\code{features=none}, $B=2{,}000$ bootstrap resamples). The unmatched
+row contains a clear global signal, part of which is OD/population mix.
+At fine OD matching ($K=64$), a statistically significant within-OD
+full-observation signal remains, but the fitted partial-observation
+detector stays near chance and multistart validation selection removes
+the small single-init lift.}
+\label{tab:phase5-labour}
+\small
+\begin{tabular}{lccc}
+\toprule
+configuration & shared cells & $\AUC_{\mathrm{emp}}$ (95\% CI) & $\AUC_{\mathrm{fit}}$ (95\% CI) \\
+\midrule
+un-matched & --        & $0.616$ $[0.569, 0.661]$ & $0.520$ $[0.472, 0.565]$ \\
+$K=8$      & $57$      & $0.541$ $[0.494, 0.587]$ & $0.508$ $[0.462, 0.554]$ \\
+$K=16$     & $164$     & $0.508$ $[0.463, 0.553]$ & $0.524$ $[0.478, 0.569]$ \\
+$K=32$     & $556$     & $0.529$ $[0.481, 0.574]$ & $0.524$ $[0.477, 0.568]$ \\
+$K=64$     & $1{,}625$ & $\mathbf{0.567}$ $[0.521, 0.610]$ & $0.521$ $[0.477, 0.568]$ \\
+$K=64$, multistart & $1{,}625$ & $0.567$ & $\mathbf{0.502}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This resolves the concern that the real-world tier is negative only
+because the tested proxy was too weak. Labour Day does produce a stronger
+route-choice signal: the unmatched empirical reference is $0.616$, and
+after fine OD matching at $K=64$ the full-observation reference remains
+significantly above chance at $0.567$ (CI $[0.521, 0.610]$). The signal is
+therefore not merely demand volume or coarse OD mix. However, the fitted
+partial-observation chain closes only $30.9\%$ of the empirical gap under
+the zero-init fit ($\AUC_{\mathrm{fit}} = 0.521$), and the per-row contrast
+diagnostic is weak: stacked Pearson is $+0.066$ on all branching states,
+median per-row cosine is $+0.247$, and only $58.3\%$ of branching rows
+have positive cosine. A $K=5$ multistart audit on the same $K=64$ split
+then lowers the validation-selected fitted AUC to $0.502$, despite a
+baseline empirical AUC of $0.567$. The small single-init lift was therefore
+not a stable positive result. The stronger-proxy experiment sharpens the
+Tier~3 conclusion: even when a real within-OD $1$-step signal exists in
+Xuancheng, the current partial-observation parametric recovery does not
+recover it robustly.
+
+A natural follow-up is whether this real-data signal is hiding in
+route memory rather than in first-order turning probabilities. We
+therefore ran a fitting-free empirical $2$-step backoff diagnostic on
+the same Labour $K=64$ split, using the same interpolation-backoff
+family that produced the Tier~2 SUMO lift. The answer is negative:
+the $1$-step empirical reference remains $0.567$ (CI $[0.521,0.610]$),
+while every non-zero $2$-step interpolation weight lowers AUC
+(fixed $\lambda=0.5$: $0.558$; count-conditional $\kappa=100$: $0.542$).
+The best ``$2$-step'' setting is $\lambda=0$, i.e.\ the original
+$1$-step chain. Thus, unlike the labelled SUMO experiment
+(\cref{sec:phase4-2step}), Xuancheng Labour-vs-normal does not provide
+preliminary evidence that simple second-order route memory is the
+missing real-world lever. The remaining gap is more likely due to
+partial-observation identifiability, proxy noise, unobserved covariates,
+or OD/time heterogeneity than to a clean $2$-step Markov effect.
+
 \subsection{Interpretation}\label{sec:phase5-interpretation}
 
 Three findings are worth foregrounding from \cref{tab:phase5-headline}.
@@ -304,6 +381,18 @@ refitting per replicate) and an $X_o$-selection sensitivity sweep, both
 left to future work because they require full refits rather than cheap
 resampling of already-computed trajectory scores.
 
+The Labour-Day stress test (\cref{sec:phase5-labour}) shows that this is
+not only a weak-proxy story. There the fine-OD empirical ceiling is higher
+and statistically significant ($0.567$ at $K=64$), but the fitted detector
+still returns to chance under validation-selected multistart ($0.502$).
+An empirical $2$-step backoff diagnostic on the same split does not lift
+the full-observation reference beyond $0.567$; adding second-order
+conditioning reduces AUC. Hence the real-data failure is not resolved by
+a simple route-memory diagnostic either.
+So the real-data failure mode is best described as weak
+partial-observation recovery of within-OD transition contrast, not simply
+absence of any real-world behavioural signal.
+
 \paragraph{The features=real basin failure repeats post-matching, and
 multistart resolves it.} Both the un-matched pool
 (\cref{sec:phase5-results}) and the OD-matched pool show the same pattern:
@@ -317,7 +406,7 @@ loss $1397 \rightarrow 9.186$), and the resulting well-fit chains give
 $\AUC_{\mathrm{fit}} = 0.483$, chance-level, resolving the apparent
 ceiling violation.
 
-\subsection{Multistart on \code{features=real}: the ceiling violation is
+\subsubsection{Multistart on \code{features=real}: the ceiling violation is
 an optimiser artefact}\label{sec:phase5-multistart}
 
 The one anomaly left open above is the OD-matched
@@ -372,12 +461,12 @@ artefact; on Xuancheng, multistart found a better optimum but it only
 confirmed the negative result. Neither dataset's headline depends on an
 optimiser accident.
 
-\subsection{Bottom line for Tier 3}\label{sec:phase5-bottom}
+\subsubsection{Bottom line for Tier 3}\label{sec:phase5-bottom}
 
 The pipeline runs cleanly on real-world data. The framework's
 gradient implementation, FD-check, regime-split machinery, and contrast
 diagnostics all port to the Xuancheng dataset without modification. The
-headline finding is robust to OD-zone granularity: \textbf{across
+headline rush-vs-off-peak finding is robust to OD-zone granularity: \textbf{across
 $K \in \{8, 16, 32, 64\}$ the fitted $1$-step inverse-MC detector does
 not recover the rush-vs-off-peak contrast (AUC $0.476$--$0.513$, every
 bootstrap CI straddling chance), even though the full-observation
@@ -391,13 +480,17 @@ negative result for behavioural-proxy validation of sat-navigation
 detection on real-world AVI data, and it characterises the gap between
 the controlled-simulation regime (Tier~2, $0.708$ AUC on labelled
 SUMO contrast) and the real-world regime under realistic
-sat-navigation adoption rates.
+sat-navigation adoption rates. The Labour-Day stress test strengthens
+rather than softens this reading: it supplies a stronger real-world
+proxy with a significant fine-OD empirical signal ($0.567$), yet the
+validation-selected fitted detector remains at chance ($0.502$).
 
 The result also identifies the methodological lever any future
 real-world validation of this framework needs: \emph{ground-truth
 sat-navigation adoption labels}, even partial, on the underlying trip
-records. With them, the proxy-weakness problem disappears and the
-controlled-comparison machinery of Tier~2 transfers directly. Without
-them, the fitted $1$-step detector cannot separate genuine within-OD
-routing differences from chance on this behavioural proxy, at any OD-zone
-granularity tested.
+records. Such labels would remove the proxy-label ambiguity and allow the
+controlled-comparison machinery of Tier~2 to be repeated on real trips,
+while OD balance, stationarity, data quality and adoption heterogeneity
+would still need to be audited. Without those labels, the fitted $1$-step
+detector cannot separate genuine within-OD routing differences from chance
+robustly on these behavioural proxies.

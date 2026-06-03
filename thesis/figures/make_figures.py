@@ -57,7 +57,7 @@ def fig_phase1_rmae():
     ours_f_only = np.array([1.08, 0.69, 0.75, 0.44, 0.46, 0.41, np.nan])
     ours_f_only_sd = np.array([0.45, 0.20, 0.40, 0.07, 0.13, 0.13, np.nan])
     nwkr = np.array([2.31, 1.59, 1.73, 1.38, 1.67, 1.42, np.nan])
-    # Paper Fig 2A eyeball numbers
+    # Visual estimates from Paper Fig. 2A.
     paper_fg = np.array([0.7, 0.5, 0.4, 0.3, 0.2, 0.15, 0.12])  # 90 extrapolated
 
     fig, ax = plt.subplots(figsize=(6.0, 3.8))
@@ -70,7 +70,7 @@ def fig_phase1_rmae():
     ax.plot(Xo[:-1], nwkr[:-1], marker='^', linestyle=':',
             color=C_NWKR, label="Ours, NWKR baseline")
     ax.plot(Xo, paper_fg, marker='x', linestyle='-.', color=C_PAPER,
-            label="Paper Fig. 2A (eyeball)", linewidth=1.5)
+            label="Paper Fig. 2A visual estimate", linewidth=1.5)
     ax.set_xlabel(r"$|X_o|$ (observation set size)")
     ax.set_ylabel(r"RMAE on unobserved states")
     ax.set_xticks(Xo)
@@ -403,6 +403,70 @@ def fig_phase5_multistart():
 
 
 # =============================================================================
+# Figure 8: conclusion synthesis -- headline outcome across tiers
+# =============================================================================
+def fig_conclusion_synthesis():
+    tiers = [
+        "Tier 1\nsynthetic\nestimator",
+        "Tier 2\nSUMO labelled\nfilter",
+        "Tier 3\nXuancheng Labour\nproxy",
+    ]
+    # Tier 1: lower-is-better RMAE reproduction.  We summarise closeness to
+    # the visually-read paper curve for the stable |X_o| >= 10 points, capped
+    # at 100% when our RMAE is slightly below the visual paper estimate.
+    paper_rmae = np.array([0.50, 0.40, 0.30, 0.20, 0.15])
+    ours_rmae = np.array([0.49, 0.37, 0.26, 0.21, 0.19])
+    tier1_reproduction = np.minimum(paper_rmae / ours_rmae, 1.0).mean()
+
+    # Tiers 2 and 3: AUC gap closed = (fit - chance) / (empirical - chance).
+    tier2_gap_closed = (0.708 - 0.5) / (0.801 - 0.5)
+    tier3_gap_closed = (0.502 - 0.5) / (0.567 - 0.5)
+
+    vals = np.array([tier1_reproduction, tier2_gap_closed, tier3_gap_closed]) * 100.0
+    colors = [C_REAL, C_OURS_FG, C_CHANCE]
+    annotations = [
+        "RMAE tracks\npaper curve",
+        "AUC 0.708 vs\n0.801 reference",
+        "AUC 0.502 vs\n0.567 reference",
+    ]
+
+    fig, ax = plt.subplots(figsize=(6.6, 3.7))
+    x = np.arange(len(tiers))
+    bars = ax.bar(x, vals, 0.58, color=colors, edgecolor="white")
+    ax.axhline(0, color="black", linewidth=0.8)
+    ax.axhline(50, color=C_CEILING, linestyle=":", linewidth=1.0)
+    ax.text(2.47, 50, "50%", va="bottom", ha="right", fontsize=8, color=C_CEILING)
+    for b, v, txt in zip(bars, vals, annotations):
+        ax.annotate(f"{v:.0f}%",
+                    (b.get_x() + b.get_width() / 2, v),
+                    textcoords="offset points", xytext=(0, 4),
+                    ha="center", fontsize=9, fontweight="bold")
+        if v >= 20:
+            ax.annotate(txt,
+                        (b.get_x() + b.get_width() / 2, v * 0.48),
+                        ha="center", va="center", fontsize=8, color="white",
+                        fontweight="bold")
+        else:
+            ax.annotate(txt,
+                        (b.get_x() + b.get_width() / 2, 15),
+                        ha="center", va="center", fontsize=8, color=C_CHANCE,
+                        fontweight="bold")
+    ax.set_xticks(x)
+    ax.set_xticklabels(tiers)
+    ax.set_ylim(0, 112)
+    ax.set_ylabel("normalised headline recovery (%)")
+    ax.set_title("Conclusion synthesis: the filter validates under labels,\n"
+                 "but the real-world proxy does not recover under partial observation")
+    ax.grid(axis="y", alpha=0.25)
+    ax.grid(axis="x", visible=False)
+    fig.tight_layout()
+    out = HERE / "fig08_conclusion_synthesis.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  saved {out.name}")
+
+
+# =============================================================================
 # Driver
 # =============================================================================
 if __name__ == "__main__":
@@ -414,4 +478,5 @@ if __name__ == "__main__":
     fig_phase4_multistart()
     fig_phase5_xuancheng()
     fig_phase5_multistart()
+    fig_conclusion_synthesis()
     print("Done.")

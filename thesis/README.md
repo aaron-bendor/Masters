@@ -7,7 +7,7 @@ Master's project report for the MEng Design Engineering programme at Imperial Co
 | File | Purpose |
 |------|---------|
 | `main.tex` | Top-level LaTeX document. Includes the section files in order. |
-| `sections/` | One `.tex` file per section, numbered to match the section order. |
+| `sections/` | Section source files. `main.tex` is the source of truth for the compiled order; older background/methodology drafts remain in the folder but are not included in the submitted build. |
 | `references.bib` | BibTeX bibliography in IEEEtran numeric style. |
 | `figures/` | Folder for any figures referenced by the sections (currently a stub). |
 | `.vscode/settings.json` | LaTeX Workshop build recipe for VS Code. |
@@ -34,17 +34,16 @@ pdflatex main.tex
 
 ## Word count / page limit
 
-The module limits the main body to 35 pages at 12pt (`Module descriptor and assessment brief | Design-Engineering-Masters-Project.html`). Front matter (abstract, ToC), back matter (references), and appendices do **not** count.
+The module limits the main body to 35 pages at 12pt (`Module descriptor and assessment brief | Design-Engineering-Masters-Project.html`). Front matter (abstract, ToC), back matter (references), and appendices do **not** count. The submitted source is set to 12pt in `main.tex`.
 
-Current status (sections shipped, pre-revision):
+Current status (sections shipped, revised through the Labour-Day Xuancheng stress test and 2-step audit):
 1. Notation
 2. Introduction
-3. Background and Related Work
-4. Methodology
-5. Tier 1: Synthetic Reproduction
-6. Tier 2: Simulated Validation on SUMO
-7. Tier 3: Real-World Validation on Xuancheng (partially pending experimental result)
-8. Discussion
-9. Project Management and Reflection
+3. Tier 1: Synthetic Reproduction
+4. Tier 2: Controlled Validation on SUMO
+5. Tier 3: Real-World Validation on Xuancheng
+6. Discussion
+7. Conclusion
+8. Project Management and Reflection
 
-Plus two appendices (repo structure / use of AI / build instructions).
+Plus appendices covering repository structure, use of AI, build instructions, and a metric/method primer.

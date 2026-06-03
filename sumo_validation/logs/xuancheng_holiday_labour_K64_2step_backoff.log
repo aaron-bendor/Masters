@@ -1,0 +1,50 @@
+/Users/aaronbendor/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/cf/fk3d9t7s3jxf9d0vpcthmn100000gn/T/matplotlib-4swkndfv because there was an issue with the default path (/Users/aaronbendor/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Matplotlib is building the font cache; this may take a moment.
+=== Xuancheng empirical 2-step backoff diagnostic ===
+days=2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21
+split=holiday_normal  regimes=holiday/normal  od_match=64  T=10  B=2000
+  building adj from /Users/aaronbendor/DESENG/Masters/real_data/xuancheng.net.xml ...
+  n = 1733, mean out-degree = 2.53
+  2023-04-28  raw_trips=426,249  legal_frac=76.5%  sub_trajs=418,726  holiday=418,726  normal=     0  other=     0
+  2023-04-29  raw_trips=423,899  legal_frac=76.5%  sub_trajs=430,085  holiday=430,085  normal=     0  other=     0
+  2023-04-30  raw_trips=366,037  legal_frac=76.6%  sub_trajs=376,027  holiday=376,027  normal=     0  other=     0
+  2023-04-11  raw_trips=328,097  legal_frac=76.6%  sub_trajs=327,535  holiday=     0  normal=327,535  other=     0
+  2023-04-12  raw_trips=327,941  legal_frac=76.5%  sub_trajs=327,949  holiday=     0  normal=327,949  other=     0
+  2023-04-13  raw_trips=337,364  legal_frac=76.6%  sub_trajs=337,967  holiday=     0  normal=337,967  other=     0
+  2023-04-14  raw_trips=368,300  legal_frac=76.7%  sub_trajs=375,002  holiday=     0  normal=375,002  other=     0
+  2023-04-17  raw_trips=327,026  legal_frac=76.6%  sub_trajs=330,320  holiday=     0  normal=330,320  other=     0
+  2023-04-18  raw_trips=327,547  legal_frac=76.5%  sub_trajs=334,562  holiday=     0  normal=334,562  other=     0
+  2023-04-19  raw_trips=325,733  legal_frac=76.6%  sub_trajs=325,373  holiday=     0  normal=325,373  other=     0
+  2023-04-20  raw_trips=320,043  legal_frac=76.8%  sub_trajs=319,696  holiday=     0  normal=319,696  other=     0
+  2023-04-21  raw_trips=339,217  legal_frac=76.6%  sub_trajs=343,387  holiday=     0  normal=343,387  other=     0
+  total: holiday=1,224,838, normal=3,021,791
+  edges with traffic (holiday): 1062/1733
+  edges with traffic (normal): 1074/1733
+  OD-matching: clustering junctions into K=64 zones, then subsampling per (zone_o, zone_d) cell ...
+  od-match: 1625 shared cells (of 1817 unique OD pairs)
+  od-match: holiday 1,224,838 → 1,222,607 (dropped 44 in non-shared cells, plus per-cell excess)
+  od-match: normal 3,021,791 → 1,222,607 (dropped 365 in non-shared cells, plus per-cell excess)
+  after OD-matching: edges with traffic (holiday): 1062/1733, (normal): 1074/1733
+n=1733  beta=0.879  N_test_per_class=300
+train trajs: holiday=1,222,307  normal=1,222,307
+
+building 1-step empirical chains ...
+counting 2-step triples ...
+   holiday:  7,667,127 triples across  1,815 (x_prev, x) pairs
+    normal:  7,688,108 triples across  1,845 (x_prev, x) pairs
+
+AUC summary
+  1-step empirical    point=0.567  95% CI=[0.521, 0.610]  P(AUC>0.5)=0.999
+  2-step fixed lam=0      point=0.567  delta=+0.000  95% CI=[0.521, 0.610]  P(AUC>0.5)=0.999  fallback=0.101
+  2-step fixed lam=0.25   point=0.563  delta=-0.005  95% CI=[0.517, 0.607]  P(AUC>0.5)=0.997  fallback=0.101
+  2-step fixed lam=0.5    point=0.558  delta=-0.010  95% CI=[0.512, 0.602]  P(AUC>0.5)=0.994  fallback=0.101
+  2-step fixed lam=0.75   point=0.549  delta=-0.018  95% CI=[0.502, 0.594]  P(AUC>0.5)=0.983  fallback=0.101
+  2-step fixed lam=0.9    point=0.543  delta=-0.024  95% CI=[0.498, 0.588]  P(AUC>0.5)=0.970  fallback=0.101
+  2-step fixed lam=1      point=0.540  delta=-0.027  95% CI=[0.496, 0.585]  P(AUC>0.5)=0.961  fallback=0.101
+  2-step count kappa=1    point=0.541  delta=-0.027  95% CI=[0.496, 0.585]  P(AUC>0.5)=0.961  fallback=0.101
+  2-step count kappa=10   point=0.541  delta=-0.026  95% CI=[0.497, 0.586]  P(AUC>0.5)=0.962  fallback=0.101
+  2-step count kappa=100  point=0.542  delta=-0.025  95% CI=[0.498, 0.587]  P(AUC>0.5)=0.968  fallback=0.101
+  2-step count kappa=1000 point=0.549  delta=-0.018  95% CI=[0.503, 0.594]  P(AUC>0.5)=0.983  fallback=0.101
+
+RESULT  dataset=xuancheng  days=2023-04-28,2023-04-29,2023-04-30,2023-04-11,2023-04-12,2023-04-13,2023-04-14,2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21  regimes=holiday/normal  od_match=64  T=10  auc_1step=0.567  auc_2step_best=0.567  delta_best=+0.000  best_mode=fixed  best_value=0  fallback=0.101

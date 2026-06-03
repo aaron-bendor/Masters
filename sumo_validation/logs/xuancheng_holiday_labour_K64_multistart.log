@@ -37,3 +37,50 @@ theta dimension d = n + E + d_T + d_psi = 6126
 
 --- Multi-start intr (K=5) ---
   [intr init  0/4] seed= 235434831 loss=2187 nit=1500 val_loglik=-1555018.931 t=354.6s
+  [intr init  1/4] seed= 691629666 loss=2187 nit=1500 val_loglik=-1597529.394 t=378.6s
+  [intr init  2/4] seed= 841660522 loss=2186 nit=1500 val_loglik=-1585667.535 t=382.6s
+  [intr init  3/4] seed=  58876431 loss=2187 nit=1500 val_loglik=-1542696.087 t=392.6s
+  [intr init  4/4] seed= 546868765 loss=2187 nit=1500 val_loglik=-1485236.785 t=447.9s
+  multi-start intr wall-clock: 1959.3s (391.9s per fit avg)
+
+--- Multi-start satnav (K=5) ---
+  [satnav init  0/4] seed= 216303183 loss=1921 nit=1500 val_loglik=-1506987.341 t=468.7s
+  [satnav init  1/4] seed=  80407934 loss=1922 nit=1500 val_loglik=-1595796.893 t=470.2s
+  [satnav init  2/4] seed=  76323480 loss=1920 nit=1500 val_loglik=-1530327.874 t=517.8s
+  [satnav init  3/4] seed= 474660448 loss=1920 nit=1500 val_loglik=-1504225.384 t=504.1s
+  [satnav init  4/4] seed= 758569577 loss=1920 nit=1500 val_loglik=-1544486.088 t=470.8s
+  multi-start satnav wall-clock: 2435.7s (487.1s per fit avg)
+
+========================================================================
+SUMMARY
+========================================================================
+empirical AUC        : 0.5674
+baseline (zeros init): fitted_f AUC = 0.5208  gap_closed =  30.9%
+multi-start (K=5, val-select): fitted_f AUC = 0.5022  gap_closed =   3.3%
+
+Per-init validation log-likelihoods (sorted desc):
+  intr   (selected idx=4, n_val=244461, baseline val_ll=-1500084.427):
+    * rank  0  init  4  val_ll=-1485236.785  final_loss=2187
+      rank  1  init  3  val_ll=-1542696.087  final_loss=2187
+      rank  2  init  0  val_ll=-1555018.931  final_loss=2187
+      rank  3  init  2  val_ll=-1585667.535  final_loss=2186
+      rank  4  init  1  val_ll=-1597529.394  final_loss=2187
+  satnav (selected idx=3, n_val=244461, baseline val_ll=-1491040.547):
+    * rank  0  init  3  val_ll=-1504225.384  final_loss=1920
+      rank  1  init  0  val_ll=-1506987.341  final_loss=1921
+      rank  2  init  2  val_ll=-1530327.874  final_loss=1920
+      rank  3  init  4  val_ll=-1544486.088  final_loss=1920
+      rank  4  init  1  val_ll=-1595796.893  final_loss=1922
+
+Per-init test AUCs (intr init varied, satnav at selected best):
+  0.513, 0.558, 0.524, 0.523, 0.502
+  range = [0.502, 0.558]  mean=0.524  std=0.019
+Per-init test AUCs (satnav init varied, intr at selected best):
+  0.490, 0.481, 0.515, 0.502, 0.486
+  range = [0.481, 0.515]  mean=0.495  std=0.012
+Per-init test AUCs (intr[k] paired with satnav[k]):
+  0.479, 0.515, 0.545, 0.523, 0.486
+  range = [0.479, 0.545]  mean=0.510  std=0.024
+
+Wall-clock: single (2 fits) = 720.0s, multi-start total = 4395.0s (intr 1959.3s + satnav 2435.7s) -- ratio 6.1x
+========================================================================

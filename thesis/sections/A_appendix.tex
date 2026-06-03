@@ -16,9 +16,10 @@ two-regime synthesis and detection.
 \code{sumo\_to\_phase3.py} (network builder, trip reader, feature
 extractor), \code{score\_seed\_big.py} and \code{contrast\_correlation.py}
 (scorers, with the \code{--dataset \{sumo,xuancheng\}} switch),
-\code{two\_step\_empirical.py} (the diagnostic of
-\cref{sec:phase4-2step}), and \code{fd\_check\_features.py} (the FD
-gradient gate).
+the empirical and backoff $2$-step diagnostics
+(\cref{sec:phase4-2step,sec:phase5-labour}), and
+\code{fd\_check\_features.py} (the FD gradient gate). Exact script names
+and log paths are indexed in \code{sumo\_validation/README.md}.
 \item[\code{real\_data/}] The Xuancheng tier: the unmodified
 \code{xuancheng.net.xml} from \cite{ma2026xuancheng}, the daily JSON
 trip files, and \code{load\_xuancheng.py} which provides the loader,
@@ -31,12 +32,15 @@ with twenty experimental-cycle entries.
 \section{Use of generative AI}\label{app:ai}
 
 In accordance with the module's declaration requirement, generative AI
-was used in this project as follows. An LLM-based code assistant
-(Claude) was used as a pair-programming aid throughout the
-implementation phase: drafting code (with the author's careful review
-of every line before commit), writing unit-test scaffolding, deriving
-analytic gradient formulas alongside the author, and stress-testing
-arguments before they made it into the writeup.
+was used in this project as follows. LLM-based code assistants,
+including Claude, Codex and Gemini, were used as pair-programming and
+writing-support aids throughout the implementation and writeup phases:
+drafting code (with the author's careful review of every line before
+commit), writing unit-test scaffolding, deriving analytic gradient
+formulas alongside the author, checking mathematical and experimental
+arguments, and helping edit the report for clarity. The author retained
+responsibility for the research design, interpretation, code accepted
+into the repository, and final submitted text.
 
 \section{Build and reproducibility}\label{app:build}
 
@@ -61,4 +65,255 @@ python3 -m venv .venv
     --day 2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21 \
     --regime_split rush_offpeak --od_match 8 \
     --features real --T 10 --maxiter 1500
+
+# Stronger-proxy Labour-Day stress test
+DAYS=2023-04-28,2023-04-29,2023-04-30,\
+2023-04-11,2023-04-12,2023-04-13,2023-04-14,\
+2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21
+.venv/bin/python sumo_validation/contrast_correlation.py \
+    --dataset xuancheng \
+    --day "$DAYS" \
+    --regime_split holiday_normal --od_match 64 \
+    --features none --T 10 --maxiter 1500
 \end{lstlisting}
+
+\section{Metric and method primer}
+\label{app:metrics-primer}
+
+This appendix gives compact reminders for the mathematical objects,
+optimisation routines and diagnostic metrics used in the main text. It
+is not needed to follow the narrative, but it fixes the precise meaning
+of terms that are easy to over-read from their names alone.
+
+\subsection{Markov chain and transition kernel}
+\label{app:markov-chain-primer}
+
+A Markov chain is a stochastic process whose next state depends only on
+its current state. In this dissertation the states are directed road
+edges. If a vehicle is currently on edge $x$, the transition kernel
+$\Pchain$ gives the probability of choosing each legal next edge:
+\[
+\pT(x'\mid x) = \Pr[X_{t+1}=x' \mid X_t=x].
+\]
+Each row of $\Pchain$ is therefore a probability distribution over the
+legal successors of $x$: entries are non-negative and sum to one. The
+``$1$-step'' assumption means that the model ignores the earlier path
+history once $x_t$ is known. The empirical $2$-step diagnostic in
+\cref{sec:phase4-2step} tests whether this simplification is too severe
+by allowing the next edge to depend on $(x_{t-1},x_t)$.
+
+\subsection{Stationary distribution, restart probability and hitting rate}
+\label{app:stationary-primer}
+
+The stationary distribution $\pi$ of a Markov chain is the long-run
+fraction of time spent in each state if the chain is followed
+indefinitely. It satisfies
+\[
+\pi^\top P = \pi^\top,\qquad \sum_x \pi(x)=1.
+\]
+The Morimura framework uses a restarted chain
+\[
+P = \beta \Pchain + (1-\beta)\bm{1}\pI^\top,
+\]
+where $\beta$ is the probability of continuing along the road-transition
+kernel and $1-\beta$ is the probability of restarting from $\pI$. This
+restart construction makes the chain well behaved and models finite trip
+lengths.
+
+A hitting rate $g(i,j)$ is a first-passage statistic: starting from
+observed state $i$, how likely is the trajectory to hit observed state
+$j$ later, discounted by the continuation probability $\beta$? In
+principle hitting rates add path-order information beyond simple
+station counts. In practice they are much noisier on sparse real-world
+data because there are $|\Xo|^2$ station pairs to estimate.
+
+\subsection{Inverse Markov-chain problem}
+\label{app:inverse-mc-primer}
+
+The forward Markov-chain problem asks: given $\Pchain$, what stationary
+distribution and hitting rates does it imply? The inverse problem asks
+the reverse: given partial observations of those statistics at a subset
+$\Xo$, recover a plausible transition kernel. This is ill-posed without
+extra structure, because many different kernels can produce similar
+station counts at a few observation states. Morimura et al.'s method
+\cite{morimura2013} supplies that structure by fitting a
+softmax-parametric kernel and regularising the parameters.
+
+\subsection{Softmax-parametric chain}
+\label{app:softmax-primer}
+
+A softmax turns arbitrary real-valued scores into probabilities. For a
+road edge $x$ with legal successors $\mathrm{adj}(x)$, the model assigns
+a score $s(x,x')$ to each possible next edge and sets
+\[
+\pT(x'\mid x)=
+\frac{\exp(s(x,x'))}
+{\sum_{y\in \mathrm{adj}(x)}\exp(s(x,y))}.
+\]
+This guarantees a valid probability distribution for every row of
+$\Pchain$. It also lets the model share information through features:
+the score can combine local edge-specific weights with global features
+such as road class, speed, lane count or turn angle. In this thesis
+``features=none'' means only local edge weights are used; ``features=real''
+adds shared road-network features as additional parameters.
+
+\subsection{Log-likelihood ratio score}
+\label{app:llr-primer}
+
+Given two fitted regime kernels $\hat{P}_A$ and $\hat{P}_B$, a trajectory
+$\tau=(x_0,\ldots,x_T)$ is scored by the log-likelihood ratio
+\[
+\Lam(\tau)=
+\sum_{t=0}^{T-1}\left[
+\log \hat{p}_B(x_{t+1}\mid x_t)
+-\log \hat{p}_A(x_{t+1}\mid x_t)
+\right].
+\]
+Positive values mean the trajectory is more likely under regime $B$ than
+regime $A$ according to the fitted chains; negative values mean the
+opposite. The score is additive, so longer trajectories can accumulate
+more evidence if the per-step differences are consistent.
+
+\subsection{ROC curve and AUC}
+\label{app:auc-primer}
+
+The receiver-operating-characteristic (ROC) curve evaluates a scalar
+score across all possible thresholds. For each threshold, it plots the
+true-positive rate against the false-positive rate. The area under this
+curve (AUC) is a threshold-free measure of separability:
+\[
+\AUC = \Pr[s(\tau_B) > s(\tau_A)]
+\]
+for a randomly chosen regime-$B$ trajectory and a randomly chosen
+regime-$A$ trajectory, up to tie handling. An AUC of $0.5$ is chance;
+$1.0$ is perfect ranking; values below $0.5$ indicate the score is
+systematically reversed. AUC does \emph{not} prove correct chain
+recovery: a classifier can rank regimes well because of aggregate bias,
+OD mix or optimiser artefacts, which is why the thesis pairs AUC with
+transition-contrast diagnostics.
+
+\subsection{Pearson correlation}
+\label{app:pearson-primer}
+
+Pearson correlation measures linear alignment between two vectors after
+subtracting their means:
+\[
+r(a,b)=
+\frac{\sum_k (a_k-\bar a)(b_k-\bar b)}
+{\sqrt{\sum_k(a_k-\bar a)^2}\sqrt{\sum_k(b_k-\bar b)^2}}.
+\]
+It lies in $[-1,1]$: $+1$ means perfect positive linear alignment, $0$
+means no linear alignment, and $-1$ means perfect reversal. In this
+thesis Pearson is computed on stacked legal outgoing-edge contrasts,
+comparing
+$\Delta_{\mathrm{fit}}=\hat{P}_B-\hat{P}_A$ with
+$\Delta_{\mathrm{emp}}=P_{B,\mathrm{emp}}-P_{A,\mathrm{emp}}$. A positive
+Pearson supports the claim that the fitted model moves probability mass
+in the same directions as the full-observation empirical chain.
+
+\subsection{Cosine similarity and collinearity}
+\label{app:cosine-primer}
+
+Cosine similarity measures directional alignment:
+\[
+\cos(a,b)=\frac{a^\top b}{\|a\|\,\|b\|}.
+\]
+It is insensitive to the vector magnitudes: two vectors pointing in the
+same direction have cosine $+1$, orthogonal vectors have cosine $0$, and
+opposite directions have cosine $-1$. We use per-row cosine at branching
+states. For a road edge with multiple legal successors, the row vector
+asks: did the fitted model increase and decrease probability on the same
+outgoing turns as the empirical contrast? The median row cosine and the
+fraction of rows with positive cosine are therefore local
+chain-recovery diagnostics.
+
+\subsection{OD matching / OD rebalancing}
+\label{app:od-primer}
+
+Origin-destination (OD) matching controls for where trips start and end.
+Real-world regimes can differ because different people travel to
+different places, not because comparable drivers choose different routes.
+The Xuancheng loader clusters network nodes into $K$ spatial zones, bins
+each trajectory by origin zone and destination zone, and then samples the
+same number of trajectories from each regime inside every shared OD
+cell. After this rebalancing, the two regime pools have the same coarse
+OD distribution, so remaining AUC is closer to a within-OD route-choice
+contrast. The sweep over $K$ checks whether this conclusion depends on
+how coarse the OD zones are.
+
+\subsection{Bootstrap confidence interval}
+\label{app:bootstrap-primer}
+
+A bootstrap estimates sampling uncertainty by repeatedly resampling the
+observed test set with replacement. In the Xuancheng experiments the
+bootstrap is stratified by regime: each replicate samples the same number
+of regime-$A$ and regime-$B$ trajectories, recomputes the AUC, and stores
+the result. The $2.5$th and $97.5$th percentiles form an empirical
+$95\%$ confidence interval. These intervals capture test-trajectory
+sampling noise conditional on the fitted chains, station set, OD match
+and train/test split. They do not include uncertainty from refitting the
+inverse-MC model or redrawing $\Xo$.
+
+\subsection{L-BFGS-B optimiser, basins and multistart}
+\label{app:lbfgs-primer}
+
+L-BFGS-B is a quasi-Newton optimiser: it minimises a differentiable loss
+using gradients and a limited-memory approximation to second-order
+curvature. The ``B'' indicates support for simple bound constraints,
+although the parameter fits here are effectively unconstrained because
+the softmax maps real-valued scores to valid probabilities.
+
+The inverse-MC loss is non-convex, so L-BFGS-B can converge to different
+local optima, or basins, depending on the starting point. A multistart
+check repeats the fit from several random initial parameters and selects
+the model with the best validation log-likelihood. If multistart changes
+the AUC or loss substantially, the single-start result may be an
+optimiser artefact. If multistart fails to improve the detector, as in
+the Labour-Day Xuancheng stress test, the weak fitted result is less
+likely to be explained by a poor initialisation alone.
+
+\subsection{Ridge regularisation and finite-difference gradient checks}
+\label{app:regularisation-fd-primer}
+
+Ridge, or Tikhonov, regularisation adds
+$\frac{\lambda}{2}\|\theta\|^2$ to the loss. This discourages very large
+parameter values and helps stabilise an under-constrained inverse
+problem, especially when only a sparse subset of states is observed.
+
+A finite-difference (FD) gradient check verifies an analytic gradient by
+perturbing one parameter at a time:
+\[
+\frac{\partial L}{\partial \theta_k}
+\approx
+\frac{L(\theta+\epsilon e_k)-L(\theta-\epsilon e_k)}{2\epsilon}.
+\]
+The thesis uses FD checks as safety gates before trusting custom
+gradient code, especially for the feature-augmented and sparse
+hitting-rate variants.
+
+\subsection{Gap closed}
+\label{app:gap-closed-primer}
+
+When the full-observation empirical reference has AUC above chance, the
+gap-closed statistic reports how much of the available empirical signal
+the fitted detector recovers:
+\[
+\mathrm{gap\ closed} =
+\frac{\AUC_{\mathrm{fit}}-0.5}
+{\AUC_{\mathrm{emp}}-0.5}.
+\]
+For example, if the empirical reference is $0.70$ and the fitted detector
+is $0.60$, the fitted detector closes $(0.60-0.50)/(0.70-0.50)=50\%$ of
+the above-chance gap. This statistic is undefined or uninformative when
+the empirical reference is at chance.
+
+\subsection{RMAE}
+\label{app:rmae-primer}
+
+Relative mean absolute error (RMAE) is used in the Tier~1 reproduction
+because Morimura et al.'s original benchmark is a stationary-distribution
+recovery task, not a two-regime detector. In this thesis it measures the
+mean absolute error of the recovered stationary mass on unobserved states
+relative to the scale of the true held-out counts. Lower is better. It is
+therefore not directly comparable to AUC: RMAE evaluates reconstruction
+accuracy, whereas AUC evaluates trajectory ranking between regimes.

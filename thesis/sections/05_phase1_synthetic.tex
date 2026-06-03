@@ -1,6 +1,8 @@
 \section{Tier 1: Validating the inverse-MC estimator inside the filter}
 \label{sec:phase1-synthetic}
 
+\subsection{Motivation}
+
 This tier validates the estimator component of the filter in isolation,
 before either the scoring rule or the regime-detection layer is attached.
 If the inverter cannot reproduce the published recovery curve on its
@@ -10,7 +12,7 @@ experiment of Morimura et al.~\cite{morimura2013} end-to-end and verify
 that we reach the published relative mean absolute error (RMAE) curve to
 within $\sim 0.05$ across observation fractions in $[0.10, 0.90]$.
 
-\subsection{Experimental setup}
+\subsection{Method}
 
 A synthetic chain is constructed on $n=100$ states with a random
 strongly-connected adjacency, mean out-degree $\sim 3$. The true
@@ -59,14 +61,14 @@ deviation across $10$ trials.}
 
 \begin{table}[H]
 \centering
-\caption{Reproduction RMAE vs.\ paper Fig.~2A (eyeball). Mean over $10$
+\caption{Reproduction RMAE vs.\ visual estimates from paper Fig.~2A. Mean over $10$
 trials, $n=100$, full $\S 6.1$ protocol including global features and
 cross-validated $\lambda$. Same data as \cref{fig:phase1-rmae}.}
 \label{tab:phase1-rmae}
 \small
 \begin{tabular}{rcccc}
 \toprule
-$|X_o|$ & Proposed (with $g$) & Proposed (no $g$) & NWKR baseline & Paper Fig.~2A (eyeball) \\
+$|X_o|$ & Proposed (with $g$) & Proposed (no $g$) & NWKR baseline & Paper Fig.~2A visual estimate \\
 \midrule
 5  & $0.97 \pm 0.28$ & $1.08 \pm 0.45$ & $2.31$ & $\sim 0.7$ \\
 10 & $0.49 \pm 0.13$ & $0.69 \pm 0.20$ & $1.59$ & $\sim 0.5$ \\
@@ -85,10 +87,13 @@ with $|X_o| = 5$ states, the $75/25$ split puts $\approx 1$ state in the
 validation set, which is not enough to discriminate $\lambda$ values
 robustly, and the cross-validated $\lambda$ over-regularises. The
 Nadaraya--Watson kernel-regression baseline (``NWKR'') does not drop
-as steeply as the paper's, which we attribute to a comparator-
-implementation gap rather than a method error.
+as steeply as the paper's, which is most plausibly a comparator-
+implementation mismatch rather than a failure of the inverse-MC
+implementation.
 
-\subsection{Prediction rescaling convention}
+\subsection{Interpretation}
+
+\subsubsection{Prediction rescaling convention}
 \label{sec:phase1-scaling}
 
 The paper writes the recovered prediction as $\hat{f}(x) = \hat{c}\,\hat{\pi}(x)$
@@ -104,7 +109,7 @@ We verified this empirically: applying the literal formula collapses
 all RMAE values to $\approx 1.0$. The scale-free form is preserved
 throughout the rest of this work.
 
-\subsection{Gradient verification}
+\subsubsection{Gradient verification}
 
 Across three random parameter draws including local-only,
 $\phi_T$-only, and $\psi$-only edge-case configurations, the centred
@@ -113,7 +118,7 @@ $\le 5 \times 10^{-9}$ for every block, confirming the
 analytic derivation. Details of the finite-difference (FD) check
 infrastructure are in \code{morimura.py}.
 
-\subsection{Headline outcome}
+\subsubsection{Headline outcome}
 
 The synthetic reproduction is locked in as a faithful reference. The
 proposed-method curve matches the original benchmark closely for

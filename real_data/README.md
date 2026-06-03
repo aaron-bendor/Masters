@@ -21,7 +21,7 @@ Source: Figshare DOI 29925824 (companion to `../papers/s41597-026-06892-2.pdf`).
 - Sub-trajectory mean length 8.2 edges (vs 15.1 raw). Effective `T` for Phase-5 experiments is therefore ~5–7 transitions.
 - **Apr 8 and Apr 9 are duplicate files** (identical 324,441 trip counts) — use only one.
 - **Apr 10 has `startTime` max ≈ 165,071 s** (~2 days) — file may concatenate; exclude or investigate.
-- Apr 5 (Tomb-Sweeping), Apr 28–29 (Labour Day) are holiday-vs-normal contrast candidates.
+- Apr 5 (Tomb-Sweeping), Apr 28–30 (Labour Day period) are holiday-vs-normal contrast candidates. The loader excludes Apr 10 from the normal-day set because of the `startTime` anomaly.
 
 ## How Phase-5 scripts use this
 

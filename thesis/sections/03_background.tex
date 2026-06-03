@@ -12,7 +12,8 @@ on the chain, recover the transition kernel itself. Inverse problems on
 Markov chains arise in transport modelling \cite{ben-akiva1985},
 biological systems \cite{noe2008}, and recommender systems
 \cite{huang2018}, and are typically ill-posed under sparse observation
-because many distinct kernels produce identical low-order statistics.
+because many distinct kernels produce identical low-order statistics
+(\cref{app:markov-chain-primer,app:stationary-primer}).
 The usual remedy is a parametric restriction: rather than fit
 $\Pchain \in \mathbb{R}^{n \times n}$ directly, one fits a parameter
 vector $\theta \in \mathbb{R}^d$ with $d \ll n^2$ such that the
@@ -73,7 +74,8 @@ weighted by a mixing parameter $\gamma$. Their key contribution is the
 analytic derivation of the gradient of this loss with respect to
 $\theta$, enabling optimisation via L-BFGS-B or, alternatively, the
 natural-gradient descent the paper introduces in $\S 4.1$ as the
-optimiser of choice when the loss landscape is ill-conditioned.
+optimiser of choice when the loss landscape is ill-conditioned
+(\cref{app:lbfgs-primer}).
 
 The paper validates the framework synthetically on a $n=100$ network
 (their $\S 6.1$) and applies it to a $1497$-link Nairobi minibus
