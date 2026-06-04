@@ -6,8 +6,7 @@ The codebase is organised as follows.
 \begin{description}
 \item[\code{morimura.py}] The inverter core: \code{Inverter} class with
 softmax-parametric chain, analytic gradients (local + globals),
-$\lambda$-cross-validated fit, and the synthetic $\S 6.1$ reproduction
-driver.
+$\lambda$-cross-validated fit, and the synthetic reproduction driver.
 \item[\code{congestion\_filter.py}] Early exploratory experiments:
 snapshot-level
 two-regime synthesis and detection.
@@ -19,7 +18,7 @@ extractor), \code{score\_seed\_big.py} and \code{contrast\_correlation.py}
 the empirical and backoff $2$-step diagnostics
 (\cref{sec:phase4-2step,sec:phase5-labour}), and
 \code{fd\_check\_features.py} (the FD gradient gate). Exact script names
-and log paths are indexed in \code{sumo\_validation/README.md}.
+and log paths are indexed in the SUMO validation README.
 \item[\code{real\_data/}] The Xuancheng tier: the unmodified
 \code{xuancheng.net.xml} from \cite{ma2026xuancheng}, the daily JSON
 trip files, and \code{load\_xuancheng.py} which provides the loader,
@@ -41,6 +40,303 @@ formulas alongside the author, checking mathematical and experimental
 arguments, and helping edit the report for clarity. The author retained
 responsibility for the research design, interpretation, code accepted
 into the repository, and final submitted text.
+
+\section{\texorpdfstring{Solver profiling for the $f+g$ extension}{Solver profiling for the f+g extension}}
+\label{app:fg-profiling}
+
+This appendix records the implementation and profiling detail behind
+\cref{sec:phase4-fg-infeasible}. The optional $f+g$ loss switches the
+full-network fits from the $f$-only setting ($\gamma=1$) to the
+Morimura formulation with hitting rates ($\gamma\in[0,1)$). Initial
+SUMO-scale tests suggested infeasibility: three sweep attempts at
+\code{maxiter} $\in \{1500,300,100\}$ and $|X_o|\in\{601,120,72\}$ did
+not complete in finite wall-clock, with the representative rush-chain fit
+at \code{maxiter=1500}, $|X_o|=601$ running $9.5$ hours without an L-BFGS
+termination signal.
+
+\paragraph{Sparse-LU implementation.} \code{morimura.py} now includes a
+\code{hitting\_pack\_sparse} path that constructs
+$(I-\beta P_T^{\setminus j})$ in CSC form from the nonzero structure of
+$P_T$ and factorises it with \code{scipy.sparse.linalg.splu}. The
+\code{grad\_log\_h} routine takes a generic \code{solve\_fn} callable so
+the dense and sparse paths share the same gradient code. A finite-difference
+check on a synthetic $n=40$ graph with $\gamma=0.5$ and all four parameter
+blocks active confirms equivalence: $\max_i |\nabla
+L_{\mathrm{dense}}^{(i)}-\nabla L_{\mathrm{sparse}}^{(i)}|=7\times10^{-15}$,
+and analytic-vs-FD relative error is $\le 10^{-7}$ across sampled
+dimensions.
+
+\paragraph{SUMO-scale timing.} A timed run at seed~$42$, $|X_o|=601$,
+$d=8{,}392$ gives the intrinsic-chain $f+g$ fit at \code{maxiter=10}
+a wall time of $1{,}787$ s, or about $180$ s per L-BFGS iteration. This is
+roughly $8\times$ slower than the dense baseline extrapolated from the
+$9.5$-hour run. The bottleneck is not the sparse LU factorisation itself;
+it is the solve on the wide dense gradient matrix
+$V\in\mathbb{R}^{n\times d}$ built inside \code{grad\_log\_h}. Dense
+LAPACK GETRS exploits BLAS3 multi-core kernels on that wide right-hand
+side, whereas \code{splu.solve} processes dense right-hand sides much more
+column-wise. At $d=8{,}392$, that throughput advantage outweighs the
+factorisation sparsity gain. The plausible city-scale fix is therefore
+Sherman--Morrison factor sharing across all $j\in X_o$ (one factor of
+$(I-\beta P_T)$ per L-BFGS iteration rather than $|X_o|$ related factors),
+or the natural-gradient route of \cite{morimura2013}.
+
+\paragraph{Subgraph tractability and $\gamma$ sensitivity.} On the
+largest strongly-connected component of one Xuancheng K-means zone
+($K=8$, zone~$0$, post-SCC $n=194$, $|X_o|=53$, $d=586$), sparse-LU is
+operationally fine: an $f$-only fit at \code{maxiter=300} converges in
+$1.4$ s, and $f+g$ fits run in $46$--$50$ s. The binding sensitivity is
+then the loss weight $\gamma$. At $\gamma=0.5$, floor-dominated empirical
+$g$ overwhelms $L_f$ and hurts performance; at $\gamma=0.95$, $f+g$
+recovers the full-observation empirical reference within sampling noise
+(\cref{tab:phase4-fg-gamma}).
+
+\begin{table}[H]
+\centering
+\caption{$\gamma$ sweep for $f+g$ on the Xuancheng $K=8$ zone-0 subgraph
+($n=194$, $|X_o|=53$, $T=10$, \code{maxiter}=300). The $f$-only column is
+the same fit ($\gamma=1$) shown for reference; the empirical 1-step
+reference on this subgraph is $0.563$.}
+\label{tab:phase4-fg-gamma}
+\small
+\begin{tabular}{ccccc}
+\toprule
+$\gamma$ & $\AUC_f$ & $\AUC_{f+g}$ & $\Delta$ & note \\
+\midrule
+$0.5$  & $0.498$ & $0.488$ & $-0.010$ & floor-dominated \\
+$0.7$  & $0.498$ & $0.487$ & $-0.010$ & still floor-dominated \\
+$0.9$  & $0.498$ & $0.521$ & $+0.023$ & starts to help \\
+\textbf{0.95} & $0.498$ & $\mathbf{0.553}$ & $\mathbf{+0.055}$ & matches empirical reference ($0.563$) \\
+$0.99$ & $0.498$ & $0.489$ & $-0.009$ & essentially f-only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A $\gamma=0.9$ sweep across all eight $K=8$ zones shows that the subgraph
+lift is not uniform. Restricting to zones with at least $100$ test
+trajectories (zones $0,5,6,7$), the mean $\Delta_{f+g}$ is $+0.018$ with
+standard deviation $0.038$: positive in trend, but within noise. The
+$g$-floor fraction remains in the $80$--$90\%$ band across zones, so
+restricting to subgraphs does not remove the data-density issue. The
+refined conclusion is therefore: naive sparse-LU does not transfer at city
+scale, $\gamma$ tuning is the binding sensitivity where the solver is
+tractable, and empirical $g$ sparsity persists at every tested scale.
+
+\section{Tier 1 synthetic reproduction details}
+\label{app:phase1-synthetic-details}
+
+The Tier~1 reproduction validates the estimator component of the filter in
+isolation. A synthetic chain is constructed on $n=100$ states with a random
+strongly-connected adjacency and mean out-degree $\sim 3$. The true
+transition kernel is a softmax of \cref{eq:softmax}; all parameters
+($\nu$, $\omega^{\mathrm{loc}}$, $\omega^{\mathrm{glo}_1}$ and
+$\omega^{\mathrm{glo}_2}$) are drawn iid $\mathcal{N}(0,1)$, with
+$d_T=d_\psi=5$ random global features as in Morimura et al.'s benchmark.
+The truth is then mixed $70/30$ with a Dirichlet$(0.3)$ row distribution to
+create a mild model-class gap analogous to the real experiments.
+
+For each observation fraction $|\Xo|/n \in \{0.05,0.10,0.20,0.35,0.50,
+0.70,0.90\}$, $X_o$ is sampled randomly and the inverter is fitted on the
+analytic $\fobs$ and $\gobs$ derived from the true chain at $X_o$.
+Tikhonov regularisation is cross-validated over
+$\{10^{-4},10^{-3},10^{-2},10^{-1}\}$ on a $75/25$ split of $X_o$. The
+reported metric is
+\begin{equation}
+\RMAE(\hat{\pi}, \pi) =
+\frac{\frac{1}{|\mathcal{X}\setminus X_o|}\sum_{x\notin X_o}
+|\hat{\pi}(x)-\pi(x)|}
+{\frac{1}{n}\sum_{x\in\mathcal{X}}\pi(x)} ,
+\end{equation}
+the mean absolute error on unobserved states normalised by the average true
+stationary mass. Each $|X_o|$ value is repeated for $10$ trials.
+
+\begin{table}[H]
+\centering
+\caption{Tier~1 reproduction RMAE versus visual estimates from Morimura
+et al.'s Fig.~2A. Mean over $10$ trials, $n=100$, full reproduction protocol
+including global features and cross-validated $\lambda$.}
+\label{tab:phase1-rmae}
+\scriptsize
+\begin{tabular}{rcccc}
+\toprule
+$|X_o|$ & with $g$ & no $g$ & NWKR & paper visual \\
+\midrule
+5  & $0.97 \pm 0.28$ & $1.08 \pm 0.45$ & $2.31$ & $\sim 0.7$ \\
+10 & $0.49 \pm 0.13$ & $0.69 \pm 0.20$ & $1.59$ & $\sim 0.5$ \\
+20 & $0.37 \pm 0.07$ & $0.75 \pm 0.40$ & $1.73$ & $\sim 0.4$ \\
+35 & $0.26 \pm 0.06$ & $0.44 \pm 0.07$ & $1.38$ & $\sim 0.3$ \\
+50 & $0.21 \pm 0.07$ & $0.46 \pm 0.13$ & $1.67$ & $\sim 0.2$ \\
+70 & $0.19 \pm 0.07$ & $0.41 \pm 0.13$ & $1.42$ & $\sim 0.15$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The reproduction tracks the paper's proposed-method curve within
+$\sim 0.05$ RMAE for $|X_o|\in[10,70]$. The main deviation is $|X_o|=5$,
+where the validation split leaves approximately one validation state and
+therefore over-regularises. The Nadaraya--Watson kernel-regression
+baseline does not drop as steeply as the paper's comparator, most plausibly
+because of a comparator-implementation mismatch rather than an inverse-MC
+implementation error.
+
+\subsection*{Scale-free prediction convention}
+
+Morimura et al. write the recovered prediction as
+$\hat{f}(x)=\hat{c}\hat{\pi}(x)$ with
+$\hat{c}=\overline{f}_{X_o}$. Taken literally with a probability vector
+$\hat{\pi}$ summing to one, this under-scales predictions by a factor tied
+to the number and mass of observed states and collapses the RMAE values
+towards one. The convention used here is
+\begin{equation}
+\hat{f}(x)=
+\frac{\sum_{i\in X_o} f_i}{\sum_{i\in X_o}\hat{\pi}_i}\,
+\hat{\pi}(x).
+\label{eq:scale-free-prediction}
+\end{equation}
+
+This is not an ad hoc patch to the optimisation objective. The Morimura
+count loss is a log-ratio loss:
+\[
+L_d(\theta)=\frac{1}{2}\sum_{i,j\in X_o}
+\left(\log\frac{\pi_i(\theta)}{\pi_j(\theta)}-
+\log\frac{f_i}{f_j}\right)^2 .
+\]
+Multiplying every observed count by any constant leaves $L_d$ unchanged,
+so the objective identifies the relative stationary mass on $X_o$ and the
+chain parameters, not the external exposure scale of the count process.
+Equation~\eqref{eq:scale-free-prediction} is the unique global calibration
+that makes the fitted stationary surrogate reproduce the observed total
+mass on $X_o$:
+\[
+\sum_{i\in X_o}\hat{f}(i)=\sum_{i\in X_o}f_i .
+\]
+It leaves all fitted ratios
+$\hat{f}(x)/\hat{f}(y)=\hat{\pi}(x)/\hat{\pi}(y)$ unchanged and therefore
+does not alter the minimiser, gradients, regularisation, or any theoretical
+claim based on matching stationary ratios. It is also Fisher-consistent for
+the benchmark's count model: if the data are generated by
+$f_i=C\pi_i^\star$ for an unknown exposure constant $C$ and the estimator
+recovers $\hat{\pi}=\pi^\star$, then
+\[
+\frac{\sum_{i\in X_o}f_i}{\sum_{i\in X_o}\hat{\pi}_i}\hat{\pi}(x)
+=
+\frac{C\sum_{i\in X_o}\pi_i^\star}{\sum_{i\in X_o}\pi_i^\star}
+\pi_x^\star
+=C\pi_x^\star=f_x .
+\]
+The scale-free form therefore preserves the objective's theoretical
+guarantees while using the only count scale that is identifiable from the
+observed subset. Applying the literal mean-count convention instead is a
+post-estimation scaling error, not a different inverse-MC solution.
+
+\subsection*{Gradient verification}
+
+Across three random parameter draws, including local-only, $\phi_T$-only
+and $\psi$-only edge cases, the centred finite-difference gradient check
+returns maximum relative error $\le 5\times10^{-9}$ for every parameter
+block. This confirms the analytic gradient implementation used in the
+downstream tiers.
+
+\section{Tier 2 multistart basin check}
+\label{sec:phase4-multistart}
+
+This appendix records the multistart audit summarised in
+\cref{sec:phase4-multiseed}. The multi-seed Tier~2 sweep showed a bimodal
+gap-closure pattern: random-trip seeds $\{7,23\}$ landed in a low-gap
+basin, while seeds $\{42,101,2024\}$ landed in a higher-gap basin. The
+audit asks whether the low-gap result is merely an artefact of the
+zero-initialisation used by L-BFGS-B.
+
+Both low-basin seeds were rerun with $K=5$ random restarts per chain
+(initial $\theta_0\sim\mathcal{N}(0,I)$, \code{features=none}, the
+local-only setting, $T=20$).
+The selected restart is the one with the highest held-out validation
+log-likelihood, compared against the zero-init baseline.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\linewidth]{fig06_phase4_multistart.png}
+\caption{Tier~2 multistart basin check on the two low-basin seeds
+(\code{features=none}, $K=5$, $T=20$). \textbf{(a)} The validation-selected
+multistart detector ties the zero-init baseline on seed~$7$ and is markedly
+worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of
+seeds $\{42,101,2024\}$ (dashed). \textbf{(b)} Every one of the ten random
+restarts (five per regime) converges to a strictly higher final loss than
+zero-init.}
+\label{fig:phase4-multistart}
+\end{figure}
+
+On both seeds, every random restart converged to a worse training loss and
+a worse held-out validation log-likelihood than the zero-init baseline
+(\cref{fig:phase4-multistart}b). On seed~$7$, the restarts reach
+intrinsic-chain loss $44.99$--$45.5$ against the baseline's $42.15$; on
+seed~$23$, they reach $457$--$459$ against $455.9$. The
+validation-selected multistart detector therefore ties the baseline on
+seed~$7$ ($30.2\%$ vs.\ $30.3\%$ gap closed) and is markedly worse on
+seed~$23$ ($7.9\%$ vs.\ $34.2\%$).
+
+The audit does not prove that the low basin is globally optimal. It does
+show that the standard random-restart recipe does not escape it: zero-init
+is the best optimum found on these instances, and the cross-seed
+bimodality should be read as a property of the loss landscapes rather than
+as a simple starting-point artefact.
+
+\section{Tier 2 sat-navigation versus congestion decomposition}
+\label{sec:phase4-rho-demand}
+
+This appendix records the simulator stress test summarised in
+\cref{sec:phase4-tsweep}. The motivation is the Tier~3 rush-vs-off-peak
+proxy: real rush hour may differ from off-peak both because sat-navigation
+adoption is higher and because congestion changes routing incentives for
+all drivers. Xuancheng has no counterfactual where one factor is varied
+while the other is held fixed, but SUMO does.
+
+The two independent levers are the per-vehicle rerouting adoption
+probability $\rho$, set by \code{--device.rerouting.probability}, and the
+\code{randomTrips.py} departure period $d$, set by \code{-p}. Lower $d$
+means more vehicles and therefore more congestion. Five random-trip seeds
+$\{7,23,42,101,2024\}$ are swept over three cells per seed:
+$(d=0.3,\rho=0)$ (peak demand, no sat-nav users),
+$(d=0.3,\rho=1)$ (peak demand, full sat-nav), and
+$(d=0.8,\rho=0)$ (off-peak demand, no sat-nav users). Each seed then gives
+three pairwise AUCs under the same $f$-only Tier~2 protocol
+(\code{features=none}, $T=20$, $|X_o|=601$, \code{maxiter}=1500):
+\texttt{pure\_congestion} (demand changes at $\rho=0$),
+\texttt{satnav\_at\_peak} ($\rho$ changes at peak demand), and
+\texttt{proxy\_diagonal} (the simulated analogue of rush-vs-off-peak).
+
+\begin{table}[H]
+\centering
+\caption{$\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy
+signal. Mean $\pm$ sample standard deviation across five SUMO seeds; $95\%$
+confidence interval (CI) computed as
+$\text{mean} \pm 1.96 \cdot \sigma/\sqrt{5}$.}
+\label{tab:phase4-rho-demand}
+\scriptsize
+\begin{tabular}{@{}p{0.22\linewidth}p{0.34\linewidth}ccc@{}}
+\toprule
+pair & cells compared & $\AUC_{\mathrm{emp}}$ & $95\%$ CI & $\AUC_{\mathrm{fit}}$ \\
+\midrule
+\texttt{pure\_congestion} & $(d=0.3,\rho=0)$ vs.\ $(d=0.8,\rho=0)$ & $0.493 \pm 0.018$ & $[0.471,0.515]$ & $0.504 \pm 0.036$ \\
+\texttt{satnav\_at\_peak} & $(d=0.3,\rho=0)$ vs.\ $(d=0.3,\rho=1)$ & $\mathbf{0.780 \pm 0.013}$ & $[0.764,0.796]$ & $0.647 \pm 0.012$ \\
+\texttt{proxy\_diagonal} & $(d=0.8,\rho=0)$ vs.\ $(d=0.3,\rho=1)$ & $\mathbf{0.793 \pm 0.023}$ & $[0.764,0.821]$ & $0.655 \pm 0.026$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The \texttt{pure\_congestion} contrast is statistically indistinguishable
+from chance: its CI straddles $0.5$. The \texttt{satnav\_at\_peak}
+contrast gives a large robust signal, and the full \texttt{proxy\_diagonal}
+is essentially the same magnitude. Decomposing the above-chance empirical
+AUC of \texttt{proxy\_diagonal} attributes about $95.6\%$ of the signal to
+sat-navigation adoption, with the pure-congestion contribution within
+noise.
+
+This is only a simulator audit. SUMO's $\rho=0$ vehicles follow
+precomputed shortest paths and ignore live congestion after departure,
+whereas real unaided commuters can remember recurring bottlenecks. The
+result is therefore a lower-bound stress test on the congestion-routing
+confound, not evidence that the real rush-hour proxy is cleanly separable.
 
 \section{Build and reproducibility}\label{app:build}
 

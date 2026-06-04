@@ -36,8 +36,8 @@ a superficially moderate gap-closure number because the reference itself
 is weak, but once OD mix is controlled the fitted detector sits at chance
 across every tested $K$ while the full-observation reference remains
 weakly above chance at finer granularities. Tier~3 is therefore a
-genuine negative result for the current $1$-step partial-observation
-filter under this behavioural proxy, not just ``less signal to recover''.
+negative result for the current $1$-step partial-observation filter
+under this behavioural proxy.
 \item The Labour-Day stress test rules out the strongest alternative
 reading: that a more intuitive real-world contrast would rescue the
 detector. Labour Day does yield a stronger empirical reference after
@@ -62,42 +62,21 @@ quantifies how much detectable signal each setting actually contains.
 
 \begin{table}[H]
 \centering
-\caption{Cross-tier synthesis of the three validation tiers. The shared
-inverse-MC scoring core of \cref{sec:disc-cross-tier} produces every row;
-the loader, regime definition, and OD-control logic differ by tier.
-Tier~2 is the representative seed~$42$ at $T=20$
-(\cref{tab:phase4-features}); Tier~3 is the pooled Apr~17--21 pool at
-$T=10$ (\cref{tab:phase5-headline}), plus the Labour-Day stress test at
-$K=64$ where shown. Fitted and Pearson cells are
-\code{none}/\code{real}.
-$^{\dagger}$Tier~1 is a $\pi$-recovery reproduction scored by RMAE, not a
-detection AUC: best RMAE $0.19$ at $|X_o|=70$, within $\sim 0.05$ of the
-paper's Fig.~2A (\cref{tab:phase1-rmae}).
-$^{\ddagger}$The Tier-3 ceiling shown is the un-matched $5$-day pool.
-OD-matching at $K=8$ lowers it to $0.518$, but a granularity sweep
-$K \in \{8, 16, 32, 64\}$ returns the matched reference to
-$\sim\!0.55$--$0.58$ for $K \ge 16$, so no fixed OD-mix fraction is
-claimed; the fitted detector stays at chance across all $K$
-(\cref{tab:phase5-ksweep}).
-$^{\S}$Labour Day vs.\ normal days, OD-matched at $K=64$:
-$\AUC_{\mathrm{emp}}=0.567$, zero-init $\AUC_{\mathrm{fit}}=0.521$,
-multistart validation-selected $\AUC_{\mathrm{fit}}=0.502$,
-Pearson $+0.066$; a fitting-free $2$-step empirical backoff diagnostic
-does not improve the reference (best non-degenerate setting below
-$0.567$; \cref{tab:phase5-labour}).
-The Tier-2 Pearson lift is robust across five seeds
-($\Delta = +0.050 \pm 0.023$, $p \approx 0.008$,
-\cref{sec:phase4-multiseed}).}
+\caption{Cross-tier synthesis. Tier~2 reports the representative
+Ingolstadt seed~$42$ at $T=20$; Xuancheng rows report the weekday proxy
+and the Labour-Day stress test. Fitted and Pearson cells are
+\code{none}/\code{real}.}
 \label{tab:cross-tier}
-\small
-\begin{tabular}{llccc}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.17\linewidth}p{0.23\linewidth}ccc@{}}
 \toprule
-tier & dataset ($n$) & $\AUC_{\mathrm{emp}}$ ceiling & $\AUC_{\mathrm{fit}}$ & per-row Pearson \\
+tier & dataset ($n$) & empirical ceiling & fit AUC & Pearson \\
 \midrule
-1 synthetic$^{\dagger}$  & random graph ($100$)  & --     & --             & -- \\
-2 SUMO                   & Munich bbox ($2{,}405$) & $0.685$ & $0.612 / 0.644$ & $+0.132 / +0.215$ \\
-3 Xuancheng$^{\ddagger}$ & AVI ($1{,}733$)        & $0.573$ & $0.524 / 0.536$ & $+0.096 / +0.072$ \\
-3 Xuancheng Labour$^{\S}$ & AVI ($1{,}733$)       & $0.567$ & $0.521 \rightarrow 0.502$ & $+0.066$ \\
+1 synthetic              & random graph ($100$)  & --     & --             & -- \\
+2 SUMO                   & Ingolstadt network ($2{,}405$) & $0.685$ & $0.612 / 0.644$ & $+0.132 / +0.215$ \\
+3 Xuancheng              & AVI ($1{,}733$)        & $0.573$ & $0.524 / 0.536$ & $+0.096 / +0.072$ \\
+3 Xuancheng Labour       & AVI ($1{,}733$)        & $0.567$ & $0.521 \rightarrow 0.502$ & $+0.066$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -105,205 +84,98 @@ tier & dataset ($n$) & $\AUC_{\mathrm{emp}}$ ceiling & $\AUC_{\mathrm{fit}}$ & p
 \subsection{Limits of the chosen approach}
 \label{sec:disc-limits}
 
-Three limitations follow from the validation tiers.
+The main limitations are label availability, stationarity, and model
+capacity.
 
-\paragraph{Multi-seed Tier 2; limited real-world proxy pools on Tier 3.} The Tier~2
-features result has been confirmed across five SUMO seeds
-(\cref{sec:phase4-multiseed}), and that confirmation materially revised
-the single-seed interpretation: the aggregate detection-AUC lift is
-\emph{not} statistically robust ($+0.024 \pm 0.026$, reversing on one of
-five seeds, $p \approx 0.11$), whereas the per-row chain-recovery lift
-\emph{is} ($+0.050 \pm 0.023$, positive on all five, $p \approx 0.008$).
-The multi-seed sweep also reproduced the bimodal basin structure,
-confirming the cross-seed AUC variance is L-BFGS basin-selection rather
-than measurement noise; a follow-up multistart check
-(\cref{sec:phase4-multistart}) further established that this low basin is
-\emph{not} escapable by random re-initialisation. Zero-init is the best
-optimum found on both low-basin seeds, so the bimodality is a property of
-the loss landscape, not of the starting point. Tier~3 (Xuancheng), by
-contrast, now uses two behavioural proxy pools (rush-vs-off-peak weekdays
-and Labour-Day-vs-normal days) but still lacks independent city/month
-replication. A multi-pool or multi-city replication is the analogous
-outstanding confirmation there, a compute-cost and data-availability
-trade-off rather than a methodological barrier.
+\paragraph{Proxy labels and stationarity.} Tier~3 cannot observe
+sat-navigation use directly, so rush-vs-off-peak and Labour-Day splits
+are behavioural proxies. They mix route guidance, ordinary congestion
+adaptation, driver composition and OD mix. The estimator also compresses
+dynamic time windows into one stationary surrogate chain, which is useful
+for scoring but should not be interpreted as a literal invariant traffic
+distribution.
 
-\paragraph{L-BFGS basin selection on \code{features=real}.} The
-Xuancheng OD-matched \code{features=real} rush-chain fit
-hit final loss $1397$, against the \code{features=none} fit's loss
-$4.058$ on the same data, and produced the ``impossible''
-$\AUC_{\mathrm{fit}} = 0.530 > \AUC_{\mathrm{emp}} = 0.518$. We ran the
-multistart variant (\cref{sec:phase5-multistart}, $K=5$): it escaped the
-high-loss basin (rush loss $1397 \rightarrow 9.186$, validation-selected),
-and the correctly-fit chains then gave $\AUC_{\mathrm{fit}} = 0.483$ --
-chance. The ceiling violation was therefore an optimiser artefact, and
-removing it \emph{strengthens} the Tier-3 negative result: the within-OD
-routing contrast is not detectable at the $1$-step Markov level under
-this proxy and data split, rather than being masked by a bad optimum. This also makes the SUMO and Xuancheng basin
-checks complementary. On SUMO zero-init was already the best optimum
-(\cref{sec:phase4-multistart}); on Xuancheng a better optimum existed but
-only confirmed the negative result, so neither tier's headline rests
-on an optimiser accident.
+\paragraph{Controlled simulation versus real traffic.} Tier~2 provides a
+labelled test bed, yet it still contains simulator-specific structure:
+at the selected demand the sat-navigation regime completes many more
+trips, and unaided SUMO drivers follow precomputed routes. The
+$\rho \times d$ audit in Section~\ref{sec:phase4-rho-demand} in the
+Appendix shows that this simulator signal is mainly tied to the
+sat-navigation label, but a real experienced driver can adapt without
+live route guidance. This is why Tier~3 remains a proxy stress test until
+trip-level guidance labels are available.
 
-\paragraph{The rush-vs-off-peak proxy confound, bounded in
-simulation.} The Tier~3 proxy bundles two effects that real data
-cannot separate: sat-navigation adoption (higher at rush hour) and
-congestion-induced rerouting that affects all drivers when demand
-rises. The Tier~2 $\rho \times d$ decomposition
-(\cref{sec:phase4-rho-demand}) addresses this: holding $\rho=0$ across
-the demand axis gives an empirical AUC of $0.493 \pm 0.018$ (within
-noise of chance), while holding demand at peak across the
-$\rho$ axis gives $0.780 \pm 0.013$. The full proxy diagonal
-($0.793 \pm 0.023$) attributes $\sim\!96\%$ of its above-chance signal
-to sat-navigation adoption, with the pure-congestion contribution
-within noise and a small residual interaction. The decomposition holds
-across all five SUMO seeds. The remaining caveat is that SUMO's
-$\rho=0$ vehicles follow precomputed shortest-path routes and do not
-react to congestion en route, so the SUMO pure-congestion AUC is a
-\emph{conservative simulator estimate} that may understate the
-experienced-human-driver confound; even tripling it would not change the
-qualitative attribution. Real-world
-verification of this decomposition would require an alternative
-experienced-driver routing model in SUMO or, ideally, a real-world
-dataset with sat-navigation-use labels.
-
-\paragraph{The hitting-rate ($f+g$) extension at scale, refined
-diagnosis.} The $f+g$ extension initially looked infeasible at SUMO
-scale on the strength of a $9.5$-hour dense fit
-that did not terminate. A robust diagnosis
-(\cref{sec:phase4-fg-infeasible}) separates that single claim into
-three: (i)~the engineering bottleneck is real but more subtle than
-``replace dense with sparse''. A FD-verified sparse-LU
-implementation now exists, but at SUMO scale ($d \approx 8{,}400$ wide
-gradient RHS) dense LAPACK GETRS still wins by $\sim 80\times$ via
-BLAS3 multi-core kernels; (ii)~the binding sensitivity is
-$\gamma$, not the solver: at $\gamma = 0.5$ the floor-dominated $L_h$
-overwhelms $L_f$ and $f+g$ hurts, while at $\gamma = 0.95$ on a
-$200$-edge Xuancheng subgraph $f+g$ recovers the full-observation
-empirical reference within sampling noise; (iii)~the data-density
-issue ($\sim 85\%$ of $\gobs$ cells at floor) persists at every scale
-we tested, so any future $f+g$ scale-up must operate at high $\gamma$.
-Under the simpler $f$-only loss the framework remains tractable and
-that is what the practical detector in this work uses. The natural
-algorithmic next step is Sherman--Morrison amortisation of the
-$(I - \beta P_T)$ factor across $X_o$ (one factor per L-BFGS iteration
-instead of $|X_o|$) or the paper's natural-gradient descent
-\cite{morimura2013}~$\S 4.1$; both are flagged as future work.
+\paragraph{Sparse observation, optimisation and feature capacity.} Both
+SUMO and Xuancheng show that the inverse problem is under-constrained at
+city scale. Multi-seed SUMO runs make the feature result weaker as an AUC
+claim but robust as a per-row chain-recovery effect; Xuancheng multistart
+removes an apparent \code{features=real} ceiling violation and returns the
+fitted detector to chance. The $f+g$ extension adds another capacity
+route, but its city-scale implementation remains expensive because each
+iteration needs large linear solves. The current thesis therefore uses
+the tractable $f$-only detector and treats $f+g$ and higher-order dynamics
+as model-class extensions.
 
 \subsection{Social, environmental, technological implications}
 \label{sec:disc-implications}
 
-\paragraph{Transport-policy modelling.} If externally-influenced routing
-constitutes even a few percent of urban traffic flow, demand models
-that assume revealed-preference inputs reflect intrinsic preferences
-are systematically misspecified. A method that quantifies and filters
-the externally-influenced fraction is a methodological prerequisite
-for any policy intervention (congestion pricing, infrastructure
-investment, route-recommendation regulation) whose evaluation rests on
-preference-revealed data.
+\paragraph{Transport-policy modelling.} Navigation platforms can change
+the routes that appear in revealed-preference data. If those influenced
+routes are fed back into demand models as ordinary preferences, policy
+evaluation can confuse platform response with driver preference. The
+controlled SUMO result shows that inverse-MC filtering can recover part
+of this distinction when labels exist; the Xuancheng result shows that
+behavioural proxies alone are too weak for confident attribution.
 
-\paragraph{Privacy and data access.} The most-restrictive privacy
-control among the three real-world AVI datasets we surveyed is also
-the one that gives the strongest scientific guarantees: the Padua
-deposit \cite{cappi2026} releases only aggregated flow statistics.
-The least-restrictive is the Ma~\emph{et al.}\ Xuancheng release
-\cite{ma2026xuancheng} which publishes joinable per-trip records with
-anonymised IDs, enabling the per-trajectory detector this work
-relies on, but at the cost of stronger reidentification surface area.
-Methodologies that can validate per-trajectory detection from
-aggregate-only data would shift this trade-off favourably.
+\paragraph{Privacy and data access.} The evidence needed for this task is
+awkward: trip-level trajectories are useful, but trip-level app-use labels
+are sensitive. Aggregate-only releases protect privacy but cannot support
+the detector tested here; joinable per-trip releases enable the method
+while increasing reidentification risk. A practical deployment would need
+privacy-preserving access to coarse guidance/compliance labels, or a
+trusted-analysis setting in which labels can be used without publishing
+raw identifiers.
 
-\paragraph{Sat-navigation regulation.} The current sat-navigation
-recommendation pipeline is unregulated in most jurisdictions; the
-welfare effects of system-wide rerouting around congestion are
-contested. A practical detector that can statistically attribute trip
-fractions to sat-navigation guidance would underpin both academic
-welfare analyses and possible regulatory disclosure requirements.
+\paragraph{Platform accountability.} A reliable detector would let cities
+audit how much of observed route choice is shaped by guidance systems,
+without needing to inspect individual recommendations. This matters for
+congestion pricing, traffic-calming decisions and claims about network
+welfare. The negative Tier~3 result is part of that accountability story:
+it warns against treating rush-hour AVI contrasts as evidence of
+sat-navigation influence unless the proxy is supported by labels or a
+stronger behavioural model.
 
 \subsection{Future work}
 \label{sec:disc-future}
 
 \begin{enumerate}
-\item \textbf{OD-cell bootstrap.} A stratified vehicle-level bootstrap
-confirms the fitted Tier-3 detector is statistically indistinguishable
-from chance, and an OD-zone granularity sweep $K \in \{8, 16, 32, 64\}$
-confirms this holds at every resolution (\cref{tab:phase5-ksweep}); the
-sweep also showed the $K=8$ ``$\sim\!75\%$ OD-mix'' interpretation to be a
-coarse-zoning artefact. The remaining outstanding extension is an
-OD-\emph{cell} bootstrap that resamples which cells enter the match and
-refits per replicate, quantifying cell-selection variance on top of
-vehicle-sampling variance, a compute-time rather than methodological
-gap.
-\item \textbf{Observation-station sensitivity.} All headline Tier~2 and
-Tier~3 fitted-chain results condition on one random observation-station
-set $\Xo$ at the stated observation fraction. This matches the main
-validation protocol but understates uncertainty for real deployments,
-where detector performance may depend on which camera or loop-detector
-locations are available. A full sensitivity analysis would repeat the
-inverse-MC fits over multiple $X_o$ seeds, report the induced spread in
-AUC and per-row Pearson, and combine this with the vehicle-level
-bootstrap above. This is a refit-level experiment, not something the
-existing bootstrap scores can recover after the fact.
-\item \textbf{Trajectory-level feature augmentation.} The strict
-$1$-step Markov LR detector ignores trip-level features (length, mean
-speed, edge-class composition, dwell time at congested edges). A
-logistic-regression layer on top of $\Lam(\tau)$ that adds those
-features would lift detection AUC further at the cost of a slightly
-weaker chain-recovery claim. Worth doing as a clearly-labelled
-``deployment-oriented'' extension.
-\item \textbf{Sherman--Morrison factor sharing in $\bm{f+g}$.} The
-sparse-LU implementation (\cref{sec:phase4-fg-infeasible}) is
-FD-verified but slower than dense at SUMO scale because the wide
-gradient RHS $V \in \mathbb{R}^{n \times d}$ benefits from BLAS3
-multi-core kernels. The natural amortisation is to factor
-$(I - \beta P_T)$ \emph{once} per L-BFGS iteration and derive each
-per-state $h_j$ and $\nabla h_j$ via a Sherman--Morrison update
-(rank-1 in the row of $P_T$ being zeroed out), which converts
-$|X_o| = 601$ factor + wide-solve pairs into a single factor and
-a single wide-solve plus $|X_o|$ rank-1 corrections. This is the
-algorithmic step that bridges the engineering gap exposed in the
-subgraph experiment.
+\item \textbf{Labelled real-world validation.} The highest-value next
+dataset would pair trajectories with coarse sat-navigation-use or
+route-guidance-compliance labels. Even partial labels would convert
+Tier~3 from a proxy stress test into a direct validation exercise.
 
-\item \textbf{Natural-gradient or LM optimisation.} Per
-\cref{sec:phase4-fg-infeasible}, even with the engineering fix above,
-the $f+g$ loss surface is under-constrained under floor-dominated
-$\gobs$ and benefits from manifold-aware steps. The paper's
-$\S 4.1$ natural-gradient descent or a Levenberg--Marquardt
-formulation against the residual Jacobian (a preliminary implementation
-was abandoned at $d = 8{,}392$ for memory cost) would
-combine well with Sherman--Morrison and enable an
-$f+g$-with-features re-validation at city scale.
-\item \textbf{OD-conditional fitting on Xuancheng.} The
-OD-rebalancing extension matches the marginal $(\text{zone}_o,
-\text{zone}_d)$ distribution. A stronger control fits per-cell chains
-and aggregates the per-cell contrasts; smaller sample sizes per cell
-but cleaner methodologically. The loader infrastructure required
-already exists.
-\item \textbf{Parametric 2-step Morimura extension.} The regularised
-2-step empirical of \cref{sec:phase4-2step} lifts AUC by about
-$+0.09$--$+0.10$ across five SUMO seeds; the selected
-count-conditional setting gives $+0.100 \pm 0.009$ but is mildly
-test-tuned. A matched Xuancheng Labour-Day audit does \emph{not} show
-the same lift: non-zero $2$-step interpolation lowers AUC relative to the
-$1$-step empirical reference. The natural inverter extension that the
-SUMO bound motivates is still a parametric softmax on $(x_p, x)$
-contexts, but it should be treated as a simulation-motivated model-class
-extension rather than the confirmed remedy for Xuancheng. The
-state-space expansion is significant
-($|X|^2 \approx 5.8\text{M}$ pairs) but only $\sim\!3{,}500$ are
-observed in training, so the parameter count and gradient cost grow as
-the observed-pair count, not as $n^2$. Per-pair softmax parameters
-with feature-sharing across topologically similar pairs would be the
-first design to try.
+\item \textbf{Robustness over stations, OD cells and cities.} The current
+fits condition on one observation-station set and a fixed OD match. A
+deployment study should repeat the inverse-MC fits over multiple $\Xo$
+draws, resample OD cells, and replicate across more city/month pools.
 
-\item \textbf{Experienced-driver routing model in SUMO.} The Tier~2
-$\rho \times d$ decomposition (\cref{sec:phase4-rho-demand}) bounds the
-congestion-routing confound from below, but its $\rho=0$ vehicles
-follow precomputed shortest-path routes and do not react to congestion
-en route. A SUMO scenario in which unaided drivers carry coarse
-local congestion knowledge (e.g.\ time-of-day-conditioned edge
-attractiveness) would tighten the bound to a quantity that more
-closely tracks human experienced-driver behaviour. SUMO's routing
-infrastructure supports this; an off-the-shelf alternative is
-\code{rerouting-with-static-traffic-class} priors keyed to rush-hour
-edge usage.
+\item \textbf{Richer behavioural state.} SUMO shows that second-order
+route memory can carry signal, while Xuancheng Labour does not show a
+simple empirical $2$-step lift. A parametric extension should therefore
+test higher-order context, time-of-day conditioning and trip-level
+features as competing explanations, with the chain-recovery claim kept
+separate from any deployment-oriented classifier.
+
+\item \textbf{Scalable $f+g$ optimisation.} The hitting-rate extension
+remains attractive because it uses more of Morimura's original evidence,
+but city-scale fitting needs factor sharing or a different optimiser.
+Sherman--Morrison updates for the $(I-\beta P_T)$ solves and
+natural-gradient or Levenberg--Marquardt steps are the most direct
+algorithmic candidates.
+
+\item \textbf{Experienced-driver simulation.} The Tier~2
+$\rho \times d$ decomposition should be repeated with unaided drivers who
+avoid known rush-hour bottlenecks. That counterfactual would make the
+simulator bound closer to the real Xuancheng ambiguity between human
+experience and algorithmic guidance.
 \end{enumerate}

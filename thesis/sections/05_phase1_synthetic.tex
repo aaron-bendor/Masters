@@ -1,132 +1,25 @@
 \section{Tier 1: Validating the inverse-MC estimator inside the filter}
 \label{sec:phase1-synthetic}
 
-\subsection{Motivation}
+This tier is a code and mathematics gate, not yet a sat-navigation
+detection experiment. It asks one narrower question: if the true Markov
+chain is known synthetically and only a subset of its states is observed,
+does this implementation recover the stationary distribution at the
+unobserved states about as well as Morimura et al.'s published method?
 
-This tier validates the estimator component of the filter in isolation,
-before either the scoring rule or the regime-detection layer is attached.
-If the inverter cannot reproduce the published recovery curve on its
-native synthetic benchmark, no downstream filter result on SUMO or
-Xuancheng is meaningful. We therefore replicate the $\S 6.1$ synthetic
-experiment of Morimura et al.~\cite{morimura2013} end-to-end and verify
-that we reach the published relative mean absolute error (RMAE) curve to
-within $\sim 0.05$ across observation fractions in $[0.10, 0.90]$.
+The reproduction follows Morimura et al.'s synthetic benchmark on a
+random $n=100$ softmax-parametric chain and matches the published
+proposed-method RMAE curve to within $\sim 0.05$ for $|\Xo|\ge 10$.
+RMAE is the relative mean absolute error of the recovered stationary mass
+on unobserved states; lower is better. The only material deviation is the
+$|\Xo|=5$ setting, where the $75/25$ validation split leaves roughly one
+validation state and makes $\lambda$ selection degenerate.
 
-\subsection{Method}
-
-A synthetic chain is constructed on $n=100$ states with a random
-strongly-connected adjacency, mean out-degree $\sim 3$. The true
-transition kernel is a softmax of \cref{eq:softmax} with all parameters
-($\nu$, $\omega^{\mathrm{loc}}$, $\omega^{\mathrm{glo}_1}$,
-$\omega^{\mathrm{glo}_2}$) drawn iid $\mathcal{N}(0,1)$, with $d_T = d_\psi = 5$
-random global features per the paper. The truth is then mixed
-$70/30$ with a Dirichlet$(0.3)$ noise row-distribution to push it
-slightly outside the parametric family ($\sim 4\%$ TV distance) and so
-present the inverter with a model-class gap analogous to a real-world
-scenario.
-
-For each observation fraction $|\Xo|/n \in \{0.05, 0.10, 0.20, 0.35,
-0.50, 0.70, 0.90\}$, $X_o$ is randomly sampled, and the inverter is
-fitted on the analytic $\fobs$ and $\gobs$ derived from the true chain
-at $X_o$, with Tikhonov regularisation $\lambda$ cross-validated over
-$\{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}\}$ on a $75/25$ split of $X_o$.
-The reported metric is the relative mean absolute error
-\begin{equation}
-\RMAE(\hat{\pi}, \pi) \;=\; \frac{\frac{1}{|\mathcal{X} \setminus X_o|}\sum_{x \notin X_o}|\hat{\pi}(x) - \pi(x)|}{\frac{1}{n}\sum_{x \in \mathcal{X}}\pi(x)},
-\end{equation}
-i.e.\ the mean absolute error on unobserved states normalised by the
-average true stationary mass. The recovered $\hat{\pi}$ is rescaled by a
-scale-free convention discussed in \cref{sec:phase1-scaling}.
-Each $|X_o|$ value is repeated for $10$ trials with fresh truth +
-$X_o$ draws, matching the visible error-bar count in the original
-Fig.~2A.
-
-\subsection{Results}
-
-The reproduction RMAE curve, our ``Proposed (with $g$)'' configuration,
-tracks the paper's Fig.~2A within $\sim 0.05$ RMAE across $|X_o| \in
-[10, 90]$. \cref{tab:phase1-rmae} summarises.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\linewidth]{fig01_phase1_rmae.png}
-\caption{Tier~1 synthetic reproduction tracks the paper's Fig.~2A within
-$\sim 0.05$ RMAE across $|X_o| \in [10, 70]$. Our ``Proposed (with $g$)''
-(dark blue) is the headline curve and matches the paper (grey) closely;
-``Proposed (no $g$)'' (light blue) is the f-only ablation; NWKR
-(red, dotted) is the comparator baseline. Error bars are $\pm 1$ standard
-deviation across $10$ trials.}
-\label{fig:phase1-rmae}
-\end{figure}
-
-\begin{table}[H]
-\centering
-\caption{Reproduction RMAE vs.\ visual estimates from paper Fig.~2A. Mean over $10$
-trials, $n=100$, full $\S 6.1$ protocol including global features and
-cross-validated $\lambda$. Same data as \cref{fig:phase1-rmae}.}
-\label{tab:phase1-rmae}
-\small
-\begin{tabular}{rcccc}
-\toprule
-$|X_o|$ & Proposed (with $g$) & Proposed (no $g$) & NWKR baseline & Paper Fig.~2A visual estimate \\
-\midrule
-5  & $0.97 \pm 0.28$ & $1.08 \pm 0.45$ & $2.31$ & $\sim 0.7$ \\
-10 & $0.49 \pm 0.13$ & $0.69 \pm 0.20$ & $1.59$ & $\sim 0.5$ \\
-20 & $0.37 \pm 0.07$ & $0.75 \pm 0.40$ & $1.73$ & $\sim 0.4$ \\
-35 & $0.26 \pm 0.06$ & $0.44 \pm 0.07$ & $1.38$ & $\sim 0.3$ \\
-50 & $0.21 \pm 0.07$ & $0.46 \pm 0.13$ & $1.67$ & $\sim 0.2$ \\
-70 & $0.19 \pm 0.07$ & $0.41 \pm 0.13$ & $1.42$ & $\sim 0.15$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The single value where our number is materially off the paper's is
-$|X_o|=5$, where our $\RMAE \approx 0.97$ against the paper's
-$\sim 0.7$. Investigation revealed this is a $\lambda$-CV degeneracy:
-with $|X_o| = 5$ states, the $75/25$ split puts $\approx 1$ state in the
-validation set, which is not enough to discriminate $\lambda$ values
-robustly, and the cross-validated $\lambda$ over-regularises. The
-Nadaraya--Watson kernel-regression baseline (``NWKR'') does not drop
-as steeply as the paper's, which is most plausibly a comparator-
-implementation mismatch rather than a failure of the inverse-MC
-implementation.
-
-\subsection{Interpretation}
-
-\subsubsection{Prediction rescaling convention}
-\label{sec:phase1-scaling}
-
-The paper writes the recovered prediction as $\hat{f}(x) = \hat{c}\,\hat{\pi}(x)$
-with $\hat{c} = \overline{f}_{X_o}$ (their $\S 6.1$). Taken literally
-this collapses every RMAE to $\approx 1$ because \code{stationary()}
-returns a probability summing to $1$ over $n$ states (so
-$\hat{\pi}(x) \sim 1/n$ while $f(x) \sim K/n$), under-scaling by a
-factor of $n$. The operationally correct convention, and the one
-that yields the paper's reported numbers, is the scale-free form
-$\hat{f}(x) = (\sum_{X_o}\!\fobs)\,\hat{\pi}(x) / (\sum_{X_o}\!\hat{\pi})$,
-which reduces to the literal formula when $\sum_{X_o}\!\hat{\pi} = 1$.
-We verified this empirically: applying the literal formula collapses
-all RMAE values to $\approx 1.0$. The scale-free form is preserved
-throughout the rest of this work.
-
-\subsubsection{Gradient verification}
-
-Across three random parameter draws including local-only,
-$\phi_T$-only, and $\psi$-only edge-case configurations, the centred
-finite-difference gradient check returns maximum relative error
-$\le 5 \times 10^{-9}$ for every block, confirming the
-analytic derivation. Details of the finite-difference (FD) check
-infrastructure are in \code{morimura.py}.
-
-\subsubsection{Headline outcome}
-
-The synthetic reproduction is locked in as a faithful reference. The
-proposed-method curve matches the original benchmark closely for
-$|X_o| \ge 10$, while the $|X_o| = 5$ case (a $\lambda$-CV degeneracy) and
-the NWKR comparator (an implementation gap, not a method error) are
-documented deviations. With those two caveats, the curve shape and
-method ordering match the paper. This implementation serves as the
-upstream operational reference for all subsequent validation tiers;
-downstream limitations in Tier~2 and Tier~3 are attributable to the data
-and the model class at scale, not to the upstream framework as
-implemented here.
+The synthetic reproduction is therefore sufficient as an implementation
+gate for the downstream tiers: it verifies the analytic gradients, the
+partial-observation loss, and the estimator's stationary-distribution
+recovery under the benchmark's own assumptions. It says nothing by itself
+about the non-stationary SUMO and Xuancheng windows studied later. Full
+protocol details, the RMAE table, and the mathematical justification for
+the scale-free prediction convention are given in
+Section~\ref{app:phase1-synthetic-details} in the Appendix.

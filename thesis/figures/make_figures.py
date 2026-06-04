@@ -216,6 +216,76 @@ def fig_phase5_xuancheng():
     print(f"  saved {out.name}")
 
 
+def fig_phase5_proxy_sweeps():
+    ks = ["K=8", "K=16", "K=32", "K=64"]
+    x = np.arange(len(ks))
+    w = 0.36
+
+    rush_emp = np.array([0.518, 0.562, 0.553, 0.575])
+    rush_emp_lo = np.array([0.471, 0.516, 0.507, 0.530])
+    rush_emp_hi = np.array([0.567, 0.605, 0.602, 0.622])
+    rush_fit = np.array([0.476, 0.486, 0.513, 0.490])
+    rush_fit_lo = np.array([0.429, 0.439, 0.467, 0.441])
+    rush_fit_hi = np.array([0.524, 0.530, 0.560, 0.535])
+
+    lab_emp = np.array([0.541, 0.508, 0.529, 0.567])
+    lab_emp_lo = np.array([0.494, 0.463, 0.481, 0.521])
+    lab_emp_hi = np.array([0.587, 0.553, 0.574, 0.610])
+    lab_fit = np.array([0.508, 0.524, 0.524, 0.521])
+    lab_fit_lo = np.array([0.462, 0.478, 0.477, 0.477])
+    lab_fit_hi = np.array([0.554, 0.569, 0.568, 0.568])
+    lab_multistart_k64 = 0.502
+
+    def yerr(vals, lo, hi):
+        return np.vstack([vals - lo, hi - vals])
+
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.4, 3.8), sharey=True)
+
+    for ax, emp, emp_lo, emp_hi, fit, fit_lo, fit_hi, title in [
+        (axA, rush_emp, rush_emp_lo, rush_emp_hi, rush_fit, rush_fit_lo, rush_fit_hi,
+         "(a) Rush vs. off-peak"),
+        (axB, lab_emp, lab_emp_lo, lab_emp_hi, lab_fit, lab_fit_lo, lab_fit_hi,
+         "(b) Labour Day vs. normal"),
+    ]:
+        ax.bar(x - w/2, emp, w, yerr=yerr(emp, emp_lo, emp_hi), capsize=3,
+               color=C_CEILING, edgecolor="white",
+               label=r"empirical 1-step reference")
+        ax.bar(x + w/2, fit, w, yerr=yerr(fit, fit_lo, fit_hi), capsize=3,
+               color=C_REAL, edgecolor="white",
+               label=r"fitted detector")
+        ax.axhline(0.5, color=C_CHANCE, linestyle=":", linewidth=1.2,
+                   label="chance")
+        ax.set_xticks(x)
+        ax.set_xticklabels(ks)
+        ax.set_xlabel("OD-zone granularity")
+        ax.set_title(title)
+        ax.set_ylim(0.42, 0.64)
+        for xi, ev, fv in zip(x, emp, fit):
+            ax.annotate(f"{ev:.3f}", (xi - w/2, ev), textcoords="offset points",
+                        xytext=(0, 4), ha="center", fontsize=7, color=C_CEILING)
+            ax.annotate(f"{fv:.3f}", (xi + w/2, fv), textcoords="offset points",
+                        xytext=(0, -12), ha="center", fontsize=7, color=C_REAL)
+
+    axA.set_ylabel("AUC")
+    axB.scatter(x[-1] + w/2, lab_multistart_k64, marker="D", s=42,
+                color=C_CHANCE, zorder=5, label="K=64 multistart")
+    axB.annotate("multistart\n0.502", (x[-1] + w/2, lab_multistart_k64),
+                 textcoords="offset points", xytext=(10, -10),
+                 ha="left", va="top", fontsize=8, color=C_CHANCE,
+                 arrowprops=dict(arrowstyle="->", color=C_CHANCE, lw=1.0))
+    handles, labels = axB.get_legend_handles_labels()
+    axB.legend(handles, labels, loc="upper left", framealpha=0.95)
+    axA.legend(loc="upper left", framealpha=0.95)
+    fig.suptitle("Tier 3 Xuancheng OD-matched proxy sweeps: empirical signal can remain,\n"
+                 "but the fitted partial-observation detector stays near chance",
+                 fontsize=10)
+    fig.tight_layout(rect=[0, 0, 1, 0.88])
+    out = HERE / "fig09_phase5_proxy_sweeps.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  saved {out.name}")
+
+
 # =============================================================================
 # Figure 5: Tier 2 multi-seed -- AUC lift is seed-dependent, Pearson lift robust
 # =============================================================================
@@ -477,6 +547,7 @@ if __name__ == "__main__":
     fig_phase4_multiseed()
     fig_phase4_multistart()
     fig_phase5_xuancheng()
+    fig_phase5_proxy_sweeps()
     fig_phase5_multistart()
     fig_conclusion_synthesis()
     print("Done.")

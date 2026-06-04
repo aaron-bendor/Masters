@@ -1,152 +1,86 @@
 \section{Conclusion}\label{sec:conclusion}
 
-This dissertation designed, validated, and stress-tested a
-\emph{partial-observation routing-influence filter}: a pipeline that
-ingests a road graph, regime-labelled partial observations at a sparse
-subset of stations $\Xo$, and trajectories, and emits a per-trip
-log-likelihood-ratio score, a thresholded filter decision, and a set of
-diagnostics. The inverse-Markov-chain method of Morimura et
-al.~\cite{morimura2013}, originally a single-chain recovery procedure,
-sits inside the filter as the estimator; the three experimental
-tiers exist to justify, parameterise, and audit specific filter design
-choices using a single shared scoring core.
+This dissertation designed and audited a
+\emph{partial-observation routing-influence filter}. The filter ingests a
+road graph, sparse regime-labelled station observations at $\Xo$, and
+held-out trajectories; it fits one inverse-Markov-chain model per regime;
+then it scores each trajectory with a log-likelihood ratio. The underlying
+estimator is Morimura et al.'s inverse-MC method~\cite{morimura2013}; the
+contribution here is the two-regime detector built around it, the
+trajectory-level scoring rule, and the diagnostic suite used to decide
+whether a positive AUC is actually evidence of route-choice recovery.
 
-\paragraph{What was designed.} A filter with (i) an FD-verified
-inverse-Markov-chain estimator, including the omega-global gradients
-that the paper states but does not derive; (ii) a feature-regularised
-filter variant that wires SUMO-derived edge attributes (road class,
-speed, lane count, turn geometry) into the estimator as $10$ shared
-global parameters; (iii) a per-trajectory log-likelihood-ratio scoring
-rule with a deployment-tunable decision threshold $\eta$; (iv) a
-diagnostic suite comprising a per-row Pearson/cosine contrast against a
-full-observation empirical reference, an OD-rebalancing pre-step for
-real-world population-mix control, multistart basin checks, and a
-fitting-free empirical $2$-step memory audit.
+\paragraph{What the evidence supports.}
+Tier~1 validates the estimator implementation: on Morimura et al.'s
+synthetic recovery benchmark, the reproduced RMAE curve tracks the
+published proposed-method curve for $|\Xo|\ge10$, with analytic gradients
+finite-difference checked before downstream use. Tier~2 is the positive
+detector result. In labelled SUMO simulation, with shared OD pairs and a
+known rerouting flag, the filter reaches $\AUC=0.708$ at $T=40$ against a
+full-observation empirical $1$-step reference of $0.801$. The
+feature-regularised variant does not robustly lift aggregate AUC across
+all seeds, but it does robustly improve per-row chain recovery, which is
+the stronger claim. Tier~3 is the real-world stress test. On Xuancheng AVI
+data, where only behavioural proxy labels are available, the fitted
+$1$-step detector remains near chance after OD control: rush-vs-off-peak
+does not recover at any tested OD granularity, and the stronger
+Labour-Day-vs-normal split falls to $\AUC=0.502$ under
+validation-selected multistart despite a weak full-observation empirical
+signal.
 
-\paragraph{How it works.} The estimator fits one regime kernel per
-regime by minimising the regularised log-ratio loss of
-\cite{morimura2013}; the scorer accumulates $\log
-\hat{p}_B(x_{t+1}\!\mid\!x_t) - \log \hat{p}_A(x_{t+1}\!\mid\!x_t)$
-along each trajectory and thresholds the result; the diagnostic suite
-flags, before any downstream claim is made, whether the AUC
-reflects per-row chain recovery or aggregate bias, whether OD-mix has
-been controlled at the chosen granularity, and whether the chosen
-optimum survives a multistart audit.
+\paragraph{What the audits changed.}
+Several headline-looking results became more precise once audited. The
+SUMO features result became a chain-recovery result rather than a robust
+detection-AUC result. The SUMO $2$-step empirical backoff lifted AUC by
+about $+0.09$--$+0.10$ across all five seeds, showing that higher-order
+route memory is a real signal in the controlled data and a justified
+future model class. The same $2$-step audit did not help on the Xuancheng
+Labour-Day split, so route memory is not the simple missing lever for that
+real-world proxy. The optional $f+g$ route is mathematically verified and
+useful on small subgraphs when $\gamma$ is tuned near the $f$-only end, but
+naive city-scale sparse-LU is too slow and empirical hitting rates are too
+floor-dominated to use as the deployed full-network detector in this
+thesis.
 
-\paragraph{What worked.} The synthetic tier (\cref{sec:phase1-synthetic})
-validates the estimator inside the filter: the reproduction matches the
-published proposed-method curve closely for $|\Xo| \ge 10$, with
-gradients FD-verified at machine precision on non-zero components.
-Under controlled SUMO simulation, the full filter reaches $\AUC = 0.708$
-at $T = 40$ against a full-observation empirical $1$-step reference of
-$0.801$, and the feature-regularised filter variant robustly improves
-per-row chain recovery across a five-seed sweep (stacked Pearson
-$+0.050 \pm 0.023$, $p \approx 0.008$, positive on all five seeds). The
-pipeline ports unchanged at its core to a $1{,}733$-edge real-world
-network.
+\paragraph{Where the filter is reliable.}
+The filter is reliable as a controlled labelled detector under the
+conditions tested in SUMO: matched OD pairs, known rerouting labels, and a
+finite-data empirical reference against which chain recovery can be
+audited. In that setting it recovers a substantial fraction of the
+available $1$-step signal and exposes where the $1$-step model class runs
+out of capacity.
 
-\paragraph{What failed or was limited.} The aggregate detection-AUC
-lift from features is seed-dependent, reversing on one of five seeds,
-so the per-row diagnostic re-classifies features as a chain-recovery
-lever rather than a robust detection lever. This is exactly the kind
-of design-relevant verdict the audit suite exists to enable. Conversely, a properly regularised
-empirical $2$-step audit (interpolation backoff with count-conditional
-trust) lifts the AUC by about $+0.09$--$+0.10$ across five SUMO seeds,
-with every seed winning; the selected count-conditional setting gives
-$+0.100 \pm 0.009$ but is mildly test-tuned. This identifies
-higher-order routing memory as a real signal the $1$-step softmax family
-cannot capture, and promotes a parametric $2$-step Morimura extension to
-a justified future direction for controlled labelled settings. The same
-diagnostic on the Xuancheng Labour-Day split does \emph{not} lift the
-empirical reference: non-zero $2$-step interpolation weights reduce AUC
-below the $1$-step reference of $0.567$. So second-order route memory is
-not the missing lever for this real-data proxy; the remaining gap points
-instead to partial-observation identifiability, proxy noise, unobserved
-covariates, and OD/time heterogeneity. The hitting-rate ($f+g$) route does not naively transfer to full-SUMO
-scale: a sparse-LU rewrite is FD-verified and works, but at $|X_o|
-\approx 600$ the wide gradient solve still favours dense BLAS3 over
-sparse per-column solves by $\sim 80\times$, and a Sherman--Morrison
-amortisation would be the right algorithmic next step. At a sub-network
-scale where the framework is operationally fine, $f+g$ at the
-correctly-tuned loss weight ($\gamma \approx 0.95$) lifts AUC by
-$+0.055$ and matches the full-observation reference on the test
-subgraph within sampling noise; the $\sim 85\%$ floor-dominated
-empirical $g$ persists at every scale we tested and is the
-$\gamma$-tuning constraint. On the real AVI data the
-fitted $1$-step filter does not recover the rush-vs-off-peak contrast
-at any OD-zone granularity tested ($K \in \{8, 16, 32, 64\}$; AUC
-$0.476$--$0.513$, every bootstrap CI straddling chance), even though
-the full-observation reference weakly carries it
-($\sim\!0.55$--$0.58$ for $K \ge 16$); the multistart audit confirms
-this is a genuine near-chance outcome rather than an optimiser
-artefact. A stronger Labour-Day-vs-normal proxy creates a clearer
-within-OD empirical signal ($\AUC_{\mathrm{emp}}=0.567$ at $K=64$), but
-the validation-selected multistart fit still falls to chance
-($\AUC_{\mathrm{fit}}=0.502$), showing that the limitation is not simply
-absence of a real-world behavioural signal; the empirical $2$-step audit
-also rules out simple route memory as an immediate rescue on that split.
-An OD-mix attribution we
-initially inferred from the coarse $K=8$
-match ($\sim\!75\%$) did not survive the granularity sweep and is not
-claimed.
-
-\paragraph{Where the filter is reliable.} Under controlled, labelled
-simulation with shared OD pairs across regimes, the filter recovers a
-robust fraction of the per-row routing contrast and supplies a
-calibrated AUC together with audit signals that correctly distinguish
-chain recovery from aggregate bias. The Tier-2 SUMO result is the
-strongest defensible claim that this dissertation makes about the
-filter as a positive detector.
-
-\paragraph{Where the filter is not reliable.} On a real-world
-behavioural proxy without ground-truth sat-navigation labels, the
-within-OD routing signal, once OD-mix is controlled, is not robustly
-recovered by the fitted $1$-step partial-observation model under the
-tested proxies, model class, and data split. The filter therefore does
-\emph{not} support
-real-world sat-navigation detection on the Xuancheng dataset; Tier~3 is
-reported as a confounding audit, not a positive detection result.
-The filter's optional $\gobs$ input is fully tractable at the
-sub-network scale where its empirical estimate is informative:
-there it lifts AUC and recovers the empirical reference within
-sampling noise. It does not currently transfer to a full city
-network under naive sparse-LU; a Sherman--Morrison factor-sharing
-update (or the paper's natural-gradient descent) is the algorithmic
-prerequisite for re-enabling the $f+g$ mode at city scale.
+\paragraph{Where it is not reliable.}
+The filter does not support a positive real-world sat-navigation detection
+claim on Xuancheng. Without trip-level guidance/adoption labels,
+rush-vs-off-peak and Labour-Day splits remain behavioural proxies that mix
+route guidance, ordinary congestion adaptation, driver composition, OD
+mix, time heterogeneity and data-quality effects. Once those confounds are
+audited, the fitted partial-observation detector does not robustly recover
+the within-OD signal that remains in the full-observation reference.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.92\linewidth]{fig08_conclusion_synthesis.png}
 \caption{Cross-tier synthesis of the dissertation's headline results.
-The bars use a normalised summary rather than a single physical metric:
+The bars use a normalised summary, since the tiers use different metrics:
 Tier~1 reports benchmark-reproduction closeness, computed as the mean
-capped ratio between the visual paper RMAE and our RMAE for
-$|\Xo|\ge 10$ (lower RMAE is better); Tiers~2--3 report AUC gap closed,
-$(\AUC_{\mathrm{fit}}-0.5)/(\AUC_{\mathrm{emp}}-0.5)$. The pattern is
-the dissertation's central conclusion: the estimator reproduces its
-synthetic benchmark, the labelled SUMO filter recovers a substantial
-fraction of the empirical $1$-step signal, and the real Xuancheng
-behavioural proxy does not recover under the fitted partial-observation
-model.}
+capped ratio between the visual paper RMAE and this reproduction's RMAE for
+$|\Xo|\ge10$; Tiers~2--3 report AUC gap closed,
+$(\AUC_{\mathrm{fit}}-0.5)/(\AUC_{\mathrm{emp}}-0.5)$. The central pattern
+is that the estimator reproduces its synthetic benchmark, the labelled
+SUMO filter recovers a substantial fraction of the empirical $1$-step
+signal, and the real Xuancheng behavioural proxy does not recover under
+the fitted partial-observation model.}
 \label{fig:conclusion-synthesis}
 \end{figure}
 
-\paragraph{Contribution.} The contribution is a designed and audited
-filter pipeline, not a fresh estimator. Academically, the work extends
-the Morimura framework into a trajectory-level regime detector and
-supplies diagnostics that distinguish chain recovery from aggregate
-bias, along with a controlled-simulator decomposition
-(\cref{sec:phase4-rho-demand}) that bounds the sat-navigation-vs.-congestion
-confound in the rush-vs-off-peak behavioural proxy used on real-world
-data, documenting where the approach succeeds (controlled simulation
-with labels), where richer model classes show promise (SUMO $2$-step
-memory), and where they do not yet explain the real-data failure
-(Xuancheng Labour-Day empirical $2$-step). It also documents where the
-current approach fails: real-world proxy without labels, OD-mix
-confounding, weak partial-observation recovery, and the $f+g$
-engineering gap at city scale. Practically, it shows that quantifying externally-influenced
-routing on real urban data is gated less by the inverse-MC machinery
-than by the availability of ground-truth adoption labels and by control
-for OD-mix confounding, a result that directly informs how any
-future real-world sat-navigation detector should be scoped, evaluated,
-and audited.
+The practical conclusion is therefore sharper than a single AUC number:
+the inverse-MC machinery is not the main bottleneck for real-world
+externally-influenced routing detection. The bottleneck is validation
+data. A future deployment needs at least partial trip-level
+sat-navigation-use or guidance-compliance labels, repeated station and OD
+sensitivity checks, and a richer model class where the controlled data
+show it is warranted. Until those labels exist, this framework is best
+read as a validated controlled-simulation filter and a real-world
+confounding audit, not as a finished real-world sat-navigation detector.
