@@ -1,13 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1780581312.80628 "main.aux" "main.bbl" "main" 1780581886.9861 0
-  "./references.bib" 1780527032.04399 12534 a31f5e9f5f02a811555a6dd656762275 ""
+["bibtex main"] 1780583465.32532 "main.aux" "main.bbl" "main" 1780583892.7488 0
+  "./references.bib" 1780583445.42078 12961 0df4482acf635f7a7d6ebd242240048e ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bst" 1440712899 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
-  "main.aux" 1780581886.72803 46388 8380184cc368f4f1a9d0d0c864a7b2b4 "pdflatex"
+  "main.aux" 1780583892.52113 46469 0f96eff670f4d75e9b69b3f272ea804d "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1780581885.49783 "main.tex" "main.pdf" "main" 1780581886.98625 0
+["pdflatex"] 1780583891.34031 "/Users/aaronbendor/DESENG/Masters/thesis/main.tex" "main.pdf" "main" 1780583892.74894 0
+  "/Users/aaronbendor/DESENG/Masters/thesis/main.tex" 1780582388.64882 4315 ce3793ac3f8917904937a733b16fe29f ""
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1254269338 2375 baa924870cfb487815765f9094cf3728 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc" 1202520719 3486 c7eadf5dcc57b3b2d11736679f6636ba ""
   "/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc" 1202520719 2405 5dcf2c1b967ee25cc46c58cd52244aed ""
@@ -265,20 +266,20 @@
   "figures/fig07_phase5_multistart.png" 1780574566.35648 74938 a56ced1798843100924dfa0ddf4849d7 ""
   "figures/fig08_conclusion_synthesis.png" 1780574566.39502 57315 1b587b796304b0d6310d3f8623396af2 ""
   "figures/fig09_phase5_proxy_sweeps.png" 1780574566.24525 67490 95c06a8314dfa910286c6c4c170bd85c ""
-  "main.aux" 1780581886.72803 46388 8380184cc368f4f1a9d0d0c864a7b2b4 "pdflatex"
-  "main.bbl" 1780581312.87227 7891 a46d761c61cbe90ac3a121fd0b413261 "bibtex main"
-  "main.out" 1780581886.73399 13881 5f50ef1f566e4b37f328622bf40c0516 "pdflatex"
-  "main.tex" 1780580708.11201 4257 1f7f2a7095917167d05bef50b07ba830 ""
-  "main.toc" 1780581886.7342 7792 5732ef67287a706e8feba9c5c3b0a219 "pdflatex"
+  "main.aux" 1780583892.52113 46469 0f96eff670f4d75e9b69b3f272ea804d "pdflatex"
+  "main.bbl" 1780583465.39126 8147 2cd985ce15f7615a8aadb785edbdc79d "bibtex main"
+  "main.out" 1780583892.52705 13881 5f50ef1f566e4b37f328622bf40c0516 "pdflatex"
+  "main.tex" 1780582388.64882 4315 ce3793ac3f8917904937a733b16fe29f ""
+  "main.toc" 1780583892.52726 7792 351444420db293d64be9c94db2c39350 "pdflatex"
   "sections/00_abstract.tex" 1780580049.48541 2704 202bc0f7b1d2943e5830a73797303470 ""
   "sections/01_notation.tex" 1780580049.57018 3297 eeec2d9c7185f215354189b16f7d3274 ""
-  "sections/02_introduction.tex" 1780578927.41583 15766 015e4d15dde37d680350c66362373f98 ""
+  "sections/02_introduction.tex" 1780583445.24725 16365 4a035a28e5e89759e988e12a2e690b53 ""
   "sections/05_phase1_synthetic.tex" 1780577280.1173 1994 a30ca1a85845e072b15b8018abab78d4 ""
   "sections/06_phase4_sumo.tex" 1780580063.04527 26772 c12c2cf782cb5209bc1e77db9ef584cd ""
   "sections/07_phase5_xuancheng.tex" 1780580080.21972 22065 f1cab52705a6c6af8de5d68f471ca97d ""
-  "sections/08_discussion.tex" 1780580080.30725 9966 3a57ab692460c1dba12fe9f969829a0e ""
+  "sections/08_discussion.tex" 1780583891.1324 9966 bf7546f56dd3ef4627d40fc4672c0c63 ""
   "sections/09_reflection.tex" 1780580105.33164 4942 fa17380f40a502f6b2d753f0ad253be0 ""
-  "sections/10_conclusion.tex" 1780581106.363 4898 95fd148279ca57b39af531b3294b2fd3 ""
+  "sections/10_conclusion.tex" 1780583445.33439 5204 1924f251297adef5b904f76b0a228266 ""
   "sections/A_appendix.tex" 1780581880.46739 28185 4aed3b0bfbca1744b3125959761dc4fb ""
   (generated)
   "main.aux"

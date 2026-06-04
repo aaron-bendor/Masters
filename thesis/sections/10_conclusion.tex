@@ -74,8 +74,12 @@ the fitted partial-observation model.}
 \label{fig:conclusion-synthesis}
 \end{figure}
 
-In sum, the inverse-MC machinery is not the main bottleneck for real-world
-externally-influenced routing detection, rather, validation
+In sum, partial observation is the practical reason for the filter, not
+just the name of the estimator: many realistic transport datasets provide
+station counts, AVI detections or incomplete trajectory fragments rather
+than complete routes linked to app-use labels. The inverse-MC machinery is
+therefore useful as a sparse-evidence filter, but it is not the main
+bottleneck for real-world externally-influenced routing detection; validation
 data is the blocker. A future deployment needs at least partial trip-level
 sat-navigation-use or guidance-compliance labels, repeated station and OD
 sensitivity checks, and a richer model class where the controlled data

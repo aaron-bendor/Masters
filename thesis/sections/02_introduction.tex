@@ -32,6 +32,16 @@ externally influenced trajectories so that a later analyst can pass a
 cleaned, intrinsic-behaviour dataset to downstream route-choice,
 demand-estimation or policy-appraisal tasks.
 
+Partial observation is the realistic version of this problem, not an
+artificial handicap. Many transport datasets see only selected roadside
+counts, AVI detections, or incomplete trip fragments rather than a full
+route history for every vehicle. Fixed-location volume sensors such as
+loops and cameras are sparse, and recent route-choice work therefore
+estimates behaviour from sparse flow measurements and speed data
+\cite{kurzhanskiy2022sparse}. A filter that only works once every
+transition and app-use label is known would be useful as a benchmark, but
+not as an operational screening method.
+
 There is also an industry motivation for making this distinction at the
 trajectory level. Insurers, fleet operators and transport analytics
 providers increasingly need to understand whether an observed driving
