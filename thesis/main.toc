@@ -55,28 +55,30 @@
 \contentsline {section}{\numberline {8}Project Management and Reflection}{32}{section.8}%
 \contentsline {subsection}{\numberline {8.1}Project structure and milestone management}{32}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Personal skill development}{33}{subsection.8.2}%
-\contentsline {section}{Appendix}{38}{subsection.8.2}%
-\contentsline {section}{\numberline {A}Repository structure and reproducibility}{38}{appendix.A}%
-\contentsline {section}{\numberline {B}Solver profiling for the $f+g$ extension}{38}{appendix.B}%
-\contentsline {paragraph}{Sparse-LU implementation.}{38}{paragraph*.37}%
-\contentsline {paragraph}{SUMO-scale timing.}{38}{paragraph*.38}%
-\contentsline {paragraph}{Subgraph tractability and $\gamma $ sensitivity.}{39}{paragraph*.39}%
-\contentsline {section}{\numberline {C}Tier 1 synthetic reproduction details}{39}{appendix.C}%
-\contentsline {section}{\numberline {D}Tier 2 multistart basin check}{41}{appendix.D}%
-\contentsline {section}{\numberline {E}Tier 2 sat-navigation versus congestion decomposition}{42}{appendix.E}%
-\contentsline {section}{\numberline {F}Build and reproducibility}{43}{appendix.F}%
-\contentsline {section}{\numberline {G}Metric and method primer}{44}{appendix.G}%
-\contentsline {subsection}{\numberline {G.1}Markov chain and transition kernel}{44}{subsection.G.1}%
-\contentsline {subsection}{\numberline {G.2}Stationary distribution, restart probability and hitting rate}{44}{subsection.G.2}%
-\contentsline {subsection}{\numberline {G.3}Inverse Markov-chain problem}{45}{subsection.G.3}%
-\contentsline {subsection}{\numberline {G.4}Softmax-parametric chain}{45}{subsection.G.4}%
-\contentsline {subsection}{\numberline {G.5}Log-likelihood ratio score}{45}{subsection.G.5}%
-\contentsline {subsection}{\numberline {G.6}ROC curve and AUC}{45}{subsection.G.6}%
-\contentsline {subsection}{\numberline {G.7}Pearson correlation}{46}{subsection.G.7}%
-\contentsline {subsection}{\numberline {G.8}Cosine similarity and collinearity}{46}{subsection.G.8}%
-\contentsline {subsection}{\numberline {G.9}OD matching / OD rebalancing}{46}{subsection.G.9}%
-\contentsline {subsection}{\numberline {G.10}Bootstrap confidence interval}{46}{subsection.G.10}%
-\contentsline {subsection}{\numberline {G.11}L-BFGS-B optimiser, basins and multistart}{47}{subsection.G.11}%
-\contentsline {subsection}{\numberline {G.12}Ridge regularisation and finite-difference gradient checks}{47}{subsection.G.12}%
-\contentsline {subsection}{\numberline {G.13}Gap closed}{47}{subsection.G.13}%
-\contentsline {subsection}{\numberline {G.14}RMAE}{47}{subsection.G.14}%
+\contentsline {section}{References}{35}{section*.37}%
+\contentsline {section}{Appendix}{38}{section*.38}%
+\contentsline {section}{\numberline {A}Code and reproducibility}{38}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Repository structure}{38}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Build and reproduction commands}{38}{subsection.A.2}%
+\contentsline {section}{\numberline {B}Solver profiling for the $f+g$ extension}{39}{appendix.B}%
+\contentsline {paragraph}{Sparse-LU implementation.}{39}{paragraph*.39}%
+\contentsline {paragraph}{SUMO-scale timing.}{39}{paragraph*.40}%
+\contentsline {paragraph}{Subgraph tractability and $\gamma $ sensitivity.}{39}{paragraph*.41}%
+\contentsline {section}{\numberline {C}Tier 1 synthetic reproduction details}{40}{appendix.C}%
+\contentsline {section}{\numberline {D}Tier 2 multistart basin check}{42}{appendix.D}%
+\contentsline {section}{\numberline {E}Tier 2 sat-navigation versus congestion decomposition}{43}{appendix.E}%
+\contentsline {section}{\numberline {F}Metric and method primer}{44}{appendix.F}%
+\contentsline {subsection}{\numberline {F.1}Markov chain and transition kernel}{44}{subsection.F.1}%
+\contentsline {subsection}{\numberline {F.2}Stationary distribution, restart probability and hitting rate}{45}{subsection.F.2}%
+\contentsline {subsection}{\numberline {F.3}Inverse Markov-chain problem}{45}{subsection.F.3}%
+\contentsline {subsection}{\numberline {F.4}Softmax-parametric chain}{45}{subsection.F.4}%
+\contentsline {subsection}{\numberline {F.5}Log-likelihood ratio score}{46}{subsection.F.5}%
+\contentsline {subsection}{\numberline {F.6}ROC curve and AUC}{46}{subsection.F.6}%
+\contentsline {subsection}{\numberline {F.7}Pearson correlation}{46}{subsection.F.7}%
+\contentsline {subsection}{\numberline {F.8}Cosine similarity and collinearity}{46}{subsection.F.8}%
+\contentsline {subsection}{\numberline {F.9}OD matching / OD rebalancing}{47}{subsection.F.9}%
+\contentsline {subsection}{\numberline {F.10}Bootstrap confidence interval}{47}{subsection.F.10}%
+\contentsline {subsection}{\numberline {F.11}L-BFGS-B optimiser, basins and multistart}{47}{subsection.F.11}%
+\contentsline {subsection}{\numberline {F.12}Ridge regularisation and finite-difference gradient checks}{47}{subsection.F.12}%
+\contentsline {subsection}{\numberline {F.13}Gap closed}{48}{subsection.F.13}%
+\contentsline {subsection}{\numberline {F.14}RMAE}{48}{subsection.F.14}%

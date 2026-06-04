@@ -11,11 +11,11 @@ the full detector in labelled simulation, then stress-test the same
 pipeline on real data where the labels are only proxies.
 
 Milestone management was driven by a continuously updated
-\code{research\_logbook.md}. After each experimental cycle I recorded the
+\code{research\_logbook.md}. Each experimental cycle recorded the
 hypothesis, setup, result, interpretation, and next action. The logbook
-became especially useful when results changed direction: it made it clear
-which claims were still supported by evidence and which were only working
-assumptions from an earlier stage.
+became especially useful when results changed direction, because it made
+clear which claims were still supported by evidence and which were only
+working assumptions from an earlier stage.
 
 Two practices worked well:
 \begin{itemize}
@@ -41,8 +41,8 @@ $\code{maxiter}$ was projected at $\sim 30$ minutes and killed at
 $3$~hours. Two iterations were burned before the structural
 diagnosis (the hitting-rate gradient is $O(|X_o| \cdot n^3)$ and the
 $84\%$-floor loss landscape is degenerate at this scale) was reached.
-In future I would profile a single iteration before committing to a
-sweep at unfamiliar configuration.
+Future sweeps at unfamiliar configurations should profile a single
+iteration before committing to a full run.
 \item \textbf{Late identification of the OD-mix confound.} The Tier-3
 rush-vs-off-peak proxy was scoped before the methodological cost of
 the OD-mix confound was clearly understood. The OD-rebalancing
@@ -54,32 +54,21 @@ Earlier scoping would have caught this; the lesson is that
 not an ad-hoc discussion item.
 \end{itemize}
 
-
-Looking back, the strongest parts of the project are the staged
-validation structure and the willingness to keep negative results in the
-main argument. The work did not stop at reproducing the source paper: it
-tested the estimator inside a detector, separated labelled simulation from
-proxy-labelled real data, and used diagnostics to avoid over-reading a
-single AUC. The main weaknesses are also clear. Tier~3 uses one real
-city/month pool rather than multiple independent real-world replications,
-and the feature result that first looked like a detection improvement
-became seed-dependent once the full SUMO sweep was run.
-
 \subsection{Personal skill development}
 \label{sec:reflect-skills}
 
-The technical skills I leaned on heavily and improved in: deriving and
+The main technical skills developed through the project were deriving and
 finite-difference-verifying analytic gradients (Eqs.~12, 15, 17--18 of
 the source paper); writing software with a clean separation between
 the inverter's mathematical core (in \code{morimura.py}, kept faithful
 to the paper) and the application-specific loaders that surround it
 (\code{sumo\_to\_phase3.py}, \code{real\_data/load\_xuancheng.py});
-and writing a logbook that records both the successful and the
-unsuccessful experimental cycles in enough detail that I could
-critique my own past decisions a month later.
+and maintaining a logbook that records both the successful and the
+unsuccessful experimental cycles in enough detail for later critical
+review.
 
-The non-technical skill I would name as the one that most shaped the
-project's outcome is \emph{disciplined treatment of negative results}. The
+The non-technical skill that most shaped the project's outcome was the
+disciplined treatment of negative results. The
 project did not produce the headline ``real-world detector with a
 high AUC and clean chain recovery'' that the SUMO Tier-2 result would
 have predicted. Instead it produced: a controlled-validation result
@@ -97,5 +86,5 @@ OD controls, bootstrap intervals, per-row diagnostics and multistart
 audit showed the useful version of the negative result: Labour Day has a
 real full-observation within-OD signal, but the fitted detector still
 falls to chance under validation-selected multistart. Accepting that
-result, rather than chasing a higher headline number, is the skill I most
-want to carry forward.
+result, rather than chasing a higher headline number, was an important
+project-management lesson.

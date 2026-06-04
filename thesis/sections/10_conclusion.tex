@@ -1,7 +1,7 @@
 \section{Conclusion}\label{sec:conclusion}
 
 This dissertation designed and audited a
-\emph{partial-observation routing-influence filter}. The filter ingests a
+partial-observation routing-influence filter. The filter ingests a
 road graph, sparse regime-labelled station observations at $\Xo$, and
 held-out trajectories; it fits one inverse-Markov-chain model per regime;
 then it scores each trajectory with a log-likelihood ratio. The underlying
@@ -19,8 +19,7 @@ detector result. In labelled SUMO simulation, with shared OD pairs and a
 known rerouting flag, the filter reaches $\AUC=0.708$ at $T=40$ against a
 full-observation empirical $1$-step reference of $0.801$. The
 feature-regularised variant does not robustly lift aggregate AUC across
-all seeds, but it does robustly improve per-row chain recovery, which is
-the stronger claim. Tier~3 is the real-world stress test. On Xuancheng AVI
+all seeds, but it does robustly improve per-row chain recovery. Tier~3 is the real-world stress test. On Xuancheng AVI
 data, where only behavioural proxy labels are available, the fitted
 $1$-step detector remains near chance after OD control: rush-vs-off-peak
 does not recover at any tested OD granularity, and the stronger
@@ -75,12 +74,11 @@ the fitted partial-observation model.}
 \label{fig:conclusion-synthesis}
 \end{figure}
 
-The practical conclusion is therefore sharper than a single AUC number:
-the inverse-MC machinery is not the main bottleneck for real-world
-externally-influenced routing detection. The bottleneck is validation
-data. A future deployment needs at least partial trip-level
+In sum, the inverse-MC machinery is not the main bottleneck for real-world
+externally-influenced routing detection, rather, validation
+data is the blocker. A future deployment needs at least partial trip-level
 sat-navigation-use or guidance-compliance labels, repeated station and OD
 sensitivity checks, and a richer model class where the controlled data
 show it is warranted. Until those labels exist, this framework is best
 read as a validated controlled-simulation filter and a real-world
-confounding audit, not as a finished real-world sat-navigation detector.
+confounding audit rather than a finished real-world sat-navigation detector.

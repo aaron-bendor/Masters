@@ -1,4 +1,4 @@
-# logs/ — captured stdout from long Phase-3/4/5 runs
+# logs/ — captured stdout from long tier and exploratory runs
 
 These are run transcripts, not data. Each was produced by piping a sweep dispatcher or a single fit to `tee` while it ran. The numbers they contain have been distilled into `research_logbook.md`; the raw logs are kept for traceability.
 

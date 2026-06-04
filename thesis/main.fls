@@ -367,7 +367,6 @@ INPUT ./sections/00_abstract.tex
 INPUT sections/00_abstract.tex
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmr10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmr8.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmr6.tfm
@@ -440,7 +439,6 @@ INPUT ./sections/06_phase4_sumo.tex
 INPUT ./sections/06_phase4_sumo.tex
 INPUT ./sections/06_phase4_sumo.tex
 INPUT sections/06_phase4_sumo.tex
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmri12.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr8.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr6.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/lm/ts1lmr.fd
@@ -477,6 +475,7 @@ INPUT ./sections/07_phase5_xuancheng.tex
 INPUT ./sections/07_phase5_xuancheng.tex
 INPUT ./sections/07_phase5_xuancheng.tex
 INPUT sections/07_phase5_xuancheng.tex
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmri12.tfm
 INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
@@ -518,6 +517,14 @@ INPUT ./sections/A_appendix.tex
 INPUT ./sections/A_appendix.tex
 INPUT ./sections/A_appendix.tex
 INPUT sections/A_appendix.tex
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtti10.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/rm-lmr17.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmmi12.tfm
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/lmsy10.tfm
@@ -530,14 +537,6 @@ INPUT ./figures/fig06_phase4_multistart.png
 INPUT ./figures/fig06_phase4_multistart.png
 INPUT ./figures/fig06_phase4_multistart.png
 INPUT ./figures/fig06_phase4_multistart.png
-INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtt10.tfm
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtti10.tfm
 INPUT main.aux
 INPUT ./main.out
 INPUT ./main.out
@@ -556,7 +555,6 @@ INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr12.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr17.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr6.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri12.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmsy6.pfb

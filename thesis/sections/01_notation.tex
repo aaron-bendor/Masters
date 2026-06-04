@@ -13,14 +13,14 @@ report.
 \textbf{Symbol} & \textbf{Meaning} \\
 \midrule
 $\mathcal{X}$, $n$ & Full state space (directed road edges); $n = |\mathcal{X}|$. \\
-$\Xo \subset \mathcal{X}$ & Subset of \emph{observed} states at which counts are available. \\
+$\Xo \subset \mathcal{X}$ & Subset of observed states at which counts are available. \\
 $\mathrm{adj}(x)$ & Set of legal successors of state $x$ (out-neighbours in the directed graph). \\
 $\pT(x'\mid x)$ & One-step transition probability from $x$ to $x'$; row $x$ of the kernel $\Pchain$. \\
 $\pI(x)$ & Restart distribution on $\mathcal{X}$; after a restart, the next state is drawn from this row vector. \\
 $\beta \in [0,1]$ & Continuation probability per step; together with $\pI$ defines the restarted stationary mixture $P = \beta\Pchain + (1-\beta)\,\bm{1}\pI^\top$. \\
 $\pi$ & Stationary distribution of $P$; obtained from $\pi^\top P = \pi^\top$, $\bm{1}^\top\pi = 1$. \\
 $\fobs(x)$ & Empirical visit count (or normalised frequency) at $x$. Observed only for $x \in \Xo$. \\
-$\gobs(x, x')$ & \emph{Hitting rate} from $x$ to $x'$, a discounted first-passage probability on $\Xo \times \Xo$; empirical in SUMO/Xuancheng and analytically generated only in the Tier~1 synthetic benchmark. \\
+$\gobs(x, x')$ & Hitting rate from $x$ to $x'$, a discounted first-passage probability on $\Xo \times \Xo$; empirical in SUMO/Xuancheng and analytically generated only in the Tier~1 synthetic benchmark. \\
 $\phi_T(x') \in \mathbb{R}^{d_T}$ & Destination-state feature vector (\cref{sec:features}). \\
 $\psi(x, x') \in \mathbb{R}^{d_\psi}$ & Directed-edge feature vector. \\
 $\nu \in \mathbb{R}^n$ & Per-state base parameters of $\pI$. \\

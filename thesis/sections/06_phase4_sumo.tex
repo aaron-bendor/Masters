@@ -35,7 +35,7 @@ full-observation transition matrix after Laplace smoothing. Here, Laplace
 smoothing means adding a small pseudo-count to each legal transition
 before normalising, so legal but unseen transitions do not receive zero
 probability. The reference is therefore the best a $1$-step detector can
-do \emph{given this finite data and smoothing}, and finite-sample and
+do given this finite data and smoothing, and finite-sample and
 train/test variation can move it (and occasionally produce apparent
 anomalies, \cref{sec:phase5-multistart}).
 
@@ -71,17 +71,19 @@ insufficient congestion to drive any rerouting. At \code{-p 0.5} the
 satnav regime delivers $\sim 36\%$ more completed trips than intrinsic
 with matched insertion ($28{,}098$ vs.\ $20{,}700$ finishing). This
 completion imbalance is a limitation of the SUMO operating point. The
-validation scorer uses balanced test sets ($N=300$ per regime), and the
-Morimura $L_d$ term is scale-free in the aggregate counts, so the result is
-not a trivial class-prior effect. Nevertheless, the fitted counts and the
-pool of long completed trajectories are conditional on different
+validation scorer uses balanced test sets ($N=300$ per regime), so the
+AUC cannot be explained by having more sat-navigation than intrinsic test
+vehicles. The count-fitting loss is based on station-count ratios,
+which removes dependence on the absolute total number of completed
+vehicles in each regime. Nevertheless, the fitted counts and the pool of
+long completed trajectories are conditional on different
 completion/survival processes in the two regimes. A real risk is therefore
 that the inverse-MC fit learns where trips survive to completion under
 sat-navigation rather than only learning routing preferences conditional on
 comparable trips. Tier~2 is therefore treated as a controlled operational
-validation of the filter under this biased operating point, not as a
-completion-balanced causal estimate of the effect of sat-navigation
-rerouting. A stricter sensitivity study would rerun the simulation or
+validation of the filter under this biased operating point. It does not
+support a completion-balanced causal estimate of the effect of
+sat-navigation rerouting. A stricter sensitivity study would rerun the simulation or
 rebuild $\fobs$ under matched completed-trip populations; that extension is
 left outside the present experimental budget.
 
@@ -117,8 +119,8 @@ per-row cosine median and fraction of rows with positive cosine, moves
 positively under \code{features=real} (dark) vs.\ \code{features=none}
 (light). The Pearson +63\% relative lift and the cosine median
 $4.6\times$ lift on the \texttt{[all branching]} generalisation block
-are the strongest evidence that chain recovery, not aggregate-bias drift,
-is what features improve.}
+are the strongest evidence that features improve chain recovery rather
+than aggregate-bias drift.}
 \label{fig:phase4-features-lift}
 \end{figure}
 
@@ -127,7 +129,7 @@ is what features improve.}
 \caption{Features lift across all metrics on the Ingolstadt SUMO network,
 seed=42 (\cref{fig:phase4-features-lift}). \texttt{[all branching]}
 restricts the per-row diagnostic to states with
-$\mathrm{out\text{-}deg} > 1$ that the inverter did \emph{not} directly
+$\mathrm{out\text{-}deg} > 1$ that the inverter did not directly
 observe, namely the generalisation block.}
 \label{tab:phase4-features}
 \small
@@ -149,9 +151,9 @@ Two results are worth separating. First, the $+0.032$ AUC lift on this
 seed sits outside the single-instance variability measured in repeated
 SUMO baseline runs. As the multi-seed
 analysis of \cref{sec:phase4-multiseed} shows, however, this aggregate
-AUC lift does \emph{not} survive replication across SUMO instances. The
-per-row chain-recovery improvement, not the aggregate AUC, is the robust
-effect. Second, the stacked Pearson on \texttt{[all branching]}
+AUC lift does not survive replication across SUMO instances. The
+robust effect lies in the per-row chain-recovery improvement; the aggregate
+AUC does not replicate. Second, the stacked Pearson on \texttt{[all branching]}
 rises from $+0.132$ to $+0.215$, and the per-row cosine median from
 $+0.095$ to $+0.435$. These are the metrics
 that distinguish ``the fit improved because the chains got more accurate
@@ -179,7 +181,7 @@ seed fixed at $13$, $T=20$, $|X_o|=601$, $\code{maxiter}=1500$) under both
 \code{features=none} and \code{features=real}
 (\cref{tab:phase4-multiseed}, \cref{fig:phase4-multiseed}).
 Because the inverse-MC loss is non-convex, the optimiser can settle into
-different local optima, or \emph{basins}, on different SUMO instances. A
+different local optima, or basins, on different SUMO instances. A
 basin here means a stable region of parameter space that L-BFGS-B reaches
 and then cannot improve beyond, even though another instance may reach a
 better region. The multistart audit in the Appendix tests whether random
@@ -191,11 +193,11 @@ re-initialisation can escape the low basin.
 \caption{Multi-seed Tier~2 features sweep (five SUMO seeds,
 \texttt{[all branching]} block, $T=20$). \textbf{(a)} The aggregate
 detection metric (gap-closed) lifts under \code{features=real} on four
-seeds but \emph{reverses} on seed~$101$; the \code{features=none} bars
+seeds but reverses on seed~$101$; the \code{features=none} bars
 also reproduce the bimodal basin structure ($\{7,23\}$ low,
 $\{42,101,2024\}$ high). \textbf{(b)} The per-row chain-recovery metric
-(stacked Pearson) lifts on \emph{all five} seeds. Features are a robust
-chain-recovery lever, not a robust aggregate-detection lever.}
+	(stacked Pearson) lifts on all five seeds. Features robustly
+improve chain recovery; aggregate detection remains seed-sensitive.}
 \label{fig:phase4-multiseed}
 \end{figure}
 
@@ -225,27 +227,25 @@ mean $\Delta$ & \multicolumn{2}{c}{--} & \multicolumn{2}{c}{$+0.024 \pm 0.026$} 
 \end{tabular}
 \end{table}
 
-Three findings. First, the aggregate detection lift is \emph{not}
+Three findings. First, the aggregate detection lift is not
 statistically robust: the paired $\AUC_{\mathrm{fit}}$ lift averages
 $+0.024 \pm 0.026$ across the five seeds, positive on four but reversing
 on seed~$101$. The test is paired because each SUMO seed is evaluated
 twice, once with \code{features=none} and once with \code{features=real},
 so the statistic tests whether the within-seed AUC differences have a
-non-zero mean (paired $t$-test: $t \approx 2.0$, $p \approx 0.11$, not
-significant at $\alpha = 0.05$). The single-seed $+0.032$ headline of
-\cref{sec:phase4-features-result} is therefore a favourable draw, not a
-replicable property of the aggregate AUC.
+non-zero mean (paired $t$-test: $t \approx 2.0$, $p \approx 0.11 > 0.05$).
+The single-seed $+0.032$ headline of \cref{sec:phase4-features-result}
+therefore reflects a favourable draw rather than a replicable property of
+the aggregate AUC.
 
-Second, the per-row chain-recovery metrics \emph{are} robust. The stacked
-Pearson lift averages $+0.050 \pm 0.023$ and is positive on \emph{all five} seeds
+Second, the per-row chain-recovery metrics are robust. The stacked
+Pearson lift averages $+0.050 \pm 0.023$ and is positive on all five seeds
 ($t \approx 4.9$, $p \approx 0.008$); the per-row cosine median lifts on
 all five as well (mean $\approx +0.25$). Seed~$101$ is the clearest warning
 that AUC and chain quality can move in different directions: features
-\emph{hurt} its detection AUC ($0.581 \to 0.559$) while \emph{improving}
+hurt its detection AUC ($0.581 \to 0.559$) while improving
 its chain recovery (cosine median $0.062 \to 0.475$). The features lever
-is therefore a
-\textbf{chain-recovery} improvement, not an aggregate-detection
-improvement.
+therefore improves \textbf{chain recovery} rather than aggregate detection.
 
 Third, the \code{features=none} fit reproduces the bimodal gap-closure
 structure observed in repeated SUMO runs: seeds $\{7, 23\}$ cluster
@@ -271,13 +271,11 @@ edge $x_t$, but drivers may also condition on the edge they just came from:
 lane group''. A $2$-step model gives the next-edge distribution the context
 $(x_{t-1},x_t)$ instead of only $x_t$.
 
-This subsection is a diagnostic, not a new fitted inverse-MC model. The
-test is: if a full-observation empirical $2$-step scorer ranks the two
-SUMO regimes better than the full-observation empirical $1$-step scorer,
-then the data contain route-memory signal that the current $1$-step
-softmax family cannot express. If it does not lift, the flipped rows are
-more likely caused by optimisation, sparse observation, or feature
-misspecification.
+The check uses full-observation empirical scorers only. If a regularised
+$2$-step scorer ranks the two SUMO regimes better than the $1$-step
+reference, the data contain route-memory signal outside the current
+$1$-step softmax family. Without such a lift, the flipped rows point more
+plausibly to optimisation, sparse observation, or feature misspecification.
 
 The catch is sparsity. On the Ingolstadt network the raw context space
 $(x_{t-1},x_t)$ has roughly $|X|^2 \approx 5.8$M possible pairs, and most
@@ -364,7 +362,7 @@ stable: any reasonable backoff strength lifts AUC by about $+0.09$ to
 $+0.10$ across all five SUMO seeds.
 
 \paragraph{Implication.} A properly regularised 2-step empirical
-\emph{does} lift the reference, decisively, across every SUMO seed
+does lift the reference, decisively, across every SUMO seed
 tested: the regularised 2-step AUC reaches $0.752 \pm 0.015$ against
 the 1-step baseline of $0.652 \pm 0.022$, a $+0.100$ delta whose
 per-seed signs all point the same way. Two implications follow.
@@ -433,7 +431,7 @@ $40$ & $\mathbf{0.801}$ & $\mathbf{0.708}$ & $69.0\%$ & $+0.216$ \\
 
 Two findings worth recording. First, the empirical reference rises from
 $0.685$ to $0.801$ between $T=20$ and $T=40$, confirming that
-the reference at $T=20$ was an artefact of the truncation window, not a
+the reference at $T=20$ reflected the truncation window rather than a
 fundamental data limit. Second, the per-row Pearson is constant across
 $T$ at $\sim +0.21$. $T$ is purely a scoring-window lever: it lets the
 trajectory-level score discriminate more sharply, but it does not
@@ -464,7 +462,7 @@ Morimura et al.'s estimator can use two kinds of sparse evidence. The
 $f$ term says how much traffic is seen at each observed station; the $g$
 term says how often a trajectory starting at one observed station later
 reaches another. Intuitively, $f+g$ should be stronger than $f$ alone
-because it adds coarse path-connectivity information, not just station
+because it adds coarse path-connectivity information beyond station
 busyness. The practical question is whether those extra hitting-rate
 measurements are dense and cheap enough to help at city scale.
 

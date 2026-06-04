@@ -13,16 +13,19 @@ the loader, the regime definition, and the OD-control logic. Because the
 real-world AVI datasets available for this study do not provide
 trip-level sat-navigation-use or route-guidance-compliance labels, this
 tier cannot directly validate sat-navigation detection. It is a
-real-world \emph{confounding audit}
+real-world confounding audit
 that asks whether a plausible behavioural proxy (rush-hour vs.\
 off-peak travel) contains a within-OD route-choice signal once the
 population-mix confound is controlled, and whether the filter survives
 that confounding. As the results below show, under the tested proxy the
-within-OD contrast is not recovered. The absence of a ground-truth
-label is the defining methodological constraint of this tier, and the
-filter's OD-rebalancing and multistart audits exist precisely so that
-this constraint can be reported directly and kept separate from any
-spurious AUC.
+within-OD contrast is not recovered. The absence of a ground-truth label
+is the defining methodological constraint of this tier; the much shorter
+legalised trip windows are the main measurement constraint. Xuancheng
+sub-trajectories average only $8.2$ edges, compared with $35.7$ edges for
+the SUMO routes, so each real-world trajectory carries less
+likelihood-ratio evidence. The filter's OD-rebalancing and multistart
+audits exist precisely so that these constraints can be reported directly
+and kept separate from any spurious AUC.
 
 \subsection{Method}
 
@@ -55,7 +58,7 @@ state space $n$ & $2{,}405$ edges & $1{,}733$ edges (SCC subset) \\
 trips per day & $\sim 28{,}000$ per regime & $\sim 327{,}000$ \\
 mean trajectory length & $35.7$ edges & $15.1$ edges (raw) \\
 total trips (full pool) & $\sim 56{,}000$ & $\sim 10.5$M (Apr 2023) \\
-ground-truth regime label & yes (\code{rerouting} flag) & \emph{no} (proxy required) \\
+ground-truth regime label & yes (\code{rerouting} flag) & no (proxy required) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -74,7 +77,7 @@ remaining $21.6\%$ split as $\sim 1.9\%$ junction-adjacent-but-disconnected
 inter-junction ``teleports'' attributable to the source pipeline's
 Dijkstra-repair step that fills in missing AVI passages on
 CityFlow's connectivity graph instead of the SUMO net's. The loader
-handles this by \emph{splitting trips at illegal boundaries} into
+handles this by splitting trips at illegal boundaries into
 legal-only sub-trajectories instead of dropping the trip wholesale:
 a $15$-edge raw trip with one illegal jump becomes two sub-trajectories.
 This is the conservative choice because the inverse-MC scorer assigns
@@ -119,7 +122,7 @@ if external rerouting influence is stronger under congestion, rush-hour
 routes should differ from off-peak routes after OD mix is controlled.
 
 This proxy is weaker than the SUMO contrast in two ways. First, rush
-and off-peak trips have \emph{different populations} (commuters vs.\
+and off-peak trips have different populations (commuters vs.\
 discretionary trips), so any chain difference reflects both the
 routing-choice effect of interest and the nuisance OD-mix effect.
 Second, the actual sat-navigation adoption rate in
@@ -140,7 +143,7 @@ peak demand gives a strong signal. That supports the proxy inside the
 simulator, but it does not settle the real-world case. SUMO's unaided
 drivers follow precomputed shortest paths, whereas real commuters may
 avoid recurring bottlenecks from experience. The Xuancheng proxy therefore
-remains a behavioural stress test, not a labelled sat-navigation
+serves as a behavioural stress test rather than labelled sat-navigation
 validation.
 
 \subsection{Results}
@@ -160,7 +163,7 @@ across the shared cells of an $8$-zone origin--destination grid.
 configurations. The full-observation empirical $1$-step reference (grey)
 is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and
 $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The
-apparent crash at $K=8$ is \emph{not} stable across zone granularity:
+apparent crash at $K=8$ is not stable across zone granularity:
 a sweep over $K \in \{8, 16, 32, 64\}$ (\cref{tab:phase5-ksweep}) shows
 the matched reference returning to $\sim\!0.55$--$0.58$ for $K \ge 16$.
 The $K=8$ drop is therefore not treated as a fixed OD-mix fraction.
@@ -228,7 +231,7 @@ the full-observation chain weakly separates rush from off-peak routes.
 
 The feature-augmented row needs separate handling. Its matched
 \code{features=real} AUC of $0.530$ exceeds the empirical reference
-($0.518$), indicating a fit problem, not a better detector.
+($0.518$), indicating a fit problem rather than a better detector.
 The diagnostic is consistent with that reading: the rush-chain loss is
 $1397$ under \code{features=real}, compared with $4.058$ under
 \code{features=none}, and the per-row Pearson is lower with features
@@ -299,14 +302,13 @@ $+0.066$ on all branching states). Thus, even when Xuancheng contains a
 measurable within-OD $1$-step contrast, the current partial-observation
 parametric recovery does not recover it robustly.
 
-A final check asks whether this real-data signal is hidden in route memory
-instead of first-order turning probabilities. This is intentionally the
-same fitting-free empirical $2$-step backoff diagnostic used in Tier~2:
-it does not fit a new inverse-MC model, but it tests whether the mechanism
-that helped SUMO -- next-edge choice depending on both the current and
-previous edge -- is also visible in the real proxy. The diagnostic was run
-on the same Labour $K=64$ split, using the interpolation-backoff family
-that produced the Tier~2 SUMO lift.
+A final check asks whether route memory carries the real-data signal that
+first-order turning probabilities miss. It reuses the fitting-free
+empirical $2$-step backoff diagnostic from Tier~2. The question is whether
+the mechanism that helped SUMO -- next-edge choice depending on both the
+current and previous edge -- is also visible in the real proxy. The
+diagnostic was run on the same Labour $K=64$ split, using the
+interpolation-backoff family that produced the Tier~2 SUMO lift.
 
 The result is negative. The $1$-step empirical reference remains $0.567$
 (CI $[0.521,0.610]$), while every non-zero $2$-step interpolation weight
@@ -361,8 +363,8 @@ validation-selected by held-out log-likelihood) on the exact OD-matched
 \code{features=real} configuration ($d=6{,}136$, $T=10$,
 $|X_o| = 433$, $517{,}177$ train transitions per regime).
 
-The result is decisive and \emph{opposite} to the SUMO basin check of
-\cref{sec:phase4-multistart}. On Xuancheng, multistart \emph{does} escape
+The result is decisive and opposite to the SUMO basin check of
+\cref{sec:phase4-multistart}. On Xuancheng, multistart does escape
 the high-loss basin: the rush (intrinsic) chain loss drops from the
 zero-init baseline of $1397$ to $9.186$ at the validation-selected
 restart (restart losses $\{1413, 1844, 273.4, 9.186, 1792\}$, so one
@@ -380,7 +382,7 @@ usable behavioural proxy signal.
 \caption{Xuancheng OD-matched \code{features=real} multistart
 ($K=5$). \textbf{(a)} The rush-chain training loss collapses from the
 zero-init baseline ($1{,}397$) to the validation-selected restart
-($9.186$): random re-initialisation \emph{escapes} the high-loss basin,
+($9.186$): random re-initialisation escapes the high-loss basin,
 unlike the SUMO case (\cref{sec:phase4-multistart}). \textbf{(b)} Despite
 the proper fit, $\AUC_{\mathrm{fit}}$ falls from the baseline's spurious
 $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ --
@@ -413,8 +415,8 @@ the same machinery cannot directly validate sat-navigation detection when
 only behavioural proxy labels are available.
 
 The result also identifies the methodological lever any future
-real-world validation of this framework needs: \emph{ground-truth
-sat-navigation adoption labels}, even partial, on the underlying trip
+real-world validation of this framework needs: ground-truth
+sat-navigation adoption labels, even partial, on the underlying trip
 records. Such labels would remove the proxy-label ambiguity and allow the
 controlled-comparison machinery of Tier~2 to be repeated on real trips,
 while OD balance, data quality and adoption heterogeneity would still need

@@ -1,5 +1,7 @@
-\section{Repository structure and reproducibility}
+\section{Code and reproducibility}
 \label{app:repo}
+
+\subsection{Repository structure}
 
 The codebase is organised as follows.
 
@@ -27,6 +29,41 @@ the three regime-split helpers, and the OD-rebalancing extension.
 \item[\code{research\_logbook.md}] The day-by-day project log,
 with twenty experimental-cycle entries.
 \end{description}
+
+\subsection{Build and reproduction commands}\label{app:build}
+
+The project is reproducible from the repository via the README, with
+the following minimum environment:
+
+\begin{lstlisting}[language=bash]
+# Python 3.14, see project README
+python3 -m venv .venv
+.venv/bin/python -m pip install numpy scipy matplotlib
+
+# Tier 1: synthetic Morimura reproduction (~20 s)
+.venv/bin/python morimura.py
+
+# Tier 2: SUMO experiments (requires SUMO_HOME set)
+.venv/bin/python sumo_validation/contrast_correlation.py \
+    --seed 42 --features real --T 40 --maxiter 1500
+
+# Tier 3: Xuancheng experiments (requires real_data/ populated)
+.venv/bin/python sumo_validation/contrast_correlation.py \
+    --dataset xuancheng \
+    --day 2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21 \
+    --regime_split rush_offpeak --od_match 8 \
+    --features real --T 10 --maxiter 1500
+
+# Stronger-proxy Labour-Day stress test
+DAYS=2023-04-28,2023-04-29,2023-04-30,\
+2023-04-11,2023-04-12,2023-04-13,2023-04-14,\
+2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21
+.venv/bin/python sumo_validation/contrast_correlation.py \
+    --dataset xuancheng \
+    --day "$DAYS" \
+    --regime_split holiday_normal --od_match 64 \
+    --features none --T 10 --maxiter 1500
+\end{lstlisting}
 
 \section{\texorpdfstring{Solver profiling for the $f+g$ extension}{Solver profiling for the f+g extension}}
 \label{app:fg-profiling}
@@ -181,8 +218,8 @@ towards one. The convention used here is
 \label{eq:scale-free-prediction}
 \end{equation}
 
-This is not an ad hoc patch to the optimisation objective. The Morimura
-count loss is a log-ratio loss:
+The scale calibration is separate from the optimisation objective. The
+Morimura count loss is a log-ratio loss:
 \[
 L_d(\theta)=\frac{1}{2}\sum_{i,j\in X_o}
 \left(\log\frac{\pi_i(\theta)}{\pi_j(\theta)}-
@@ -190,7 +227,8 @@ L_d(\theta)=\frac{1}{2}\sum_{i,j\in X_o}
 \]
 Multiplying every observed count by any constant leaves $L_d$ unchanged,
 so the objective identifies the relative stationary mass on $X_o$ and the
-chain parameters, not the external exposure scale of the count process.
+chain parameters; the external exposure scale of the count process remains
+unidentified.
 Equation~\eqref{eq:scale-free-prediction} is the unique global calibration
 that makes the fitted stationary surrogate reproduce the observed total
 mass on $X_o$:
@@ -213,8 +251,9 @@ recovers $\hat{\pi}=\pi^\star$, then
 \]
 The scale-free form therefore preserves the objective's theoretical
 guarantees while using the only count scale that is identifiable from the
-observed subset. Applying the literal mean-count convention instead is a
-post-estimation scaling error, not a different inverse-MC solution.
+observed subset. Applying the literal mean-count convention instead creates
+a post-estimation scaling error rather than a different inverse-MC
+solution.
 
 \subsection*{Gradient verification}
 
@@ -323,50 +362,16 @@ This is only a simulator audit. SUMO's $\rho=0$ vehicles follow
 precomputed shortest paths and ignore live congestion after departure,
 whereas real unaided commuters can remember recurring bottlenecks. The
 result is therefore a lower-bound stress test on the congestion-routing
-confound, not evidence that the real rush-hour proxy is cleanly separable.
-
-\section{Build and reproducibility}\label{app:build}
-
-The project is reproducible from the repository via the README, with
-the following minimum environment:
-
-\begin{lstlisting}[language=bash]
-# Python 3.14, see project README
-python3 -m venv .venv
-.venv/bin/python -m pip install numpy scipy matplotlib
-
-# Tier 1: synthetic Morimura reproduction (~20 s)
-.venv/bin/python morimura.py
-
-# Tier 2: SUMO experiments (requires SUMO_HOME set)
-.venv/bin/python sumo_validation/contrast_correlation.py \
-    --seed 42 --features real --T 40 --maxiter 1500
-
-# Tier 3: Xuancheng experiments (requires real_data/ populated)
-.venv/bin/python sumo_validation/contrast_correlation.py \
-    --dataset xuancheng \
-    --day 2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21 \
-    --regime_split rush_offpeak --od_match 8 \
-    --features real --T 10 --maxiter 1500
-
-# Stronger-proxy Labour-Day stress test
-DAYS=2023-04-28,2023-04-29,2023-04-30,\
-2023-04-11,2023-04-12,2023-04-13,2023-04-14,\
-2023-04-17,2023-04-18,2023-04-19,2023-04-20,2023-04-21
-.venv/bin/python sumo_validation/contrast_correlation.py \
-    --dataset xuancheng \
-    --day "$DAYS" \
-    --regime_split holiday_normal --od_match 64 \
-    --features none --T 10 --maxiter 1500
-\end{lstlisting}
+confound. It does not show that the real rush-hour proxy is cleanly
+separable.
 
 \section{Metric and method primer}
 \label{app:metrics-primer}
 
 This appendix gives compact reminders for the mathematical objects,
-optimisation routines and diagnostic metrics used in the main text. It
-is not needed to follow the narrative, but it fixes the precise meaning
-of terms that are easy to over-read from their names alone.
+optimisation routines and diagnostic metrics used in the main text. The
+primer fixes the precise meaning of terms that are easy to over-read from
+their names alone.
 
 \subsection{Markov chain and transition kernel}
 \label{app:markov-chain-primer}
@@ -470,7 +475,7 @@ curve (AUC) is a threshold-free measure of separability:
 for a randomly chosen regime-$B$ trajectory and a randomly chosen
 regime-$A$ trajectory, up to tie handling. An AUC of $0.5$ is chance;
 $1.0$ is perfect ranking; values below $0.5$ indicate the score is
-systematically reversed. AUC does \emph{not} prove correct chain
+systematically reversed. AUC does not prove correct chain
 recovery: a classifier can rank regimes well because of aggregate bias,
 OD mix or optimiser artefacts, which is why the thesis pairs AUC with
 transition-contrast diagnostics.
@@ -503,7 +508,7 @@ Cosine similarity measures directional alignment:
 \]
 It is insensitive to the vector magnitudes: two vectors pointing in the
 same direction have cosine $+1$, orthogonal vectors have cosine $0$, and
-opposite directions have cosine $-1$. We use per-row cosine at branching
+opposite directions have cosine $-1$. Per-row cosine is used at branching
 states. For a road edge with multiple legal successors, the row vector
 asks: did the fitted model increase and decrease probability on the same
 outgoing turns as the empirical contrast? The median row cosine and the
@@ -515,7 +520,7 @@ chain-recovery diagnostics.
 
 Origin-destination (OD) matching controls for where trips start and end.
 Real-world regimes can differ because different people travel to
-different places, not because comparable drivers choose different routes.
+different places before any route-choice difference is considered.
 The Xuancheng loader clusters network nodes into $K$ spatial zones, bins
 each trajectory by origin zone and destination zone, and then samples the
 same number of trajectories from each regime inside every shared OD
@@ -594,8 +599,9 @@ the empirical reference is at chance.
 \label{app:rmae-primer}
 
 Relative mean absolute error (RMAE) is used in the Tier~1 reproduction
-because Morimura et al.'s original benchmark is a stationary-distribution
-recovery task, not a two-regime detector. In this thesis it measures the
+because Morimura et al.'s original benchmark evaluates
+stationary-distribution recovery rather than two-regime detection. In this
+thesis it measures the
 mean absolute error of the recovered stationary mass on unobserved states
 relative to the scale of the true held-out counts. Lower is better. It is
 therefore not directly comparable to AUC: RMAE evaluates reconstruction

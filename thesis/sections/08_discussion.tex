@@ -13,7 +13,7 @@ OD-control logic; the shared scoring core is selected by a single
 generalisation result for an inverse-MC pipeline that the original paper
 validated only on synthetic data and one real-world demonstration.
 
-What does \emph{not} generalise as cleanly is the magnitude of the
+What does not generalise as cleanly is the magnitude of the
 detection signal. Tier~1 reproduces the paper's RMAE within
 $\sim 0.05$ for $|\Xo| \ge 10$. Tier~2 reaches $\AUC = 0.708$ at $T=40$
 on the controlled SUMO comparison, $\sim 69\%$ of the gap to the
@@ -35,7 +35,7 @@ SUMO labelled comparison.
 again at $T=30$ and $T=40$. Since the LLR score accumulates evidence over
 the trajectory, the shorter real-data window likely suppresses both the
 empirical reference and fitted AUC.
-\item The fitted-vs-reference gap is \emph{not} merely a scaled-down
+\item The fitted-vs-reference gap is not merely a scaled-down
 version of the SUMO success. The pooled un-matched Xuancheng row gives
 a superficially moderate gap-closure number because the reference itself
 is weak, but once OD mix is controlled the fitted detector sits at chance

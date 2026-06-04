@@ -162,11 +162,11 @@ The full-network SUMO and Xuancheng fits use the $f$-only setting
 ($\gamma=1$). Here ``$f$-only'' means fitting only to observed station
 counts, while ``$f+g$'' means also fitting the between-station hitting
 rates. The latter is not used in the full-network detector because
-empirical $\gobs$ is sparse and floor-dominated at city scale: by
-``floor-dominated'' I mean that most observed station pairs are almost
-never connected in the sample, so many hitting-rate estimates collapse to
-the same small minimum value (\cref{sec:phase4-fg-infeasible}). All
-parametric fits use L-BFGS-B
+empirical $\gobs$ is sparse and floor-dominated at city scale. In this
+context, ``floor-dominated'' means that most observed station pairs are
+almost never connected in the sample, so many hitting-rate estimates
+collapse to the same small minimum value
+(\cref{sec:phase4-fg-infeasible}). All parametric fits use L-BFGS-B
 (\cref{app:lbfgs-primer}), because the objective is smooth, analytic
 gradients are available, and the parameter dimension is large enough that
 a limited-memory quasi-Newton method is a practical compromise between
@@ -200,9 +200,10 @@ thresholds
 
 \paragraph{What assumptions this carries.}
 The Morimura estimator carries assumptions that are used later in the
-report. First, it assumes a one-step MC: the next edge depends on the
-current edge, not the full previous path. Second, its count term is a
-stationary count model. Up to an unknown exposure scale $c>0$, the model
+report. First, it assumes a one-step MC: the current edge alone determines
+the next-edge distribution, while the full previous path sits outside the
+state. Second, its count term is a stationary count model. Up to an
+unknown exposure scale $c>0$, the model
 treats observed counts as
 \[
 f_i \approx c\,\pi_i(\theta), \qquad i\in\Xo,
@@ -215,17 +216,17 @@ probability from observed station $i$ to observed station $j$ in the same
 stationary chain. This is an approximation for the four-hour SUMO rush
 window and for the Xuancheng time-of-day splits: their observed counts
 are time-integrals of changing demand, congestion, queue spillback and
-route composition, not draws from a single invariant distribution.
-I still use the stationary surrogate because it is identifiable from
+route composition rather than draws from a single invariant distribution.
+The stationary surrogate is retained because it is identifiable from
 sparse station counts and directly comparable to Morimura et al.; a fully
 time-dependent route-choice model would add assumptions that the available
-data cannot reliably support. The fitted chain should therefore be read
-as the best stationary, softmax-parametric projection of a
-non-stationary window under the Morimura log-ratio loss, not as literal
-behavioural ground truth. Third, the softmax form restricts recoverable
+data cannot reliably support. The fitted chain should therefore be read as
+the best stationary, softmax-parametric projection of a
+non-stationary window under the Morimura log-ratio loss, with no claim
+that it is literal behavioural ground truth. Third, the softmax form restricts recoverable
 behaviour to the chosen feature and parameter family. The empirical
 full-observation transition matrix used for comparison is also a
-finite-data reference, not an oracle.
+finite-data reference rather than an oracle.
 
 \subsection{Experimental structure}
 \label{sec:roadmap}\label{sec:sumo}\label{sec:avi-prior}
@@ -277,8 +278,8 @@ OD-matching sensitivity, multistart behaviour or the empirical $2$-step
 reference, depending on the failure mode under test. Test trajectories are
 withheld from the empirical transition matrix and from the
 empirical-reference LLR scorer. The inverse-MC fit uses aggregate station
-counts for the whole regime window, not counts recomputed after removing
-held-out vehicles, so the reported AUCs are held out at the
+counts for the whole regime window; those counts are not recomputed after
+removing held-out vehicles. The reported AUCs are therefore held out at the
 trajectory-scoring level rather than as a fully out-of-sample sensor-count
 experiment. The Discussion compares what generalises across tiers, the
 Conclusion states the supported claims, and the final section covers

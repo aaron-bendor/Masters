@@ -4,10 +4,10 @@
 \label{sec:inverse-mc}
 
 A Markov chain is a stochastic process in which the next state depends
-only on the current state. The \emph{forward} problem asks, given a
+only on the current state. The forward problem asks, given a
 transition kernel $\Pchain$, what statistics (stationary distribution,
 hitting times, expected occupation, etc.) does the chain produce? The
-\emph{inverse} problem reverses this: given partial statistics observed
+inverse problem reverses this: given partial statistics observed
 on the chain, recover the transition kernel itself. Inverse problems on
 Markov chains arise in transport modelling \cite{ben-akiva1985},
 biological systems \cite{noe2008}, and recommender systems
@@ -81,7 +81,7 @@ The paper validates the framework synthetically on a $n=100$ network
 (their $\S 6.1$) and applies it to a $1497$-link Nairobi minibus
 network as a real-world demonstration ($\S 6.2$). Both validations report
 favourable RMAE on the recovered stationary distribution. Two limitations
-of this validation are directly relevant to our work. First, the
+of this validation are directly relevant to this dissertation. First, the
 synthetic experiment uses analytical (i.e.\ noise-free) hitting rates
 $\gobs$ computed from the true chain; on noisy real-world data the
 empirical $\gobs$ is overwhelmingly sparse, an effect documented in
@@ -95,7 +95,7 @@ recovery distinguishes them.
 
 Several adjacent papers address route-choice estimation when the
 modeller does not observe complete paths. This is important: the novelty
-claim of this dissertation is \emph{not} that route choice under partial
+claim of this dissertation is not that route choice under partial
 observation has never been studied. Van Oijen et al.~\cite{vanoijen2020sensor}
 estimate recursive link-based logit models and link flows in a
 sensor-equipped network, explicitly connecting recursive route choice to
@@ -127,14 +127,14 @@ than asking whether the data reveal which regime generated a particular
 trajectory. Gu et al.~\cite{gu2018} are closer to detection: they monitor
 junction-level movement-pattern changes relative to a learned baseline.
 Their unit of evidence is nevertheless a population-level turning
-distribution over a time window, not a single trajectory scored under
-two sparse-observation route-choice models.
+distribution over a time window. The method does not score a single
+trajectory under two sparse-observation route-choice models.
 
 The gap addressed by this thesis is therefore specific. Prior work
 contains recursive route-choice models, partial-sensor estimation,
 incomplete-trip estimation, inverse preference learning, routing-app
 impact analysis, and junction-level movement-change detection. What is
-missing is a complete \emph{two-regime partial-observation filter}: one
+missing is a complete two-regime partial-observation filter: one
 that fits regime-specific route-choice chains from sparse station counts,
 scores individual trajectories by a log-likelihood ratio, and reports
 diagnostics that separate genuine chain recovery from aggregate
@@ -154,7 +154,7 @@ network derived from OpenStreetMap. Crucially, SUMO exposes a
 gives each vehicle access to an internal congestion-aware
 sat-navigation device; when set to $0.0$, vehicles route via static
 shortest-path Dijkstra. By running an identical vehicle population
-twice with that flag toggled, we obtain a controlled labelled
+twice with that flag toggled, the experiment obtains a controlled labelled
 comparison --- intrinsic-routed vs.\ sat-navigation-routed --- against
 which the Morimura-based detector can be honestly benchmarked.
 
@@ -174,6 +174,6 @@ Ma et al.~\cite{ma2026xuancheng} Xuancheng dataset --- used in this thesis ---
 releases joinable entry/exit tables with anonymised vehicle IDs from
 which complete trajectories can be reconstructed, covering
 $\sim 350{,}000$ trips/day across $\sim 1{,}760$ road segments for the
-month of April~2023. The Ma~\emph{et al.}\ release is, to our knowledge,
-the largest openly available city-scale AVI dataset with
+month of April~2023. The Ma~\emph{et al.}\ release is the largest
+identified openly available city-scale AVI dataset with
 per-vehicle granularity at the time of writing.
