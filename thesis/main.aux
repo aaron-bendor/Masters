@@ -17,7 +17,6 @@
 \citation{gu2018}
 \citation{rust1987}
 \citation{ben-akiva1985,frejinger2007,fosgerau2013route,mai2015nested}
-\citation{crisostomi2011google}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Introduction}{6}{section.2}\protected@file@percent }
 \newlabel{sec:introduction}{{2}{6}{Introduction}{section.2}{}}
 \newlabel{sec:introduction@cref}{{[section][2][]2}{[1][6][]6}{}{}{}}
@@ -37,6 +36,7 @@
 \newlabel{sec:rerouting-prior@cref}{{[subsection][2][2]2.2}{[1][6][]6}{}{}{}}
 \newlabel{eq:softmax}{{1}{6}{Related work and novelty}{equation.1}{}}
 \newlabel{eq:softmax@cref}{{[equation][1][]1}{[1][6][]6}{}{}{}}
+\citation{crisostomi2011google}
 \citation{yang2001atis,ramos2020information,acemoglu2018informational,cabannes2018gps}
 \citation{lee2008trajectory}
 \citation{gu2018}
@@ -57,14 +57,14 @@
 \newlabel{sec:loss-gradients}{{2.3}{7}{Filter specification and assumptions}{subsection.2.3}{}}
 \newlabel{sec:loss-gradients@cref}{{[subsection][3][2]2.3}{[1][7][]7}{}{}{}}
 \@writefile{toc}{\contentsline {paragraph}{What is fitted.}{7}{paragraph*.2}\protected@file@percent }
-\newlabel{eq:morimura-loss}{{2}{7}{What is fitted}{equation.2}{}}
-\newlabel{eq:morimura-loss@cref}{{[equation][2][]2}{[1][7][]7}{}{}{}}
 \citation{neyman1933}
+\newlabel{eq:morimura-loss}{{2}{8}{What is fitted}{equation.2}{}}
+\newlabel{eq:morimura-loss@cref}{{[equation][2][]2}{[1][7][]8}{}{}{}}
 \@writefile{toc}{\contentsline {paragraph}{How trajectories are scored.}{8}{paragraph*.3}\protected@file@percent }
 \newlabel{sec:detector}{{2.3}{8}{How trajectories are scored}{paragraph*.3}{}}
 \newlabel{sec:detector@cref}{{[subsection][3][2]2.3}{[1][8][]8}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{What assumptions this carries.}{8}{paragraph*.4}\protected@file@percent }
 \citation{lopez2018}
+\@writefile{toc}{\contentsline {paragraph}{What assumptions this carries.}{9}{paragraph*.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Experimental structure}{9}{subsection.2.4}\protected@file@percent }
 \newlabel{sec:roadmap}{{2.4}{9}{Experimental structure}{subsection.2.4}{}}
 \newlabel{sec:roadmap@cref}{{[subsection][4][2]2.4}{[1][9][]9}{}{}{}}
@@ -78,168 +78,169 @@
 \newlabel{sec:2step-diag@cref}{{[subsection][4][2]2.4}{[1][9][]9}{}{}{}}
 \newlabel{sec:od-rebal}{{2.4}{9}{Experimental structure}{subsection.2.4}{}}
 \newlabel{sec:od-rebal@cref}{{[subsection][4][2]2.4}{[1][9][]9}{}{}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Partial-observation routing-influence filter used in the three tiers}}{9}{algorithm.1}\protected@file@percent }
-\newlabel{alg:routing-filter}{{1}{9}{Partial-observation routing-influence filter used in the three tiers}{algorithm.1}{}}
-\newlabel{alg:routing-filter@cref}{{[algorithm][1][]1}{[1][9][]9}{}{}{}}
-\citation{lopez2018}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Partial-observation routing-influence filter used in the three tiers}}{10}{algorithm.1}\protected@file@percent }
+\newlabel{alg:routing-filter}{{1}{10}{Partial-observation routing-influence filter used in the three tiers}{algorithm.1}{}}
+\newlabel{alg:routing-filter@cref}{{[algorithm][1][]1}{[1][9][]10}{}{}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Tier 1: Validating the inverse-MC estimator inside the filter}{10}{section.3}\protected@file@percent }
 \newlabel{sec:phase1-synthetic}{{3}{10}{Tier 1: Validating the inverse-MC estimator inside the filter}{section.3}{}}
 \newlabel{sec:phase1-synthetic@cref}{{[section][3][]3}{[1][10][]10}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Tier 2: Controlled validation of the filter in SUMO}{10}{section.4}\protected@file@percent }
-\newlabel{sec:phase4-sumo}{{4}{10}{Tier 2: Controlled validation of the filter in SUMO}{section.4}{}}
-\newlabel{sec:phase4-sumo@cref}{{[section][4][]4}{[1][10][]10}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Motivation}{10}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Method}{11}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Scenario construction}{11}{subsubsection.4.2.1}\protected@file@percent }
-\newlabel{sec:phase4-scenario}{{4.2.1}{11}{Scenario construction}{subsubsection.4.2.1}{}}
-\newlabel{sec:phase4-scenario@cref}{{[subsubsection][1][4,2]4.2.1}{[1][11][]11}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Results}{12}{subsection.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Single-seed result: features and the inverse fit}{12}{subsubsection.4.3.1}\protected@file@percent }
-\newlabel{sec:phase4-features-result}{{4.3.1}{12}{Single-seed result: features and the inverse fit}{subsubsection.4.3.1}{}}
-\newlabel{sec:phase4-features-result@cref}{{[subsubsection][1][4,3]4.3.1}{[1][12][]12}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Tier~2 features lift on the Ingolstadt SUMO network, seed~$42$, $T=20$. Every metric, including detection AUC, gap-closed, per-row Pearson, per-row cosine median and fraction of rows with positive cosine, moves positively under \texttt  {features=real} (dark) vs.\ \texttt  {features=none} (light). The Pearson +63\% relative lift and the cosine median $4.6\times $ lift on the \texttt  {[all branching]} generalisation block are the strongest evidence that chain recovery, not aggregate-bias drift, is what features improve.}}{12}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:phase4-features-lift}{{1}{12}{Tier~2 features lift on the Ingolstadt SUMO network, seed~$42$, $T=20$. Every metric, including detection AUC, gap-closed, per-row Pearson, per-row cosine median and fraction of rows with positive cosine, moves positively under \code {features=real} (dark) vs.\ \code {features=none} (light). The Pearson +63\% relative lift and the cosine median $4.6\times $ lift on the \texttt {[all branching]} generalisation block are the strongest evidence that chain recovery, not aggregate-bias drift, is what features improve}{figure.caption.5}{}}
-\newlabel{fig:phase4-features-lift@cref}{{[figure][1][]1}{[1][12][]12}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Features lift across all metrics on the Ingolstadt SUMO network, seed=42 (\cref  {fig:phase4-features-lift}). \texttt  {[all branching]} restricts the per-row diagnostic to states with $\mathrm  {out\text  {-}deg} > 1$ that the inverter did \emph  {not} directly observe, namely the generalisation block.}}{13}{table.caption.6}\protected@file@percent }
-\newlabel{tab:phase4-features}{{2}{13}{Features lift across all metrics on the Ingolstadt SUMO network, seed=42 (\cref {fig:phase4-features-lift}). \texttt {[all branching]} restricts the per-row diagnostic to states with $\mathrm {out\text {-}deg} > 1$ that the inverter did \emph {not} directly observe, namely the generalisation block}{table.caption.6}{}}
-\newlabel{tab:phase4-features@cref}{{[table][2][]2}{[1][12][]13}{}{}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}Multi-seed validation: chain recovery is robust, detection AUC is not}{13}{subsubsection.4.3.2}\protected@file@percent }
-\newlabel{sec:phase4-multiseed}{{4.3.2}{13}{Multi-seed validation: chain recovery is robust, detection AUC is not}{subsubsection.4.3.2}{}}
-\newlabel{sec:phase4-multiseed@cref}{{[subsubsection][2][4,3]4.3.2}{[1][13][]13}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Multi-seed Tier~2 features sweep (five SUMO seeds, \texttt  {[all branching]} block, $T=20$). \textbf  {(a)} The aggregate detection metric (gap-closed) lifts under \texttt  {features=real} on four seeds but \emph  {reverses} on seed~$101$; the \texttt  {features=none} bars also reproduce the bimodal basin structure ($\{7,23\}$ low, $\{42,101,2024\}$ high). \textbf  {(b)} The per-row chain-recovery metric (stacked Pearson) lifts on \emph  {all five} seeds. Features are a robust chain-recovery lever, not a robust aggregate-detection lever.}}{14}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:phase4-multiseed}{{2}{14}{Multi-seed Tier~2 features sweep (five SUMO seeds, \texttt {[all branching]} block, $T=20$). \textbf {(a)} The aggregate detection metric (gap-closed) lifts under \code {features=real} on four seeds but \emph {reverses} on seed~$101$; the \code {features=none} bars also reproduce the bimodal basin structure ($\{7,23\}$ low, $\{42,101,2024\}$ high). \textbf {(b)} The per-row chain-recovery metric (stacked Pearson) lifts on \emph {all five} seeds. Features are a robust chain-recovery lever, not a robust aggregate-detection lever}{figure.caption.7}{}}
-\newlabel{fig:phase4-multiseed@cref}{{[figure][2][]2}{[1][13][]14}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Multi-seed features sweep on the Ingolstadt SUMO network (\cref  {fig:phase4-multiseed}), \texttt  {[all branching]} block, $T=20$, $|X_o|=601$. The AUC lift reverses on seed~$101$; the Pearson lift is positive on all five seeds. Mean~$\Delta $ rows are \texttt  {real}~$-$~\texttt  {none} with sample standard deviation.}}{14}{table.caption.8}\protected@file@percent }
-\newlabel{tab:phase4-multiseed}{{3}{14}{Multi-seed features sweep on the Ingolstadt SUMO network (\cref {fig:phase4-multiseed}), \texttt {[all branching]} block, $T=20$, $|X_o|=601$. The AUC lift reverses on seed~$101$; the Pearson lift is positive on all five seeds. Mean~$\Delta $ rows are \code {real}~$-$~\code {none} with sample standard deviation}{table.caption.8}{}}
-\newlabel{tab:phase4-multiseed@cref}{{[table][3][]3}{[1][14][]14}{}{}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{15}{subsubsection.4.3.3}\protected@file@percent }
-\newlabel{sec:phase4-2step}{{4.3.3}{15}{Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{subsubsection.4.3.3}{}}
-\newlabel{sec:phase4-2step@cref}{{[subsubsection][3][4,3]4.3.3}{[1][15][]15}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Dirichlet smoothing: shrink rare contexts toward uniform turns.}{15}{paragraph*.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Interpolation backoff: shrink rare contexts toward the 1-step empirical.}{15}{paragraph*.10}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 2-step empirical sweep on the Ingolstadt SUMO network across five SUMO seeds ($T=20$, training/test split as in \cref  {sec:phase4-multiseed}, 1-step empirical baseline mean $0.652 \pm 0.022$ across these seeds). Each row reports the best configuration for that method. The single-seed row is a comparison point; the multi-seed rows are the load-bearing evidence.}}{16}{table.caption.11}\protected@file@percent }
-\newlabel{tab:phase4-2step}{{4}{16}{2-step empirical sweep on the Ingolstadt SUMO network across five SUMO seeds ($T=20$, training/test split as in \cref {sec:phase4-multiseed}, 1-step empirical baseline mean $0.652 \pm 0.022$ across these seeds). Each row reports the best configuration for that method. The single-seed row is a comparison point; the multi-seed rows are the load-bearing evidence}{table.caption.11}{}}
-\newlabel{tab:phase4-2step@cref}{{[table][4][]4}{[1][15][]16}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implication.}{16}{paragraph*.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.4}Trajectory-length sweep: lifting the reference and the detector together}{17}{subsubsection.4.3.4}\protected@file@percent }
-\newlabel{sec:phase4-tsweep}{{4.3.4}{17}{Trajectory-length sweep: lifting the reference and the detector together}{subsubsection.4.3.4}{}}
-\newlabel{sec:phase4-tsweep@cref}{{[subsubsection][4][4,3]4.3.4}{[1][17][]17}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Tier~2 $T$-sweep on the Ingolstadt SUMO network, seed~$42$, \texttt  {features=real}. The empirical $1$-step Markov reference (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes.}}{17}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:phase4-tsweep}{{3}{17}{Tier~2 $T$-sweep on the Ingolstadt SUMO network, seed~$42$, \code {features=real}. The empirical $1$-step Markov reference (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes}{figure.caption.13}{}}
-\newlabel{fig:phase4-tsweep@cref}{{[figure][3][]3}{[1][17][]17}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces $T$-sweep on the Ingolstadt SUMO network, seed=42, \texttt  {features=real} (\cref  {fig:phase4-tsweep}). The fit itself is $T$-independent: only the test scoring window changes, as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs.}}{17}{table.caption.14}\protected@file@percent }
-\newlabel{tab:phase4-tsweep}{{5}{17}{$T$-sweep on the Ingolstadt SUMO network, seed=42, \code {features=real} (\cref {fig:phase4-tsweep}). The fit itself is $T$-independent: only the test scoring window changes, as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs}{table.caption.14}{}}
-\newlabel{tab:phase4-tsweep@cref}{{[table][5][]5}{[1][17][]17}{}{}{}}
+\citation{lopez2018}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Tier~1 reproduction of Morimura et al.'s synthetic recovery benchmark. The vertical axis is RMAE on unobserved states, so lower is better. The reproduced proposed-method curve with hitting rates (``with $g$'') follows the visually estimated paper curve closely once $|X_{\!o}|\ge 10$, which is the implementation check needed before using the inverse-MC estimator inside the two-regime filter.}}{11}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:phase1-rmae}{{1}{11}{Tier~1 reproduction of Morimura et al.'s synthetic recovery benchmark. The vertical axis is RMAE on unobserved states, so lower is better. The reproduced proposed-method curve with hitting rates (``with $g$'') follows the visually estimated paper curve closely once $|\Xo |\ge 10$, which is the implementation check needed before using the inverse-MC estimator inside the two-regime filter}{figure.caption.5}{}}
+\newlabel{fig:phase1-rmae@cref}{{[figure][1][]1}{[1][10][]11}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Tier 2: Controlled validation of the filter in SUMO}{11}{section.4}\protected@file@percent }
+\newlabel{sec:phase4-sumo}{{4}{11}{Tier 2: Controlled validation of the filter in SUMO}{section.4}{}}
+\newlabel{sec:phase4-sumo@cref}{{[section][4][]4}{[1][11][]11}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Motivation}{11}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Method}{12}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Scenario construction}{12}{subsubsection.4.2.1}\protected@file@percent }
+\newlabel{sec:phase4-scenario}{{4.2.1}{12}{Scenario construction}{subsubsection.4.2.1}{}}
+\newlabel{sec:phase4-scenario@cref}{{[subsubsection][1][4,2]4.2.1}{[1][12][]12}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Results}{13}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Single-seed result: features and the inverse fit}{13}{subsubsection.4.3.1}\protected@file@percent }
+\newlabel{sec:phase4-features-result}{{4.3.1}{13}{Single-seed result: features and the inverse fit}{subsubsection.4.3.1}{}}
+\newlabel{sec:phase4-features-result@cref}{{[subsubsection][1][4,3]4.3.1}{[1][13][]13}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Tier~2 features lift on the Ingolstadt SUMO network, seed~$42$, $T=20$. Every metric, including detection AUC, gap-closed, per-row Pearson, per-row cosine median and fraction of rows with positive cosine, moves positively under \texttt  {features=real} (dark) vs.\ \texttt  {features=none} (light). The Pearson +63\% relative lift and the cosine median $4.6\times $ lift on the \texttt  {[all branching]} generalisation block are the strongest evidence that chain recovery, not aggregate-bias drift, is what features improve.}}{13}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:phase4-features-lift}{{2}{13}{Tier~2 features lift on the Ingolstadt SUMO network, seed~$42$, $T=20$. Every metric, including detection AUC, gap-closed, per-row Pearson, per-row cosine median and fraction of rows with positive cosine, moves positively under \code {features=real} (dark) vs.\ \code {features=none} (light). The Pearson +63\% relative lift and the cosine median $4.6\times $ lift on the \texttt {[all branching]} generalisation block are the strongest evidence that chain recovery, not aggregate-bias drift, is what features improve}{figure.caption.6}{}}
+\newlabel{fig:phase4-features-lift@cref}{{[figure][2][]2}{[1][13][]13}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Features lift across all metrics on the Ingolstadt SUMO network, seed=42 (\cref  {fig:phase4-features-lift}). \texttt  {[all branching]} restricts the per-row diagnostic to states with $\mathrm  {out\text  {-}deg} > 1$ that the inverter did \emph  {not} directly observe, namely the generalisation block.}}{14}{table.caption.7}\protected@file@percent }
+\newlabel{tab:phase4-features}{{2}{14}{Features lift across all metrics on the Ingolstadt SUMO network, seed=42 (\cref {fig:phase4-features-lift}). \texttt {[all branching]} restricts the per-row diagnostic to states with $\mathrm {out\text {-}deg} > 1$ that the inverter did \emph {not} directly observe, namely the generalisation block}{table.caption.7}{}}
+\newlabel{tab:phase4-features@cref}{{[table][2][]2}{[1][13][]14}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}Multi-seed validation: chain recovery is robust, detection AUC is not}{14}{subsubsection.4.3.2}\protected@file@percent }
+\newlabel{sec:phase4-multiseed}{{4.3.2}{14}{Multi-seed validation: chain recovery is robust, detection AUC is not}{subsubsection.4.3.2}{}}
+\newlabel{sec:phase4-multiseed@cref}{{[subsubsection][2][4,3]4.3.2}{[1][14][]14}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Multi-seed Tier~2 features sweep (five SUMO seeds, \texttt  {[all branching]} block, $T=20$). \textbf  {(a)} The aggregate detection metric (gap-closed) lifts under \texttt  {features=real} on four seeds but \emph  {reverses} on seed~$101$; the \texttt  {features=none} bars also reproduce the bimodal basin structure ($\{7,23\}$ low, $\{42,101,2024\}$ high). \textbf  {(b)} The per-row chain-recovery metric (stacked Pearson) lifts on \emph  {all five} seeds. Features are a robust chain-recovery lever, not a robust aggregate-detection lever.}}{15}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:phase4-multiseed}{{3}{15}{Multi-seed Tier~2 features sweep (five SUMO seeds, \texttt {[all branching]} block, $T=20$). \textbf {(a)} The aggregate detection metric (gap-closed) lifts under \code {features=real} on four seeds but \emph {reverses} on seed~$101$; the \code {features=none} bars also reproduce the bimodal basin structure ($\{7,23\}$ low, $\{42,101,2024\}$ high). \textbf {(b)} The per-row chain-recovery metric (stacked Pearson) lifts on \emph {all five} seeds. Features are a robust chain-recovery lever, not a robust aggregate-detection lever}{figure.caption.8}{}}
+\newlabel{fig:phase4-multiseed@cref}{{[figure][3][]3}{[1][14][]15}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Multi-seed features sweep on the Ingolstadt SUMO network (\cref  {fig:phase4-multiseed}), \texttt  {[all branching]} block, $T=20$, $|X_o|=601$. The AUC lift reverses on seed~$101$; the Pearson lift is positive on all five seeds. Mean~$\Delta $ rows are \texttt  {real}~$-$~\texttt  {none} with sample standard deviation.}}{15}{table.caption.9}\protected@file@percent }
+\newlabel{tab:phase4-multiseed}{{3}{15}{Multi-seed features sweep on the Ingolstadt SUMO network (\cref {fig:phase4-multiseed}), \texttt {[all branching]} block, $T=20$, $|X_o|=601$. The AUC lift reverses on seed~$101$; the Pearson lift is positive on all five seeds. Mean~$\Delta $ rows are \code {real}~$-$~\code {none} with sample standard deviation}{table.caption.9}{}}
+\newlabel{tab:phase4-multiseed@cref}{{[table][3][]3}{[1][15][]15}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{16}{subsubsection.4.3.3}\protected@file@percent }
+\newlabel{sec:phase4-2step}{{4.3.3}{16}{Higher-order memory diagnostic: a regularised 2-step empirical lifts the reference}{subsubsection.4.3.3}{}}
+\newlabel{sec:phase4-2step@cref}{{[subsubsection][3][4,3]4.3.3}{[1][16][]16}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Dirichlet smoothing: shrink rare contexts toward uniform turns.}{16}{paragraph*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Interpolation backoff: shrink rare contexts toward the 1-step empirical.}{16}{paragraph*.11}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 2-step empirical sweep on the Ingolstadt SUMO network across five SUMO seeds ($T=20$, training/test split as in \cref  {sec:phase4-multiseed}, 1-step empirical baseline mean $0.652 \pm 0.022$ across these seeds). Each row reports the best configuration for that method. The single-seed row is a comparison point; the multi-seed rows are the load-bearing evidence.}}{17}{table.caption.12}\protected@file@percent }
+\newlabel{tab:phase4-2step}{{4}{17}{2-step empirical sweep on the Ingolstadt SUMO network across five SUMO seeds ($T=20$, training/test split as in \cref {sec:phase4-multiseed}, 1-step empirical baseline mean $0.652 \pm 0.022$ across these seeds). Each row reports the best configuration for that method. The single-seed row is a comparison point; the multi-seed rows are the load-bearing evidence}{table.caption.12}{}}
+\newlabel{tab:phase4-2step@cref}{{[table][4][]4}{[1][17][]17}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implication.}{17}{paragraph*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.4}Trajectory-length sweep: lifting the reference and the detector together}{18}{subsubsection.4.3.4}\protected@file@percent }
+\newlabel{sec:phase4-tsweep}{{4.3.4}{18}{Trajectory-length sweep: lifting the reference and the detector together}{subsubsection.4.3.4}{}}
+\newlabel{sec:phase4-tsweep@cref}{{[subsubsection][4][4,3]4.3.4}{[1][18][]18}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Tier~2 $T$-sweep on the Ingolstadt SUMO network, seed~$42$, \texttt  {features=real}. The empirical $1$-step Markov reference (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes.}}{18}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:phase4-tsweep}{{4}{18}{Tier~2 $T$-sweep on the Ingolstadt SUMO network, seed~$42$, \code {features=real}. The empirical $1$-step Markov reference (grey dashed) rises with $T$ as expected for a variance-shrinking score; the fitted detector (blue solid) tracks it with roughly constant gap. The shaded region is the recoverable contrast not yet captured by the fitter. The fitted chain itself is $T$-independent (identical final losses across runs); only the trajectory-level scoring window changes}{figure.caption.14}{}}
+\newlabel{fig:phase4-tsweep@cref}{{[figure][4][]4}{[1][18][]18}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces $T$-sweep on the Ingolstadt SUMO network, seed=42, \texttt  {features=real} (\cref  {fig:phase4-tsweep}). The fit itself is $T$-independent: only the test scoring window changes, as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs.}}{18}{table.caption.15}\protected@file@percent }
+\newlabel{tab:phase4-tsweep}{{5}{18}{$T$-sweep on the Ingolstadt SUMO network, seed=42, \code {features=real} (\cref {fig:phase4-tsweep}). The fit itself is $T$-independent: only the test scoring window changes, as confirmed by the identical final-loss values $836.4 / 529.4$ across all three runs}{table.caption.15}{}}
+\newlabel{tab:phase4-tsweep@cref}{{[table][5][]5}{[1][18][]18}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.5}The $f+g$ extension at scale: a refined diagnosis}{19}{subsubsection.4.3.5}\protected@file@percent }
+\newlabel{sec:phase4-fg-infeasible}{{4.3.5}{19}{The \texorpdfstring {$f+g$}{f+g} extension at scale: a refined diagnosis}{subsubsection.4.3.5}{}}
+\newlabel{sec:phase4-fg-infeasible@cref}{{[subsubsection][5][4,3]4.3.5}{[1][19][]19}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Interpretation}{19}{subsection.4.4}\protected@file@percent }
 \citation{ma2026xuancheng}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.5}The $f+g$ extension at scale: a refined diagnosis}{18}{subsubsection.4.3.5}\protected@file@percent }
-\newlabel{sec:phase4-fg-infeasible}{{4.3.5}{18}{The \texorpdfstring {$f+g$}{f+g} extension at scale: a refined diagnosis}{subsubsection.4.3.5}{}}
-\newlabel{sec:phase4-fg-infeasible@cref}{{[subsubsection][5][4,3]4.3.5}{[1][18][]18}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Interpretation}{18}{subsection.4.4}\protected@file@percent }
 \citation{cappi2026}
 \citation{wang2023xuancheng}
 \citation{ma2026xuancheng}
 \citation{ma2026xuancheng}
 \citation{ma2026xuancheng}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Tier 3: Real-world stress test of the filter under OD confounding}{19}{section.5}\protected@file@percent }
-\newlabel{sec:phase5-xuancheng}{{5}{19}{Tier 3: Real-world stress test of the filter under OD confounding}{section.5}{}}
-\newlabel{sec:phase5-xuancheng@cref}{{[section][5][]5}{[1][18][]19}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Motivation}{19}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Method}{19}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Dataset choice}{19}{subsubsection.5.2.1}\protected@file@percent }
-\newlabel{sec:phase5-dataset}{{5.2.1}{19}{Dataset choice}{subsubsection.5.2.1}{}}
-\newlabel{sec:phase5-dataset@cref}{{[subsubsection][1][5,2]5.2.1}{[1][19][]19}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Xuancheng AVI dataset \cite  {ma2026xuancheng} scale, compared with the Tier~2 Ingolstadt SUMO network.}}{19}{table.caption.15}\protected@file@percent }
-\newlabel{tab:phase5-dataset-scale}{{6}{19}{Xuancheng AVI dataset \cite {ma2026xuancheng} scale, compared with the Tier~2 Ingolstadt SUMO network}{table.caption.15}{}}
-\newlabel{tab:phase5-dataset-scale@cref}{{[table][6][]6}{[1][19][]19}{}{}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Verification: route legality and time-of-day distribution}{19}{subsubsection.5.2.2}\protected@file@percent }
-\newlabel{sec:phase5-verification}{{5.2.2}{19}{Verification: route legality and time-of-day distribution}{subsubsection.5.2.2}{}}
-\newlabel{sec:phase5-verification@cref}{{[subsubsection][2][5,2]5.2.2}{[1][19][]19}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Route legality.}{20}{paragraph*.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Time-of-day distribution.}{20}{paragraph*.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}The fundamental real-world gap: no ground-truth sat-nav label}{20}{subsubsection.5.2.3}\protected@file@percent }
-\newlabel{sec:phase5-proxy}{{5.2.3}{20}{The fundamental real-world gap: no ground-truth sat-nav label}{subsubsection.5.2.3}{}}
-\newlabel{sec:phase5-proxy@cref}{{[subsubsection][3][5,2]5.2.3}{[1][20][]20}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Results}{21}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Rush-vs-off-peak results}{21}{subsubsection.5.3.1}\protected@file@percent }
-\newlabel{sec:phase5-results}{{5.3.1}{21}{Rush-vs-off-peak results}{subsubsection.5.3.1}{}}
-\newlabel{sec:phase5-results@cref}{{[subsubsection][1][5,3]5.3.1}{[1][21][]21}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph  {not} stable across zone granularity: a sweep over $K \in \{8, 16, 32, 64\}$ (\cref  {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$. The $K=8$ drop is therefore not treated as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations.}}{21}{figure.caption.18}\protected@file@percent }
-\newlabel{fig:phase5-headline}{{4}{21}{Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph {not} stable across zone granularity: a sweep over $K \in \{8, 16, 32, 64\}$ (\cref {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$. The $K=8$ drop is therefore not treated as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations}{figure.caption.18}{}}
-\newlabel{fig:phase5-headline@cref}{{[figure][4][]4}{[1][21][]21}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Rush-vs-off-peak headline configurations on Xuancheng. Fitted columns report \texttt  {features=none}/\texttt  {features=real}; recovery diagnostics are Pearson and median cosine on \texttt  {[all branching]} states.}}{22}{table.caption.19}\protected@file@percent }
-\newlabel{tab:phase5-headline}{{7}{22}{Rush-vs-off-peak headline configurations on Xuancheng. Fitted columns report \code {features=none}/\code {features=real}; recovery diagnostics are Pearson and median cosine on \texttt {[all branching]} states}{table.caption.19}{}}
-\newlabel{tab:phase5-headline@cref}{{[table][7][]7}{[1][21][]22}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Rush-vs-off-peak OD-zone granularity sweep (\texttt  {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals.}}{22}{table.caption.20}\protected@file@percent }
-\newlabel{tab:phase5-ksweep}{{8}{22}{Rush-vs-off-peak OD-zone granularity sweep (\code {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals}{table.caption.20}{}}
-\newlabel{tab:phase5-ksweep@cref}{{[table][8][]8}{[1][21][]22}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Tier~3 OD-matched proxy sweeps. \textbf  {(a)} In the rush-vs-off-peak proxy, the empirical reference returns above chance for $K\ge 16$, but the fitted detector stays near chance. \textbf  {(b)} Labour Day creates the clearer empirical contrast at $K=64$, yet the fitted detector remains weak and the validation-selected multistart result drops to $0.502$. Error bars are bootstrap $95\%$ confidence intervals for the shown AUCs.}}{22}{figure.caption.21}\protected@file@percent }
-\newlabel{fig:phase5-sweeps}{{5}{22}{Tier~3 OD-matched proxy sweeps. \textbf {(a)} In the rush-vs-off-peak proxy, the empirical reference returns above chance for $K\ge 16$, but the fitted detector stays near chance. \textbf {(b)} Labour Day creates the clearer empirical contrast at $K=64$, yet the fitted detector remains weak and the validation-selected multistart result drops to $0.502$. Error bars are bootstrap $95\%$ confidence intervals for the shown AUCs}{figure.caption.21}{}}
-\newlabel{fig:phase5-sweeps@cref}{{[figure][5][]5}{[1][21][]22}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Labour-Day-versus-normal stress test (\texttt  {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals where available.}}{22}{table.caption.22}\protected@file@percent }
-\newlabel{tab:phase5-labour}{{9}{22}{Labour-Day-versus-normal stress test (\code {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals where available}{table.caption.22}{}}
-\newlabel{tab:phase5-labour@cref}{{[table][9][]9}{[1][21][]22}{}{}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}Stronger-proxy stress test: Labour Day versus normal days}{23}{subsubsection.5.3.2}\protected@file@percent }
-\newlabel{sec:phase5-labour}{{5.3.2}{23}{Stronger-proxy stress test: Labour Day versus normal days}{subsubsection.5.3.2}{}}
-\newlabel{sec:phase5-labour@cref}{{[subsubsection][2][5,3]5.3.2}{[1][23][]23}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Interpretation}{24}{subsection.5.4}\protected@file@percent }
-\newlabel{sec:phase5-interpretation}{{5.4}{24}{Interpretation}{subsection.5.4}{}}
-\newlabel{sec:phase5-interpretation@cref}{{[subsection][4][5]5.4}{[1][23][]24}{}{}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Multistart on \texttt  {features=real}: the ceiling violation is an optimiser artefact}{24}{subsubsection.5.4.1}\protected@file@percent }
-\newlabel{sec:phase5-multistart}{{5.4.1}{24}{Multistart on \code {features=real}: the ceiling violation is an optimiser artefact}{subsubsection.5.4.1}{}}
-\newlabel{sec:phase5-multistart@cref}{{[subsubsection][1][5,4]5.4.1}{[1][24][]24}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Xuancheng OD-matched \texttt  {features=real} multistart ($K=5$). \textbf  {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph  {escapes} the high-loss basin, unlike the SUMO case (\cref  {sec:phase4-multistart}). \textbf  {(b)} Despite the proper fit, $\mathrm  {AUC}_{\mathrm  {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ -- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance.}}{25}{figure.caption.23}\protected@file@percent }
-\newlabel{fig:phase5-multistart}{{6}{25}{Xuancheng OD-matched \code {features=real} multistart ($K=5$). \textbf {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph {escapes} the high-loss basin, unlike the SUMO case (\cref {sec:phase4-multistart}). \textbf {(b)} Despite the proper fit, $\AUC _{\mathrm {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ -- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance}{figure.caption.23}{}}
-\newlabel{fig:phase5-multistart@cref}{{[figure][6][]6}{[1][24][]25}{}{}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}Bottom line for Tier 3}{25}{subsubsection.5.4.2}\protected@file@percent }
-\newlabel{sec:phase5-bottom}{{5.4.2}{25}{Bottom line for Tier 3}{subsubsection.5.4.2}{}}
-\newlabel{sec:phase5-bottom@cref}{{[subsubsection][2][5,4]5.4.2}{[1][24][]25}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{25}{section.6}\protected@file@percent }
-\newlabel{sec:discussion}{{6}{25}{Discussion}{section.6}{}}
-\newlabel{sec:discussion@cref}{{[section][6][]6}{[1][25][]25}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Cross-tier comparison}{25}{subsection.6.1}\protected@file@percent }
-\newlabel{sec:disc-cross-tier}{{6.1}{25}{Cross-tier comparison}{subsection.6.1}{}}
-\newlabel{sec:disc-cross-tier@cref}{{[subsection][1][6]6.1}{[1][25][]25}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Cross-tier synthesis. Tier~2 reports the representative Ingolstadt seed~$42$ at $T=20$; Xuancheng rows report the weekday proxy and the Labour-Day stress test. Fitted and Pearson cells are \texttt  {none}/\texttt  {real}.}}{26}{table.caption.24}\protected@file@percent }
-\newlabel{tab:cross-tier}{{10}{26}{Cross-tier synthesis. Tier~2 reports the representative Ingolstadt seed~$42$ at $T=20$; Xuancheng rows report the weekday proxy and the Labour-Day stress test. Fitted and Pearson cells are \code {none}/\code {real}}{table.caption.24}{}}
-\newlabel{tab:cross-tier@cref}{{[table][10][]10}{[1][26][]26}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Limits of the chosen approach}{27}{subsection.6.2}\protected@file@percent }
-\newlabel{sec:disc-limits}{{6.2}{27}{Limits of the chosen approach}{subsection.6.2}{}}
-\newlabel{sec:disc-limits@cref}{{[subsection][2][6]6.2}{[1][26][]27}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Proxy labels and stationarity.}{27}{paragraph*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Controlled simulation versus real traffic.}{27}{paragraph*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Sparse observation, optimisation and feature capacity.}{27}{paragraph*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Social, environmental, technological implications}{27}{subsection.6.3}\protected@file@percent }
-\newlabel{sec:disc-implications}{{6.3}{27}{Social, environmental, technological implications}{subsection.6.3}{}}
-\newlabel{sec:disc-implications@cref}{{[subsection][3][6]6.3}{[1][27][]27}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Transport-policy modelling.}{27}{paragraph*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Privacy and data access.}{27}{paragraph*.29}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Platform accountability.}{27}{paragraph*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Tier 3: Real-world stress test of the filter under OD confounding}{20}{section.5}\protected@file@percent }
+\newlabel{sec:phase5-xuancheng}{{5}{20}{Tier 3: Real-world stress test of the filter under OD confounding}{section.5}{}}
+\newlabel{sec:phase5-xuancheng@cref}{{[section][5][]5}{[1][20][]20}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Motivation}{20}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Method}{20}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Dataset choice}{20}{subsubsection.5.2.1}\protected@file@percent }
+\newlabel{sec:phase5-dataset}{{5.2.1}{20}{Dataset choice}{subsubsection.5.2.1}{}}
+\newlabel{sec:phase5-dataset@cref}{{[subsubsection][1][5,2]5.2.1}{[1][20][]20}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Xuancheng AVI dataset \cite  {ma2026xuancheng} scale, compared with the Tier~2 Ingolstadt SUMO network.}}{21}{table.caption.16}\protected@file@percent }
+\newlabel{tab:phase5-dataset-scale}{{6}{21}{Xuancheng AVI dataset \cite {ma2026xuancheng} scale, compared with the Tier~2 Ingolstadt SUMO network}{table.caption.16}{}}
+\newlabel{tab:phase5-dataset-scale@cref}{{[table][6][]6}{[1][20][]21}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Verification: route legality and time-of-day distribution}{21}{subsubsection.5.2.2}\protected@file@percent }
+\newlabel{sec:phase5-verification}{{5.2.2}{21}{Verification: route legality and time-of-day distribution}{subsubsection.5.2.2}{}}
+\newlabel{sec:phase5-verification@cref}{{[subsubsection][2][5,2]5.2.2}{[1][21][]21}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Route legality.}{21}{paragraph*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Time-of-day distribution.}{21}{paragraph*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}The fundamental real-world gap: no ground-truth sat-nav label}{22}{subsubsection.5.2.3}\protected@file@percent }
+\newlabel{sec:phase5-proxy}{{5.2.3}{22}{The fundamental real-world gap: no ground-truth sat-nav label}{subsubsection.5.2.3}{}}
+\newlabel{sec:phase5-proxy@cref}{{[subsubsection][3][5,2]5.2.3}{[1][21][]22}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Results}{22}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Rush-vs-off-peak results}{22}{subsubsection.5.3.1}\protected@file@percent }
+\newlabel{sec:phase5-results}{{5.3.1}{22}{Rush-vs-off-peak results}{subsubsection.5.3.1}{}}
+\newlabel{sec:phase5-results@cref}{{[subsubsection][1][5,3]5.3.1}{[1][22][]22}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Rush-vs-off-peak headline configurations on Xuancheng. Fitted columns report \texttt  {features=none}/\texttt  {features=real}; recovery diagnostics are Pearson and median cosine on \texttt  {[all branching]} states.}}{22}{table.caption.20}\protected@file@percent }
+\newlabel{tab:phase5-headline}{{7}{22}{Rush-vs-off-peak headline configurations on Xuancheng. Fitted columns report \code {features=none}/\code {features=real}; recovery diagnostics are Pearson and median cosine on \texttt {[all branching]} states}{table.caption.20}{}}
+\newlabel{tab:phase5-headline@cref}{{[table][7][]7}{[1][22][]22}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph  {not} stable across zone granularity: a sweep over $K \in \{8, 16, 32, 64\}$ (\cref  {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$. The $K=8$ drop is therefore not treated as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations.}}{23}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:phase5-headline}{{5}{23}{Tier~3 Xuancheng rush-vs-off-peak detection AUC across three configurations. The full-observation empirical $1$-step reference (grey) is $0.556$ on a single day, $0.573$ when $5$ weekdays are pooled, and $0.518$ once the pools are OD-matched at $K=8$ spatial zones. The apparent crash at $K=8$ is \emph {not} stable across zone granularity: a sweep over $K \in \{8, 16, 32, 64\}$ (\cref {tab:phase5-ksweep}) shows the matched reference returning to $\sim \!0.55$--$0.58$ for $K \ge 16$. The $K=8$ drop is therefore not treated as a fixed OD-mix fraction. Fitted detectors (blue bars) sit at or below chance in all three configurations}{figure.caption.19}{}}
+\newlabel{fig:phase5-headline@cref}{{[figure][5][]5}{[1][22][]23}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Rush-vs-off-peak OD-zone granularity sweep (\texttt  {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals.}}{23}{table.caption.21}\protected@file@percent }
+\newlabel{tab:phase5-ksweep}{{8}{23}{Rush-vs-off-peak OD-zone granularity sweep (\code {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals}{table.caption.21}{}}
+\newlabel{tab:phase5-ksweep@cref}{{[table][8][]8}{[1][22][]23}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}Stronger-proxy stress test: Labour Day versus normal days}{24}{subsubsection.5.3.2}\protected@file@percent }
+\newlabel{sec:phase5-labour}{{5.3.2}{24}{Stronger-proxy stress test: Labour Day versus normal days}{subsubsection.5.3.2}{}}
+\newlabel{sec:phase5-labour@cref}{{[subsubsection][2][5,3]5.3.2}{[1][24][]24}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Labour-Day-versus-normal stress test (\texttt  {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals where available.}}{24}{table.caption.22}\protected@file@percent }
+\newlabel{tab:phase5-labour}{{9}{24}{Labour-Day-versus-normal stress test (\code {features=none}). Brackets give stratified vehicle-level bootstrap $95\%$ confidence intervals where available}{table.caption.22}{}}
+\newlabel{tab:phase5-labour@cref}{{[table][9][]9}{[1][24][]24}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Tier~3 OD-matched proxy sweeps. \textbf  {(a)} In the rush-vs-off-peak proxy, the empirical reference returns above chance for $K\ge 16$, but the fitted detector stays near chance. \textbf  {(b)} Labour Day creates the clearer empirical contrast at $K=64$, yet the fitted detector remains weak and the validation-selected multistart result drops to $0.502$. Error bars are bootstrap $95\%$ confidence intervals for the shown AUCs.}}{25}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:phase5-sweeps}{{6}{25}{Tier~3 OD-matched proxy sweeps. \textbf {(a)} In the rush-vs-off-peak proxy, the empirical reference returns above chance for $K\ge 16$, but the fitted detector stays near chance. \textbf {(b)} Labour Day creates the clearer empirical contrast at $K=64$, yet the fitted detector remains weak and the validation-selected multistart result drops to $0.502$. Error bars are bootstrap $95\%$ confidence intervals for the shown AUCs}{figure.caption.23}{}}
+\newlabel{fig:phase5-sweeps@cref}{{[figure][6][]6}{[1][24][]25}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Interpretation}{25}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:phase5-interpretation}{{5.4}{25}{Interpretation}{subsection.5.4}{}}
+\newlabel{sec:phase5-interpretation@cref}{{[subsection][4][5]5.4}{[1][25][]25}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Multistart on \texttt  {features=real}: the ceiling violation is an optimiser artefact}{26}{subsubsection.5.4.1}\protected@file@percent }
+\newlabel{sec:phase5-multistart}{{5.4.1}{26}{Multistart on \code {features=real}: the ceiling violation is an optimiser artefact}{subsubsection.5.4.1}{}}
+\newlabel{sec:phase5-multistart@cref}{{[subsubsection][1][5,4]5.4.1}{[1][26][]26}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Xuancheng OD-matched \texttt  {features=real} multistart ($K=5$). \textbf  {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph  {escapes} the high-loss basin, unlike the SUMO case (\cref  {sec:phase4-multistart}). \textbf  {(b)} Despite the proper fit, $\mathrm  {AUC}_{\mathrm  {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ -- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance.}}{27}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:phase5-multistart}{{7}{27}{Xuancheng OD-matched \code {features=real} multistart ($K=5$). \textbf {(a)} The rush-chain training loss collapses from the zero-init baseline ($1{,}397$) to the validation-selected restart ($9.186$): random re-initialisation \emph {escapes} the high-loss basin, unlike the SUMO case (\cref {sec:phase4-multistart}). \textbf {(b)} Despite the proper fit, $\AUC _{\mathrm {fit}}$ falls from the baseline's spurious $0.530$ (which exceeded the empirical ceiling $0.518$) to $0.483$ -- chance. The ceiling violation was an optimiser artefact; under correct chain recovery the fitted detector returns to chance}{figure.caption.24}{}}
+\newlabel{fig:phase5-multistart@cref}{{[figure][7][]7}{[1][26][]27}{}{}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}Bottom line for Tier 3}{27}{subsubsection.5.4.2}\protected@file@percent }
+\newlabel{sec:phase5-bottom}{{5.4.2}{27}{Bottom line for Tier 3}{subsubsection.5.4.2}{}}
+\newlabel{sec:phase5-bottom@cref}{{[subsubsection][2][5,4]5.4.2}{[1][27][]27}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{28}{section.6}\protected@file@percent }
+\newlabel{sec:discussion}{{6}{28}{Discussion}{section.6}{}}
+\newlabel{sec:discussion@cref}{{[section][6][]6}{[1][27][]28}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Cross-tier comparison}{28}{subsection.6.1}\protected@file@percent }
+\newlabel{sec:disc-cross-tier}{{6.1}{28}{Cross-tier comparison}{subsection.6.1}{}}
+\newlabel{sec:disc-cross-tier@cref}{{[subsection][1][6]6.1}{[1][27][]28}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Cross-tier synthesis. Tier~2 reports the representative Ingolstadt seed~$42$ at $T=20$; Xuancheng rows report the weekday proxy and the Labour-Day stress test. Fitted and Pearson cells are \texttt  {none}/\texttt  {real}.}}{29}{table.caption.25}\protected@file@percent }
+\newlabel{tab:cross-tier}{{10}{29}{Cross-tier synthesis. Tier~2 reports the representative Ingolstadt seed~$42$ at $T=20$; Xuancheng rows report the weekday proxy and the Labour-Day stress test. Fitted and Pearson cells are \code {none}/\code {real}}{table.caption.25}{}}
+\newlabel{tab:cross-tier@cref}{{[table][10][]10}{[1][29][]29}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Limits of the chosen approach}{29}{subsection.6.2}\protected@file@percent }
+\newlabel{sec:disc-limits}{{6.2}{29}{Limits of the chosen approach}{subsection.6.2}{}}
+\newlabel{sec:disc-limits@cref}{{[subsection][2][6]6.2}{[1][29][]29}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Proxy labels and stationarity.}{29}{paragraph*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Controlled simulation versus real traffic.}{29}{paragraph*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Sparse observation, optimisation and feature capacity.}{29}{paragraph*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Social, environmental, technological implications}{29}{subsection.6.3}\protected@file@percent }
+\newlabel{sec:disc-implications}{{6.3}{29}{Social, environmental, technological implications}{subsection.6.3}{}}
+\newlabel{sec:disc-implications@cref}{{[subsection][3][6]6.3}{[1][29][]29}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Transport-policy modelling.}{29}{paragraph*.29}\protected@file@percent }
 \citation{morimura2013}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Future work}{28}{subsection.6.4}\protected@file@percent }
-\newlabel{sec:disc-future}{{6.4}{28}{Future work}{subsection.6.4}{}}
-\newlabel{sec:disc-future@cref}{{[subsection][4][6]6.4}{[1][28][]28}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{28}{section.7}\protected@file@percent }
-\newlabel{sec:conclusion}{{7}{28}{Conclusion}{section.7}{}}
-\newlabel{sec:conclusion@cref}{{[section][7][]7}{[1][28][]28}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{What the evidence supports.}{28}{paragraph*.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{What the audits changed.}{29}{paragraph*.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Where the filter is reliable.}{29}{paragraph*.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Where it is not reliable.}{29}{paragraph*.34}\protected@file@percent }
-\citation{markscheme}
+\@writefile{toc}{\contentsline {paragraph}{Privacy and data access.}{30}{paragraph*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Platform accountability.}{30}{paragraph*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Future work}{30}{subsection.6.4}\protected@file@percent }
+\newlabel{sec:disc-future}{{6.4}{30}{Future work}{subsection.6.4}{}}
+\newlabel{sec:disc-future@cref}{{[subsection][4][6]6.4}{[1][30][]30}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{31}{section.7}\protected@file@percent }
+\newlabel{sec:conclusion}{{7}{31}{Conclusion}{section.7}{}}
+\newlabel{sec:conclusion@cref}{{[section][7][]7}{[1][30][]31}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{What the evidence supports.}{31}{paragraph*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What the audits changed.}{31}{paragraph*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Where the filter is reliable.}{31}{paragraph*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Where it is not reliable.}{31}{paragraph*.35}\protected@file@percent }
 \citation{morimura2013}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Cross-tier synthesis of the dissertation's headline results. The bars use a normalised summary, since the tiers use different metrics: Tier~1 reports benchmark-reproduction closeness, computed as the mean capped ratio between the visual paper RMAE and this reproduction's RMAE for $|X_{\!o}|\ge 10$; Tiers~2--3 report AUC gap closed, $(\mathrm  {AUC}_{\mathrm  {fit}}-0.5)/(\mathrm  {AUC}_{\mathrm  {emp}}-0.5)$. The central pattern is that the estimator reproduces its synthetic benchmark, the labelled SUMO filter recovers a substantial fraction of the empirical $1$-step signal, and the real Xuancheng behavioural proxy does not recover under the fitted partial-observation model.}}{30}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:conclusion-synthesis}{{7}{30}{Cross-tier synthesis of the dissertation's headline results. The bars use a normalised summary, since the tiers use different metrics: Tier~1 reports benchmark-reproduction closeness, computed as the mean capped ratio between the visual paper RMAE and this reproduction's RMAE for $|\Xo |\ge 10$; Tiers~2--3 report AUC gap closed, $(\AUC _{\mathrm {fit}}-0.5)/(\AUC _{\mathrm {emp}}-0.5)$. The central pattern is that the estimator reproduces its synthetic benchmark, the labelled SUMO filter recovers a substantial fraction of the empirical $1$-step signal, and the real Xuancheng behavioural proxy does not recover under the fitted partial-observation model}{figure.caption.35}{}}
-\newlabel{fig:conclusion-synthesis@cref}{{[figure][7][]7}{[1][29][]30}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Project Management and Reflection}{30}{section.8}\protected@file@percent }
-\newlabel{sec:reflection}{{8}{30}{Project Management and Reflection}{section.8}{}}
-\newlabel{sec:reflection@cref}{{[section][8][]8}{[1][30][]30}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Project structure and milestone management}{30}{subsection.8.1}\protected@file@percent }
-\newlabel{sec:reflect-pm}{{8.1}{30}{Project structure and milestone management}{subsection.8.1}{}}
-\newlabel{sec:reflect-pm@cref}{{[subsection][1][8]8.1}{[1][30][]30}{}{}{}}
-\citation{markscheme}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Personal skill development}{32}{subsection.8.2}\protected@file@percent }
-\newlabel{sec:reflect-skills}{{8.2}{32}{Personal skill development}{subsection.8.2}{}}
-\newlabel{sec:reflect-skills@cref}{{[subsection][2][8]8.2}{[1][31][]32}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Cross-tier synthesis of the dissertation's headline results. The bars use a normalised summary, since the tiers use different metrics: Tier~1 reports benchmark-reproduction closeness, computed as the mean capped ratio between the visual paper RMAE and this reproduction's RMAE for $|X_{\!o}|\ge 10$; Tiers~2--3 report AUC gap closed, $(\mathrm  {AUC}_{\mathrm  {fit}}-0.5)/(\mathrm  {AUC}_{\mathrm  {emp}}-0.5)$. The central pattern is that the estimator reproduces its synthetic benchmark, the labelled SUMO filter recovers a substantial fraction of the empirical $1$-step signal, and the real Xuancheng behavioural proxy does not recover under the fitted partial-observation model.}}{32}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:conclusion-synthesis}{{8}{32}{Cross-tier synthesis of the dissertation's headline results. The bars use a normalised summary, since the tiers use different metrics: Tier~1 reports benchmark-reproduction closeness, computed as the mean capped ratio between the visual paper RMAE and this reproduction's RMAE for $|\Xo |\ge 10$; Tiers~2--3 report AUC gap closed, $(\AUC _{\mathrm {fit}}-0.5)/(\AUC _{\mathrm {emp}}-0.5)$. The central pattern is that the estimator reproduces its synthetic benchmark, the labelled SUMO filter recovers a substantial fraction of the empirical $1$-step signal, and the real Xuancheng behavioural proxy does not recover under the fitted partial-observation model}{figure.caption.36}{}}
+\newlabel{fig:conclusion-synthesis@cref}{{[figure][8][]8}{[1][32][]32}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Project Management and Reflection}{32}{section.8}\protected@file@percent }
+\newlabel{sec:reflection}{{8}{32}{Project Management and Reflection}{section.8}{}}
+\newlabel{sec:reflection@cref}{{[section][8][]8}{[1][32][]32}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Project structure and milestone management}{32}{subsection.8.1}\protected@file@percent }
+\newlabel{sec:reflect-pm}{{8.1}{32}{Project structure and milestone management}{subsection.8.1}{}}
+\newlabel{sec:reflect-pm@cref}{{[subsection][1][8]8.1}{[1][32][]32}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Personal skill development}{33}{subsection.8.2}\protected@file@percent }
+\newlabel{sec:reflect-skills}{{8.2}{33}{Personal skill development}{subsection.8.2}{}}
+\newlabel{sec:reflect-skills@cref}{{[subsection][2][8]8.2}{[1][33][]33}{}{}{}}
 \bibdata{references}
 \bibcite{morimura2013}{{1}{}{{}}{{}}}
 \bibcite{yang2001atis}{{2}{}{{}}{{}}}
@@ -264,92 +265,89 @@
 \bibcite{ma2026xuancheng}{{21}{}{{}}{{}}}
 \bibcite{cappi2026}{{22}{}{{}}{{}}}
 \bibcite{wang2023xuancheng}{{23}{}{{}}{{}}}
-\bibcite{markscheme}{{24}{}{{}}{{}}}
 \citation{ma2026xuancheng}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Repository structure and reproducibility}{35}{appendix.A}\protected@file@percent }
-\newlabel{app:repo}{{A}{35}{Repository structure and reproducibility}{appendix.A}{}}
-\newlabel{app:repo@cref}{{[section][1][]A}{[1][35][]35}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Use of generative AI}{35}{appendix.B}\protected@file@percent }
-\newlabel{app:ai}{{B}{35}{Use of generative AI}{appendix.B}{}}
-\newlabel{app:ai@cref}{{[section][2][]B}{[1][35][]35}{}{}{}}
 \citation{morimura2013}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Solver profiling for the $f+g$ extension}{36}{appendix.C}\protected@file@percent }
-\newlabel{app:fg-profiling}{{C}{36}{\texorpdfstring {Solver profiling for the $f+g$ extension}{Solver profiling for the f+g extension}}{appendix.C}{}}
-\newlabel{app:fg-profiling@cref}{{[section][3][]C}{[1][36][]36}{}{}{}}
-\@writefile{toc}{\contentsline {paragraph}{Sparse-LU implementation.}{36}{paragraph*.36}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{SUMO-scale timing.}{36}{paragraph*.37}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Subgraph tractability and $\gamma $ sensitivity.}{36}{paragraph*.38}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces $\gamma $ sweep for $f+g$ on the Xuancheng $K=8$ zone-0 subgraph ($n=194$, $|X_o|=53$, $T=10$, \texttt  {maxiter}=300). The $f$-only column is the same fit ($\gamma =1$) shown for reference; the empirical 1-step reference on this subgraph is $0.563$.}}{37}{table.caption.39}\protected@file@percent }
-\newlabel{tab:phase4-fg-gamma}{{11}{37}{$\gamma $ sweep for $f+g$ on the Xuancheng $K=8$ zone-0 subgraph ($n=194$, $|X_o|=53$, $T=10$, \code {maxiter}=300). The $f$-only column is the same fit ($\gamma =1$) shown for reference; the empirical 1-step reference on this subgraph is $0.563$}{table.caption.39}{}}
-\newlabel{tab:phase4-fg-gamma@cref}{{[table][11][]11}{[1][36][]37}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Tier 1 synthetic reproduction details}{37}{appendix.D}\protected@file@percent }
-\newlabel{app:phase1-synthetic-details}{{D}{37}{Tier 1 synthetic reproduction details}{appendix.D}{}}
-\newlabel{app:phase1-synthetic-details@cref}{{[section][4][]D}{[1][37][]37}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Tier~1 reproduction RMAE versus visual estimates from Morimura et al.'s Fig.~2A. Mean over $10$ trials, $n=100$, full reproduction protocol including global features and cross-validated $\lambda $.}}{38}{table.caption.40}\protected@file@percent }
-\newlabel{tab:phase1-rmae}{{12}{38}{Tier~1 reproduction RMAE versus visual estimates from Morimura et al.'s Fig.~2A. Mean over $10$ trials, $n=100$, full reproduction protocol including global features and cross-validated $\lambda $}{table.caption.40}{}}
-\newlabel{tab:phase1-rmae@cref}{{[table][12][]12}{[1][37][]38}{}{}{}}
-\newlabel{eq:scale-free-prediction}{{4}{38}{}{equation.4}{}}
-\newlabel{eq:scale-free-prediction@cref}{{[equation][4][]4}{[1][38][]38}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {E}Tier 2 multistart basin check}{39}{appendix.E}\protected@file@percent }
-\newlabel{sec:phase4-multistart}{{E}{39}{Tier 2 multistart basin check}{appendix.E}{}}
-\newlabel{sec:phase4-multistart@cref}{{[section][5][]E}{[1][39][]39}{}{}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Tier~2 multistart basin check on the two low-basin seeds (\texttt  {features=none}, $K=5$, $T=20$). \textbf  {(a)} The validation-selected multistart detector ties the zero-init baseline on seed~$7$ and is markedly worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of seeds $\{42,101,2024\}$ (dashed). \textbf  {(b)} Every one of the ten random restarts (five per regime) converges to a strictly higher final loss than zero-init.}}{39}{figure.caption.41}\protected@file@percent }
-\newlabel{fig:phase4-multistart}{{8}{39}{Tier~2 multistart basin check on the two low-basin seeds (\code {features=none}, $K=5$, $T=20$). \textbf {(a)} The validation-selected multistart detector ties the zero-init baseline on seed~$7$ and is markedly worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of seeds $\{42,101,2024\}$ (dashed). \textbf {(b)} Every one of the ten random restarts (five per regime) converges to a strictly higher final loss than zero-init}{figure.caption.41}{}}
-\newlabel{fig:phase4-multistart@cref}{{[figure][8][]8}{[1][39][]39}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {F}Tier 2 sat-navigation versus congestion decomposition}{40}{appendix.F}\protected@file@percent }
-\newlabel{sec:phase4-rho-demand}{{F}{40}{Tier 2 sat-navigation versus congestion decomposition}{appendix.F}{}}
-\newlabel{sec:phase4-rho-demand@cref}{{[section][6][]F}{[1][40][]40}{}{}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces $\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ confidence interval (CI) computed as $\text  {mean} \pm 1.96 \cdot \sigma /\sqrt  {5}$.}}{40}{table.caption.42}\protected@file@percent }
-\newlabel{tab:phase4-rho-demand}{{13}{40}{$\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ confidence interval (CI) computed as $\text {mean} \pm 1.96 \cdot \sigma /\sqrt {5}$}{table.caption.42}{}}
-\newlabel{tab:phase4-rho-demand@cref}{{[table][13][]13}{[1][40][]40}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {G}Build and reproducibility}{41}{appendix.G}\protected@file@percent }
-\newlabel{app:build}{{G}{41}{Build and reproducibility}{appendix.G}{}}
-\newlabel{app:build@cref}{{[section][7][]G}{[1][40][]41}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {H}Metric and method primer}{41}{appendix.H}\protected@file@percent }
-\newlabel{app:metrics-primer}{{H}{41}{Metric and method primer}{appendix.H}{}}
-\newlabel{app:metrics-primer@cref}{{[section][8][]H}{[1][41][]41}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.1}Markov chain and transition kernel}{41}{subsection.H.1}\protected@file@percent }
-\newlabel{app:markov-chain-primer}{{H.1}{41}{Markov chain and transition kernel}{subsection.H.1}{}}
-\newlabel{app:markov-chain-primer@cref}{{[subsection][1][8]H.1}{[1][41][]41}{}{}{}}
+\@writefile{toc}{\contentsline {section}{Appendix}{38}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A}Repository structure and reproducibility}{38}{appendix.A}\protected@file@percent }
+\newlabel{app:repo}{{A}{38}{Repository structure and reproducibility}{appendix.A}{}}
+\newlabel{app:repo@cref}{{[section][1][]A}{[1][38][]38}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Solver profiling for the $f+g$ extension}{38}{appendix.B}\protected@file@percent }
+\newlabel{app:fg-profiling}{{B}{38}{\texorpdfstring {Solver profiling for the $f+g$ extension}{Solver profiling for the f+g extension}}{appendix.B}{}}
+\newlabel{app:fg-profiling@cref}{{[section][2][]B}{[1][38][]38}{}{}{}}
+\@writefile{toc}{\contentsline {paragraph}{Sparse-LU implementation.}{38}{paragraph*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{SUMO-scale timing.}{38}{paragraph*.38}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Subgraph tractability and $\gamma $ sensitivity.}{39}{paragraph*.39}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces $\gamma $ sweep for $f+g$ on the Xuancheng $K=8$ zone-0 subgraph ($n=194$, $|X_o|=53$, $T=10$, \texttt  {maxiter}=300). The $f$-only column is the same fit ($\gamma =1$) shown for reference; the empirical 1-step reference on this subgraph is $0.563$.}}{39}{table.caption.40}\protected@file@percent }
+\newlabel{tab:phase4-fg-gamma}{{11}{39}{$\gamma $ sweep for $f+g$ on the Xuancheng $K=8$ zone-0 subgraph ($n=194$, $|X_o|=53$, $T=10$, \code {maxiter}=300). The $f$-only column is the same fit ($\gamma =1$) shown for reference; the empirical 1-step reference on this subgraph is $0.563$}{table.caption.40}{}}
+\newlabel{tab:phase4-fg-gamma@cref}{{[table][11][]11}{[1][39][]39}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Tier 1 synthetic reproduction details}{39}{appendix.C}\protected@file@percent }
+\newlabel{app:phase1-synthetic-details}{{C}{39}{Tier 1 synthetic reproduction details}{appendix.C}{}}
+\newlabel{app:phase1-synthetic-details@cref}{{[section][3][]C}{[1][39][]39}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Tier~1 reproduction RMAE versus visual estimates from Morimura et al.'s Fig.~2A. Mean over $10$ trials, $n=100$, full reproduction protocol including global features and cross-validated $\lambda $.}}{40}{table.caption.41}\protected@file@percent }
+\newlabel{tab:phase1-rmae}{{12}{40}{Tier~1 reproduction RMAE versus visual estimates from Morimura et al.'s Fig.~2A. Mean over $10$ trials, $n=100$, full reproduction protocol including global features and cross-validated $\lambda $}{table.caption.41}{}}
+\newlabel{tab:phase1-rmae@cref}{{[table][12][]12}{[1][40][]40}{}{}{}}
+\newlabel{eq:scale-free-prediction}{{4}{40}{}{equation.4}{}}
+\newlabel{eq:scale-free-prediction@cref}{{[equation][4][]4}{[1][40][]40}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Tier 2 multistart basin check}{41}{appendix.D}\protected@file@percent }
+\newlabel{sec:phase4-multistart}{{D}{41}{Tier 2 multistart basin check}{appendix.D}{}}
+\newlabel{sec:phase4-multistart@cref}{{[section][4][]D}{[1][41][]41}{}{}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Tier~2 multistart basin check on the two low-basin seeds (\texttt  {features=none}, $K=5$, $T=20$). \textbf  {(a)} The validation-selected multistart detector ties the zero-init baseline on seed~$7$ and is markedly worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of seeds $\{42,101,2024\}$ (dashed). \textbf  {(b)} Every one of the ten random restarts (five per regime) converges to a strictly higher final loss than zero-init.}}{42}{figure.caption.42}\protected@file@percent }
+\newlabel{fig:phase4-multistart}{{9}{42}{Tier~2 multistart basin check on the two low-basin seeds (\code {features=none}, $K=5$, $T=20$). \textbf {(a)} The validation-selected multistart detector ties the zero-init baseline on seed~$7$ and is markedly worse on seed~$23$; neither approaches the $\sim 61\%$ good-basin level of seeds $\{42,101,2024\}$ (dashed). \textbf {(b)} Every one of the ten random restarts (five per regime) converges to a strictly higher final loss than zero-init}{figure.caption.42}{}}
+\newlabel{fig:phase4-multistart@cref}{{[figure][9][]9}{[1][41][]42}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Tier 2 sat-navigation versus congestion decomposition}{42}{appendix.E}\protected@file@percent }
+\newlabel{sec:phase4-rho-demand}{{E}{42}{Tier 2 sat-navigation versus congestion decomposition}{appendix.E}{}}
+\newlabel{sec:phase4-rho-demand@cref}{{[section][5][]E}{[1][42][]42}{}{}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces $\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ confidence interval (CI) computed as $\text  {mean} \pm 1.96 \cdot \sigma /\sqrt  {5}$.}}{43}{table.caption.43}\protected@file@percent }
+\newlabel{tab:phase4-rho-demand}{{13}{43}{$\rho \times d$ decomposition of the SUMO rush-vs-off-peak proxy signal. Mean $\pm $ sample standard deviation across five SUMO seeds; $95\%$ confidence interval (CI) computed as $\text {mean} \pm 1.96 \cdot \sigma /\sqrt {5}$}{table.caption.43}{}}
+\newlabel{tab:phase4-rho-demand@cref}{{[table][13][]13}{[1][43][]43}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Build and reproducibility}{43}{appendix.F}\protected@file@percent }
+\newlabel{app:build}{{F}{43}{Build and reproducibility}{appendix.F}{}}
+\newlabel{app:build@cref}{{[section][6][]F}{[1][43][]43}{}{}{}}
 \citation{morimura2013}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.2}Stationary distribution, restart probability and hitting rate}{42}{subsection.H.2}\protected@file@percent }
-\newlabel{app:stationary-primer}{{H.2}{42}{Stationary distribution, restart probability and hitting rate}{subsection.H.2}{}}
-\newlabel{app:stationary-primer@cref}{{[subsection][2][8]H.2}{[1][42][]42}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.3}Inverse Markov-chain problem}{42}{subsection.H.3}\protected@file@percent }
-\newlabel{app:inverse-mc-primer}{{H.3}{42}{Inverse Markov-chain problem}{subsection.H.3}{}}
-\newlabel{app:inverse-mc-primer@cref}{{[subsection][3][8]H.3}{[1][42][]42}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.4}Softmax-parametric chain}{42}{subsection.H.4}\protected@file@percent }
-\newlabel{app:softmax-primer}{{H.4}{42}{Softmax-parametric chain}{subsection.H.4}{}}
-\newlabel{app:softmax-primer@cref}{{[subsection][4][8]H.4}{[1][42][]42}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.5}Log-likelihood ratio score}{43}{subsection.H.5}\protected@file@percent }
-\newlabel{app:llr-primer}{{H.5}{43}{Log-likelihood ratio score}{subsection.H.5}{}}
-\newlabel{app:llr-primer@cref}{{[subsection][5][8]H.5}{[1][42][]43}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.6}ROC curve and AUC}{43}{subsection.H.6}\protected@file@percent }
-\newlabel{app:auc-primer}{{H.6}{43}{ROC curve and AUC}{subsection.H.6}{}}
-\newlabel{app:auc-primer@cref}{{[subsection][6][8]H.6}{[1][43][]43}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.7}Pearson correlation}{43}{subsection.H.7}\protected@file@percent }
-\newlabel{app:pearson-primer}{{H.7}{43}{Pearson correlation}{subsection.H.7}{}}
-\newlabel{app:pearson-primer@cref}{{[subsection][7][8]H.7}{[1][43][]43}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.8}Cosine similarity and collinearity}{43}{subsection.H.8}\protected@file@percent }
-\newlabel{app:cosine-primer}{{H.8}{43}{Cosine similarity and collinearity}{subsection.H.8}{}}
-\newlabel{app:cosine-primer@cref}{{[subsection][8][8]H.8}{[1][43][]43}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.9}OD matching / OD rebalancing}{44}{subsection.H.9}\protected@file@percent }
-\newlabel{app:od-primer}{{H.9}{44}{OD matching / OD rebalancing}{subsection.H.9}{}}
-\newlabel{app:od-primer@cref}{{[subsection][9][8]H.9}{[1][44][]44}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.10}Bootstrap confidence interval}{44}{subsection.H.10}\protected@file@percent }
-\newlabel{app:bootstrap-primer}{{H.10}{44}{Bootstrap confidence interval}{subsection.H.10}{}}
-\newlabel{app:bootstrap-primer@cref}{{[subsection][10][8]H.10}{[1][44][]44}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.11}L-BFGS-B optimiser, basins and multistart}{44}{subsection.H.11}\protected@file@percent }
-\newlabel{app:lbfgs-primer}{{H.11}{44}{L-BFGS-B optimiser, basins and multistart}{subsection.H.11}{}}
-\newlabel{app:lbfgs-primer@cref}{{[subsection][11][8]H.11}{[1][44][]44}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.12}Ridge regularisation and finite-difference gradient checks}{44}{subsection.H.12}\protected@file@percent }
-\newlabel{app:regularisation-fd-primer}{{H.12}{44}{Ridge regularisation and finite-difference gradient checks}{subsection.H.12}{}}
-\newlabel{app:regularisation-fd-primer@cref}{{[subsection][12][8]H.12}{[1][44][]44}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Metric and method primer}{44}{appendix.G}\protected@file@percent }
+\newlabel{app:metrics-primer}{{G}{44}{Metric and method primer}{appendix.G}{}}
+\newlabel{app:metrics-primer@cref}{{[section][7][]G}{[1][44][]44}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}Markov chain and transition kernel}{44}{subsection.G.1}\protected@file@percent }
+\newlabel{app:markov-chain-primer}{{G.1}{44}{Markov chain and transition kernel}{subsection.G.1}{}}
+\newlabel{app:markov-chain-primer@cref}{{[subsection][1][7]G.1}{[1][44][]44}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.2}Stationary distribution, restart probability and hitting rate}{44}{subsection.G.2}\protected@file@percent }
+\newlabel{app:stationary-primer}{{G.2}{44}{Stationary distribution, restart probability and hitting rate}{subsection.G.2}{}}
+\newlabel{app:stationary-primer@cref}{{[subsection][2][7]G.2}{[1][44][]44}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.3}Inverse Markov-chain problem}{45}{subsection.G.3}\protected@file@percent }
+\newlabel{app:inverse-mc-primer}{{G.3}{45}{Inverse Markov-chain problem}{subsection.G.3}{}}
+\newlabel{app:inverse-mc-primer@cref}{{[subsection][3][7]G.3}{[1][44][]45}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.4}Softmax-parametric chain}{45}{subsection.G.4}\protected@file@percent }
+\newlabel{app:softmax-primer}{{G.4}{45}{Softmax-parametric chain}{subsection.G.4}{}}
+\newlabel{app:softmax-primer@cref}{{[subsection][4][7]G.4}{[1][45][]45}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.5}Log-likelihood ratio score}{45}{subsection.G.5}\protected@file@percent }
+\newlabel{app:llr-primer}{{G.5}{45}{Log-likelihood ratio score}{subsection.G.5}{}}
+\newlabel{app:llr-primer@cref}{{[subsection][5][7]G.5}{[1][45][]45}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.6}ROC curve and AUC}{45}{subsection.G.6}\protected@file@percent }
+\newlabel{app:auc-primer}{{G.6}{45}{ROC curve and AUC}{subsection.G.6}{}}
+\newlabel{app:auc-primer@cref}{{[subsection][6][7]G.6}{[1][45][]45}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.7}Pearson correlation}{46}{subsection.G.7}\protected@file@percent }
+\newlabel{app:pearson-primer}{{G.7}{46}{Pearson correlation}{subsection.G.7}{}}
+\newlabel{app:pearson-primer@cref}{{[subsection][7][7]G.7}{[1][45][]46}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.8}Cosine similarity and collinearity}{46}{subsection.G.8}\protected@file@percent }
+\newlabel{app:cosine-primer}{{G.8}{46}{Cosine similarity and collinearity}{subsection.G.8}{}}
+\newlabel{app:cosine-primer@cref}{{[subsection][8][7]G.8}{[1][46][]46}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.9}OD matching / OD rebalancing}{46}{subsection.G.9}\protected@file@percent }
+\newlabel{app:od-primer}{{G.9}{46}{OD matching / OD rebalancing}{subsection.G.9}{}}
+\newlabel{app:od-primer@cref}{{[subsection][9][7]G.9}{[1][46][]46}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.10}Bootstrap confidence interval}{46}{subsection.G.10}\protected@file@percent }
+\newlabel{app:bootstrap-primer}{{G.10}{46}{Bootstrap confidence interval}{subsection.G.10}{}}
+\newlabel{app:bootstrap-primer@cref}{{[subsection][10][7]G.10}{[1][46][]46}{}{}{}}
 \providecommand\NAT@force@numbers{}\NAT@force@numbers
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.13}Gap closed}{45}{subsection.H.13}\protected@file@percent }
-\newlabel{app:gap-closed-primer}{{H.13}{45}{Gap closed}{subsection.H.13}{}}
-\newlabel{app:gap-closed-primer@cref}{{[subsection][13][8]H.13}{[1][45][]45}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {H.14}RMAE}{45}{subsection.H.14}\protected@file@percent }
-\newlabel{app:rmae-primer}{{H.14}{45}{RMAE}{subsection.H.14}{}}
-\newlabel{app:rmae-primer@cref}{{[subsection][14][8]H.14}{[1][45][]45}{}{}{}}
-\gdef \@abspage@last{45}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.11}L-BFGS-B optimiser, basins and multistart}{47}{subsection.G.11}\protected@file@percent }
+\newlabel{app:lbfgs-primer}{{G.11}{47}{L-BFGS-B optimiser, basins and multistart}{subsection.G.11}{}}
+\newlabel{app:lbfgs-primer@cref}{{[subsection][11][7]G.11}{[1][46][]47}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.12}Ridge regularisation and finite-difference gradient checks}{47}{subsection.G.12}\protected@file@percent }
+\newlabel{app:regularisation-fd-primer}{{G.12}{47}{Ridge regularisation and finite-difference gradient checks}{subsection.G.12}{}}
+\newlabel{app:regularisation-fd-primer@cref}{{[subsection][12][7]G.12}{[1][47][]47}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.13}Gap closed}{47}{subsection.G.13}\protected@file@percent }
+\newlabel{app:gap-closed-primer}{{G.13}{47}{Gap closed}{subsection.G.13}{}}
+\newlabel{app:gap-closed-primer@cref}{{[subsection][13][7]G.13}{[1][47][]47}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.14}RMAE}{47}{subsection.G.14}\protected@file@percent }
+\newlabel{app:rmae-primer}{{G.14}{47}{RMAE}{subsection.G.14}{}}
+\newlabel{app:rmae-primer@cref}{{[subsection][14][7]G.14}{[1][47][]47}{}{}{}}
+\gdef \@abspage@last{47}

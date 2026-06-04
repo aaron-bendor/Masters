@@ -94,12 +94,13 @@ used to construct a rush-vs-off-peak regime split with windows
 $\text{rush} = [25{,}200, 32{,}400] \cup [61{,}200, 68{,}400]$
 (7--9~AM and 5--7~PM) and
 $\text{offpeak} = [36{,}000, 57{,}600]$ (10~AM--4~PM); trips outside
-either window are discarded. These windows are explicitly non-stationary:
-the rush periods cover ramp-up, peak loading and dissipation, while the
-off-peak pool averages several lower-demand hours. The inverse-MC fit thus
-projects each time-varying window onto one stationary surrogate chain,
-without estimating an invariant distribution that the data literally
-sample. Three anomalous days are flagged for exclusion or special handling:
+either window are discarded. Because the legalised Xuancheng
+sub-trajectories are much shorter than the SUMO routes, the Tier~3 tests
+use $T=10$. This is shorter than every main SUMO scoring window
+($T=20$--$40$), and the Tier~2 sweep showed that AUC increases with
+longer $T$; the shorter Xuancheng window can therefore contribute to low
+test AUC even before any model-fitting error is considered. Three
+anomalous days are flagged for exclusion or special handling:
 Apr~5 (Tomb-Sweeping holiday, $264$k trips, demand outlier), Apr~28--30
 (Labour Day period, $\sim 366$--$426$k trips), Apr~10
 (\code{startTime} max~$\approx 165$k, suggesting a multi-day
@@ -168,11 +169,10 @@ configurations.}
 \label{fig:phase5-headline}
 \end{figure}
 
-The numerical evidence is split into three views. \Cref{tab:phase5-headline}
-shows the headline rush-vs-off-peak configurations. \Cref{tab:phase5-ksweep}
-isolates the OD-zone granularity sweep for that same proxy, and
-\cref{tab:phase5-labour} repeats the same logic for the stronger
-Labour-Day proxy. \Cref{fig:phase5-sweeps} visualises the two OD sweeps.
+The numerical evidence is split into two rush-vs-off-peak views.
+\Cref{tab:phase5-headline} shows the headline configurations, and
+\cref{tab:phase5-ksweep} isolates the OD-zone granularity sweep for the
+same proxy.
 
 \begin{table}[!htbp]
 \centering
@@ -217,18 +217,40 @@ $K=64$ & $1{,}448$ & $0.575\ [0.530,0.622]$ & $0.490\ [0.441,0.535]$ \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.95\linewidth]{fig09_phase5_proxy_sweeps.png}
-\caption{Tier~3 OD-matched proxy sweeps. \textbf{(a)} In the
-rush-vs-off-peak proxy, the empirical reference returns above chance for
-$K\ge16$, but the fitted detector stays near chance. \textbf{(b)} Labour
-Day creates the clearer empirical contrast at $K=64$, yet the fitted
-detector remains weak and the validation-selected multistart result drops
-to $0.502$. Error bars are bootstrap $95\%$ confidence intervals for the
-shown AUCs.}
-\label{fig:phase5-sweeps}
-\end{figure}
+The OD-matched $K=8$ row matches $517{,}477$ trips per regime across
+$55$ shared OD cells. It lowers the full-observation reference from
+$0.573$ to $0.518$, but the granularity sweep shows that this drop is
+specific to coarse zoning: for $K\ge16$, the matched empirical reference
+returns to about $0.55$--$0.58$. The stable result concerns detector
+recovery: across every tested $K$, the fitted AUC remains at chance
+($0.476$--$0.513$, with bootstrap intervals crossing $0.50$), even where
+the full-observation chain weakly separates rush from off-peak routes.
+
+The feature-augmented row needs separate handling. Its matched
+\code{features=real} AUC of $0.530$ exceeds the empirical reference
+($0.518$), indicating a fit problem, not a better detector.
+The diagnostic is consistent with that reading: the rush-chain loss is
+$1397$ under \code{features=real}, compared with $4.058$ under
+\code{features=none}, and the per-row Pearson is lower with features
+($+0.077$ vs.\ $+0.104$ on \texttt{[all branching]} states). The static
+road attributes also add parameters while the Xuancheng proxy is sparse
+and only indirectly related to route guidance. The multistart check in
+\cref{sec:phase5-multistart} resolves the anomaly:
+once the high-loss basin is avoided, \code{features=real} returns to
+chance-level AUC and does not improve the real-world recovery.
+
+\subsubsection{Stronger-proxy stress test: Labour Day versus normal days}
+\label{sec:phase5-labour}
+
+The rush-vs-off-peak proxy may simply be too weak. To test whether the
+detector works when the real-world behavioural contrast is stronger, the
+same pipeline was run on a holiday split suggested by the dataset audit:
+Labour Day period trips (Apr~28--30) against the same normal midweek pool
+(Apr~11--14 and Apr~17--21). A broader holiday pool that also included
+Tomb-Sweeping Apr~5 was first tested but gave empirical AUCs near chance
+at every OD granularity, consistent with pooling low-demand and
+high-demand holiday regimes that partially cancel. Labour-only is the
+more informative stress test.
 
 \begin{table}[!htbp]
 \centering
@@ -252,43 +274,22 @@ $K=64$, multistart & $1{,}625$ & $0.567$ & $\mathbf{0.502}$ \\
 \end{tabular}
 \end{table}
 
-The OD-matched $K=8$ row matches $517{,}477$ trips per regime across
-$55$ shared OD cells. It lowers the full-observation reference from
-$0.573$ to $0.518$, but the granularity sweep shows that this drop is
-specific to coarse zoning: for $K\ge16$, the matched empirical reference
-returns to about $0.55$--$0.58$. The stable result concerns detector
-recovery: across every tested $K$, the fitted AUC remains at chance
-($0.476$--$0.513$, with bootstrap intervals crossing $0.50$), even where
-the full-observation chain weakly separates rush from off-peak routes.
-
-The feature-augmented row needs separate handling. Its matched
-\code{features=real} AUC of $0.530$ exceeds the empirical reference
-($0.518$), indicating a fit problem, not a better detector.
-The diagnostic is consistent with that reading: the rush-chain loss is
-$1397$ under \code{features=real}, compared with $4.058$ under
-\code{features=none}, and the per-row Pearson is lower with features
-($+0.077$ vs.\ $+0.104$ on \texttt{[all branching]} states). The static
-road attributes also add parameters while the Xuancheng proxy is sparse,
-non-stationary and only indirectly related to route guidance. The
-multistart check in \cref{sec:phase5-multistart} resolves the anomaly:
-once the high-loss basin is avoided, \code{features=real} returns to
-chance-level AUC and does not improve the real-world recovery.
-
-\subsubsection{Stronger-proxy stress test: Labour Day versus normal days}
-\label{sec:phase5-labour}
-
-The rush-vs-off-peak proxy may simply be too weak. To test whether the
-detector works when the real-world behavioural contrast is stronger, the
-same pipeline was run on a holiday split suggested by the dataset audit:
-Labour Day period trips (Apr~28--30) against the same normal midweek pool
-(Apr~11--14 and Apr~17--21). A broader holiday pool that also included
-Tomb-Sweeping Apr~5 was first tested but gave empirical AUCs near chance
-at every OD granularity, consistent with pooling low-demand and
-high-demand holiday regimes that partially cancel. Labour-only is the
-more informative stress test.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{fig09_phase5_proxy_sweeps.png}
+\caption{Tier~3 OD-matched proxy sweeps. \textbf{(a)} In the
+rush-vs-off-peak proxy, the empirical reference returns above chance for
+$K\ge16$, but the fitted detector stays near chance. \textbf{(b)} Labour
+Day creates the clearer empirical contrast at $K=64$, yet the fitted
+detector remains weak and the validation-selected multistart result drops
+to $0.502$. Error bars are bootstrap $95\%$ confidence intervals for the
+shown AUCs.}
+\label{fig:phase5-sweeps}
+\end{figure}
 
 This addresses the concern that the real-world tier is negative only
-because rush-vs-off-peak is too weak. Labour Day produces a clearer
+because rush-vs-off-peak is too weak. \Cref{tab:phase5-labour} and
+\cref{fig:phase5-sweeps} show that Labour Day produces a clearer
 route-choice contrast: the unmatched empirical reference is $0.616$, and
 after fine OD matching at $K=64$ it remains above chance at $0.567$ (CI
 $[0.521, 0.610]$). The fitted chain, however, reaches only
@@ -299,9 +300,13 @@ measurable within-OD $1$-step contrast, the current partial-observation
 parametric recovery does not recover it robustly.
 
 A final check asks whether this real-data signal is hidden in route memory
-instead of first-order turning probabilities. A fitting-free empirical
-$2$-step backoff diagnostic was run on the same Labour $K=64$ split,
-using the interpolation-backoff family that produced the Tier~2 SUMO lift.
+instead of first-order turning probabilities. This is intentionally the
+same fitting-free empirical $2$-step backoff diagnostic used in Tier~2:
+it does not fit a new inverse-MC model, but it tests whether the mechanism
+that helped SUMO -- next-edge choice depending on both the current and
+previous edge -- is also visible in the real proxy. The diagnostic was run
+on the same Labour $K=64$ split, using the interpolation-backoff family
+that produced the Tier~2 SUMO lift.
 
 The result is negative. The $1$-step empirical reference remains $0.567$
 (CI $[0.521,0.610]$), while every non-zero $2$-step interpolation weight
@@ -325,8 +330,8 @@ The fitted $1$-step
 inverse-MC detector still stays at chance after OD control and after
 multistart validation selection. This points to partial-observation
 identifiability under a noisy proxy: only $433$ of $1{,}733$ states anchor
-the stationary ratios, while most branching transitions are inferred
-through a parametric softmax fitted to non-stationary time windows.
+the observed count ratios, while most branching transitions must be
+inferred through a parametric softmax from sparse observations.
 
 The feature and route-memory audits narrow the failure mode. Static road
 features do not help because they increase the fitted parameterisation in
@@ -335,7 +340,8 @@ high-loss basin unless multistart is used; the validation-selected
 feature fit returns to chance. A fitting-free $2$-step empirical backoff
 on the Labour-Day split also fails to improve the full-observation
 reference. The remaining explanation combines sparse observation, proxy
-noise, OD/time heterogeneity and stationary-chain projection.
+noise, OD/time heterogeneity and limited partial-observation
+identifiability.
 
 \subsubsection{Multistart on \code{features=real}: the ceiling violation is
 an optimiser artefact}\label{sec:phase5-multistart}
@@ -368,9 +374,9 @@ at chance regardless of which basin each restart lands in. The optimiser
 instability is real and severe; escaping it still does not recover a
 usable behavioural proxy signal.
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.74\textwidth]{figures/fig07_phase5_multistart.png}
+\includegraphics[width=\linewidth]{figures/fig07_phase5_multistart.png}
 \caption{Xuancheng OD-matched \code{features=real} multistart
 ($K=5$). \textbf{(a)} The rush-chain training loss collapses from the
 zero-init baseline ($1{,}397$) to the validation-selected restart
@@ -411,7 +417,7 @@ real-world validation of this framework needs: \emph{ground-truth
 sat-navigation adoption labels}, even partial, on the underlying trip
 records. Such labels would remove the proxy-label ambiguity and allow the
 controlled-comparison machinery of Tier~2 to be repeated on real trips,
-while OD balance, stationarity, data quality and adoption heterogeneity
-would still need to be audited. Without those labels, the fitted $1$-step
+while OD balance, data quality and adoption heterogeneity would still need
+to be audited. Without those labels, the fitted $1$-step
 detector cannot separate genuine within-OD routing differences from chance
 robustly on these behavioural proxies.

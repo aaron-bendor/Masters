@@ -32,6 +32,19 @@ externally influenced trajectories so that a later analyst can pass a
 cleaned, intrinsic-behaviour dataset to downstream route-choice,
 demand-estimation or policy-appraisal tasks.
 
+There is also an industry motivation for making this distinction at the
+trajectory level. Insurers, fleet operators and transport analytics
+providers increasingly need to understand whether an observed driving
+event reflects a driver's own route choice or the influence of an external
+routing system. In the near term, that could support cleaner risk and
+exposure analysis for usage-based insurance or commercial fleet audits:
+for example, separating a driver who repeatedly chooses a high-risk route
+from a driver who was diverted there by live guidance. Longer term, the
+same distinction becomes part of a broader question in driving analytics:
+when a journey, near miss or disruption is shaped by AI-mediated
+navigation, the evidence should not be interpreted as if it came only from
+human preference.
+
 \subsection{Related work and novelty}
 \label{sec:inverse-mc}\label{sec:route-softmax}\label{sec:partial-route-prior}\label{sec:rerouting-prior}
 
@@ -142,13 +155,18 @@ observed station-count ratios through the model stationary distribution
 $\pi(\theta)$, $L_h$ matches observed hitting rates $g_{ij}$ through the
 model hitting rates $H_{ij}(\theta)$, $\gamma$ controls the
 count-versus-hitting-rate balance, and $\lambda$ is ridge
-regularisation.
+regularisation, meaning an $L_2$ penalty that discourages very large
+parameter values and stabilises the under-constrained fit.
 
 The full-network SUMO and Xuancheng fits use the $f$-only setting
-($\gamma=1$), because empirical $\gobs$ is sparse and floor-dominated at
-city scale: most observed station pairs are almost never connected in the
-sample, so many hitting-rate estimates collapse to the same small floor
-value (\cref{sec:phase4-fg-infeasible}). All parametric fits use L-BFGS-B
+($\gamma=1$). Here ``$f$-only'' means fitting only to observed station
+counts, while ``$f+g$'' means also fitting the between-station hitting
+rates. The latter is not used in the full-network detector because
+empirical $\gobs$ is sparse and floor-dominated at city scale: by
+``floor-dominated'' I mean that most observed station pairs are almost
+never connected in the sample, so many hitting-rate estimates collapse to
+the same small minimum value (\cref{sec:phase4-fg-infeasible}). All
+parametric fits use L-BFGS-B
 (\cref{app:lbfgs-primer}), because the objective is smooth, analytic
 gradients are available, and the parameter dimension is large enough that
 a limited-memory quasi-Newton method is a practical compromise between
@@ -198,12 +216,11 @@ stationary chain. This is an approximation for the four-hour SUMO rush
 window and for the Xuancheng time-of-day splits: their observed counts
 are time-integrals of changing demand, congestion, queue spillback and
 route composition, not draws from a single invariant distribution.
-Keeping this stationary surrogate is deliberate. It keeps the filter
-simple to implement, identifiable from sparse station counts and directly
-comparable to Morimura et al.; a fully time-dependent route-choice model
-would add assumptions that the available data cannot reliably support and
-risk overcomplicating the detector. The fitted chain should therefore be
-read as the best stationary, softmax-parametric projection of a
+I still use the stationary surrogate because it is identifiable from
+sparse station counts and directly comparable to Morimura et al.; a fully
+time-dependent route-choice model would add assumptions that the available
+data cannot reliably support. The fitted chain should therefore be read
+as the best stationary, softmax-parametric projection of a
 non-stationary window under the Morimura log-ratio loss, not as literal
 behavioural ground truth. Third, the softmax form restricts recoverable
 behaviour to the chosen feature and parameter family. The empirical

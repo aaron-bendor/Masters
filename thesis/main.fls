@@ -2,7 +2,7 @@ PWD /Users/aaronbendor/DESENG/Masters/thesis
 INPUT /usr/local/texlive/2026/texmf.cnf
 INPUT /usr/local/texlive/2026/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/aaronbendor/DESENG/Masters/thesis/main.tex
+INPUT main.tex
 OUTPUT main.log
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/base/article.cls
@@ -425,11 +425,16 @@ INPUT ./sections/02_introduction.tex
 INPUT ./sections/02_introduction.tex
 INPUT sections/02_introduction.tex
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbx12.tfm
+INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmr10.tfm
 INPUT ./sections/05_phase1_synthetic.tex
 INPUT ./sections/05_phase1_synthetic.tex
 INPUT ./sections/05_phase1_synthetic.tex
 INPUT ./sections/05_phase1_synthetic.tex
 INPUT sections/05_phase1_synthetic.tex
+INPUT ./figures/fig01_phase1_rmae.png
+INPUT ./figures/fig01_phase1_rmae.png
+INPUT ./figures/fig01_phase1_rmae.png
+INPUT ./figures/fig01_phase1_rmae.png
 INPUT ./sections/06_phase4_sumo.tex
 INPUT ./sections/06_phase4_sumo.tex
 INPUT ./sections/06_phase4_sumo.tex
@@ -476,6 +481,10 @@ INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
 INPUT ./figures/fig04_phase5_xuancheng.png
+INPUT ./figures/fig09_phase5_proxy_sweeps.png
+INPUT ./figures/fig09_phase5_proxy_sweeps.png
+INPUT ./figures/fig09_phase5_proxy_sweeps.png
+INPUT ./figures/fig09_phase5_proxy_sweeps.png
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmtk10.tfm
 INPUT ./figures/fig07_phase5_multistart.png
 INPUT ./figures/fig07_phase5_multistart.png
@@ -501,7 +510,6 @@ INPUT ./sections/09_reflection.tex
 INPUT ./sections/09_reflection.tex
 INPUT ./sections/09_reflection.tex
 INPUT sections/09_reflection.tex
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/tfm/public/lm/ec-lmbxi10.tfm
 INPUT ./main.bbl
 INPUT ./main.bbl
 INPUT main.bbl
@@ -537,7 +545,6 @@ INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbsy10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx12.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx8.pfb
-INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbxi10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmex10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi10.pfb
 INPUT /usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi12.pfb

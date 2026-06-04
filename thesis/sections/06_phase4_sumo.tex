@@ -26,10 +26,10 @@ input.
 
 A note on terminology used throughout this section. The no-rerouting
 regime is called ``static unguided routing'': SUMO routes those
-vehicles by static shortest-path Dijkstra with no live rerouting. This is
-a controlled proxy for intrinsic route choice, not a behavioural model of
-human preference, and the fitted ``intrinsic'' chain is interpreted
-accordingly. The term ``empirical $1$-step reference'' (rather than an
+vehicles by static shortest-path Dijkstra with no live rerouting.
+Accordingly, ``intrinsic'' means the simulator's static-route baseline
+rather than a full behavioural model of human preference. The term
+``empirical $1$-step reference'' (rather than an
 information-theoretic ceiling) means the AUC obtained from the
 full-observation transition matrix after Laplace smoothing. Here, Laplace
 smoothing means adding a small pseudo-count to each legal transition
@@ -91,23 +91,6 @@ empirical $\fobs$) and complete per-vehicle routes \code{vehroutes.*.xml}
 contrast diagnostic). The inverter sees only $|X_o| = 601$ randomly
 	sampled edges, $25\%$ of the network, consistent with the
 operating point of the Tier~1 reproduction.
-
-A stationarity caveat applies here and carries through to Tier~3. The
-Morimura observation model assumes the counts $\fobs$ are samples of a
-\emph{stationary} distribution and that $\gobs$ are stationary hitting
-rates. SUMO instead produces finite-horizon, dynamic, congestion-affected
-counts over a four-hour rush window. As demand loads, queues form and
-rerouting reacts, the instantaneous occupancy distribution changes; the
-\code{edgedata} totals are therefore time-integrated visit-frequency
-summaries, not exact samples from a single invariant $\pi$. The inverse
-fit is consequently a controlled operational test of a stationary surrogate
-under structural misspecification, not a claim that the fitted chain is
-behavioural ground truth. This is one reason the
-full-observation empirical transition matrix is reported as a finite-data reference
-rather than as a true ceiling, and why the per-row contrast diagnostic
-(\cref{sec:detector}), which compares fitted and empirical \emph{contrasts}
-on the same finite data, is the load-bearing evidence rather than the
-absolute AUC.
 
 \subsection{Results}
 
@@ -245,8 +228,11 @@ mean $\Delta$ & \multicolumn{2}{c}{--} & \multicolumn{2}{c}{$+0.024 \pm 0.026$} 
 Three findings. First, the aggregate detection lift is \emph{not}
 statistically robust: the paired $\AUC_{\mathrm{fit}}$ lift averages
 $+0.024 \pm 0.026$ across the five seeds, positive on four but reversing
-on seed~$101$ (a paired $t$-test gives $t \approx 2.0$, $p \approx 0.11$,
-not significant at $\alpha = 0.05$). The single-seed $+0.032$ headline of
+on seed~$101$. The test is paired because each SUMO seed is evaluated
+twice, once with \code{features=none} and once with \code{features=real},
+so the statistic tests whether the within-seed AUC differences have a
+non-zero mean (paired $t$-test: $t \approx 2.0$, $p \approx 0.11$, not
+significant at $\alpha = 0.05$). The single-seed $+0.032$ headline of
 \cref{sec:phase4-features-result} is therefore a favourable draw, not a
 replicable property of the aggregate AUC.
 
@@ -473,6 +459,14 @@ real-world proxy may still mix human experience with algorithmic guidance.
 
 \subsubsection{The \texorpdfstring{$f+g$}{f+g} extension at scale: a refined diagnosis}
 \label{sec:phase4-fg-infeasible}
+
+Morimura et al.'s estimator can use two kinds of sparse evidence. The
+$f$ term says how much traffic is seen at each observed station; the $g$
+term says how often a trajectory starting at one observed station later
+reaches another. Intuitively, $f+g$ should be stronger than $f$ alone
+because it adds coarse path-connectivity information, not just station
+busyness. The practical question is whether those extra hitting-rate
+measurements are dense and cheap enough to help at city scale.
 
 The optional $f+g$ loss was audited because the initial SUMO-scale run at
 $|X_o|=601$ did not terminate after $9.5$ hours, but the diagnosis is more

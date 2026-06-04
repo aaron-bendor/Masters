@@ -1,11 +1,11 @@
 \section{Tier 1: Validating the inverse-MC estimator inside the filter}
 \label{sec:phase1-synthetic}
 
-This tier is a code and mathematics gate, not yet a sat-navigation
-detection experiment. It asks one narrower question: if the true Markov
-chain is known synthetically and only a subset of its states is observed,
-does this implementation recover the stationary distribution at the
-unobserved states about as well as Morimura et al.'s published method?
+Before testing sat-navigation detection, I first used Tier~1 as an
+implementation check. The question is deliberately narrow: if the true
+Markov chain is known synthetically and only a subset of its states is
+observed, does this implementation recover the stationary distribution at
+the unobserved states about as well as Morimura et al.'s published method?
 
 The reproduction follows Morimura et al.'s synthetic benchmark on a
 random $n=100$ softmax-parametric chain and matches the published
@@ -15,11 +15,23 @@ on unobserved states; lower is better. The only material deviation is the
 $|\Xo|=5$ setting, where the $75/25$ validation split leaves roughly one
 validation state and makes $\lambda$ selection degenerate.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\linewidth]{fig01_phase1_rmae.png}
+\caption{Tier~1 reproduction of Morimura et al.'s synthetic recovery
+benchmark. The vertical axis is RMAE on unobserved states, so lower is
+better. The reproduced proposed-method curve with hitting rates
+(``with $g$'') follows the visually estimated paper curve closely once
+$|\Xo|\ge10$, which is the implementation check needed before using the
+inverse-MC estimator inside the two-regime filter.}
+\label{fig:phase1-rmae}
+\end{figure}
+
 The synthetic reproduction is therefore sufficient as an implementation
 gate for the downstream tiers: it verifies the analytic gradients, the
 partial-observation loss, and the estimator's stationary-distribution
-recovery under the benchmark's own assumptions. It says nothing by itself
-about the non-stationary SUMO and Xuancheng windows studied later. Full
+recovery under the benchmark's own assumptions. It does not by itself
+validate the later SUMO and Xuancheng detection settings. Full
 protocol details, the RMAE table, and the mathematical justification for
 the scale-free prediction convention are given in
 Section~\ref{app:phase1-synthetic-details} in the Appendix.

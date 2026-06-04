@@ -98,7 +98,7 @@ def fig_phase4_t_sweep():
     ax.plot(T, fit, marker='s', color=C_OURS_FG, linestyle='-',
             label=r"fitted detector ($\mathrm{AUC}_\mathrm{fit}$, features=real)",
             linewidth=1.8)
-    ax.fill_between(T, fit, emp, color=C_OURS_FG, alpha=0.10,
+    ax.fill_between(T, fit, emp, color=C_OURS_FG, alpha=0.22,
                     label="gap (recoverable contrast)")
     ax.axhline(0.5, color=C_CHANCE, linestyle=':', linewidth=1, label="chance (0.5)")
     for x, y_emp, y_fit in zip(T, emp, fit):
@@ -358,7 +358,7 @@ def fig_phase4_multistart():
 
     x = np.arange(len(seeds))
     w = 0.38
-    fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.2, 3.8))
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(7.2, 3.8))
 
     # Panel (a): gap-closed -- baseline vs multistart, with good-basin reference
     axA.bar(x - w/2, gap_base, w, color=C_NONE, label="zero-init baseline",
@@ -418,7 +418,7 @@ def fig_phase5_multistart():
     base_loss = 1397.0          # zero-init baseline rush-chain loss
     sel_idx = 3                 # validation-selected restart (loss 9.186)
 
-    fig, (axA, axB) = plt.subplots(1, 2, figsize=(9.2, 3.8))
+    fig, (axA, axB) = plt.subplots(1, 2, figsize=(7.2, 3.8))
 
     # Panel (a): the loss escape -- baseline vs each restart, log scale
     xr = np.arange(len(restart_loss))
@@ -447,8 +447,6 @@ def fig_phase5_multistart():
     xb = np.arange(2)
     axB.axhline(0.518, color=C_CEILING, linestyle="--", linewidth=1.4,
                 label=r"empirical ceiling $0.518$")
-    axB.axhline(0.5, color="black", linestyle=":", linewidth=1.0,
-                label="chance")
     axB.bar(xb, aucs, 0.5, color=bcols, edgecolor="white")
     for xi, av in zip(xb, aucs):
         axB.annotate(f"{av:.3f}", (xi, av), textcoords="offset points",
@@ -504,8 +502,6 @@ def fig_conclusion_synthesis():
     x = np.arange(len(tiers))
     bars = ax.bar(x, vals, 0.58, color=colors, edgecolor="white")
     ax.axhline(0, color="black", linewidth=0.8)
-    ax.axhline(50, color=C_CEILING, linestyle=":", linewidth=1.0)
-    ax.text(2.47, 50, "50%", va="bottom", ha="right", fontsize=8, color=C_CEILING)
     for b, v, txt in zip(bars, vals, annotations):
         ax.annotate(f"{v:.0f}%",
                     (b.get_x() + b.get_width() / 2, v),

@@ -1,45 +1,35 @@
 \section{Project Management and Reflection}\label{sec:reflection}
 
-This section addresses the \emph{Project Management} and \emph{Reflection}
-learning outcomes of the module assessment criteria
-\cite{markscheme}.
-
 \subsection{Project structure and milestone management}
 \label{sec:reflect-pm}
 
 The project was scoped at the outset as a three-tier validation
 pipeline (synthetic, simulated, real-world) extending a single source
-paper \cite{morimura2013}. This top-down decomposition served well as a
-stable organising structure: each tier had clear inputs, outputs, and
-acceptance criteria, and the natural sequencing (upstream
-validation locks before downstream tiers depend on it) gave a clean
-de-risking order.
+paper \cite{morimura2013}. This decomposition gave the work a useful
+order: first verify the estimator on the paper's own benchmark, then test
+the full detector in labelled simulation, then stress-test the same
+pipeline on real data where the labels are only proxies.
 
-Internal milestone management was driven by a running
-\code{research\_logbook.md} file with twenty experimental-cycle entries
-spanning the full project. Each entry documents one cycle: hypothesis,
-setup, result, interpretation, and next action. Two practices that worked
-particularly well:
+Milestone management was driven by a continuously updated
+\code{research\_logbook.md}. After each experimental cycle I recorded the
+hypothesis, setup, result, interpretation, and next action. The logbook
+became especially useful when results changed direction: it made it clear
+which claims were still supported by evidence and which were only working
+assumptions from an earlier stage.
+
+Two practices worked well:
 \begin{itemize}
-\item \textbf{The auto-memory file as an \emph{epistemic} index.}
-A separate file (\code{MEMORY.md} with links to per-finding markdown
-records) was used for ``things I now believe and the evidence for them''
-as opposed to ``things I did and when''. Concretely, the file
-records statements such as ``empirical $g$ on SUMO is sparse to the
-point of being uninformative for the optimiser'' with a pointer to the
-specific experimental entry that established it. This separation made it possible to
-quickly distinguish ``a working assumption that was right when I made
-it but might now be stale'' from ``a finding I have evidence for''.
-\item \textbf{Audit-before-extend.} A guiding rule, learned from an
-early retraction of a headline number, was to audit
-the upstream implementation before extending it. Two specific audits
-saved time: (i) the gradient finite-difference check at $\sim 10^{-9}$
-relative error confirmed the analytic gradient derivation before any
-sweep was run on features, avoiding the trap of attributing fit
-behaviour to a buggy derivative; (ii) the contrast-correlation
-diagnostic established that AUC alone is an unreliable signal of
-chain quality, which materially altered how the Tier~2 result was
-framed.
+\item \textbf{Audit-before-extend.} An early retraction of a headline
+number made it clear that every extension needed an upstream audit first.
+The gradient finite-difference check at $\sim 10^{-9}$ relative error
+confirmed the analytic gradient derivation before the feature sweep, and
+the contrast-correlation diagnostic showed that AUC alone was not enough
+to claim chain recovery.
+\item \textbf{Keeping decisions traceable.} Linking each reported number
+back to a script, seed, log entry and interpretation note made the late
+rewrite possible. It was particularly important for the $f+g$ diagnosis,
+the SUMO multistart check and the Labour-Day stress test, all of which
+changed how the results should be framed.
 \end{itemize}
 
 Two practices that did not work as well are worth recording explicitly:
@@ -65,19 +55,15 @@ not an ad-hoc discussion item.
 \end{itemize}
 
 
-By the assessment criteria of \cite{markscheme}, the strengths I would
-foreground are: contextual investigation (a critical engagement with
-three real-world AVI datasets, only one of which is actually usable
-for per-trajectory work, and an explicit positioning against the
-source paper and rerouting-detection prior art); validation
-(three independent validation tiers, each with its own stated assumptions
-and a quantified ceiling); and reflection (this section, and the
-reframed $f+g$ infeasibility claim, plus the basin-selection
-question chased to resolution on both tiers via multistart rather than
-left as a hand-wave). The weaknesses are: the single day-pool on Tier~3
-(no multi-pool replication, in contrast to the five-seed Tier-2
-confirmation), and that the headline detection-AUC lift from features
-proved seed-dependent rather than robust once the sweep was run.
+Looking back, the strongest parts of the project are the staged
+validation structure and the willingness to keep negative results in the
+main argument. The work did not stop at reproducing the source paper: it
+tested the estimator inside a detector, separated labelled simulation from
+proxy-labelled real data, and used diagnostics to avoid over-reading a
+single AUC. The main weaknesses are also clear. Tier~3 uses one real
+city/month pool rather than multiple independent real-world replications,
+and the feature result that first looked like a detection improvement
+became seed-dependent once the full SUMO sweep was run.
 
 \subsection{Personal skill development}
 \label{sec:reflect-skills}

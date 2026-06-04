@@ -28,7 +28,9 @@ $\omega^{\mathrm{loc}} \in \mathbb{R}^E$ & Per-edge local weights of $\pT$, with
 $\omega^{\mathrm{glo}_1} \in \mathbb{R}^{d_T}$ & Shared weights on destination features $\phi_T$ (paper Eq.~17). \\
 $\omega^{\mathrm{glo}_2} \in \mathbb{R}^{d_\psi}$ & Shared weights on edge features $\psi$ (paper Eq.~17). \\
 $\theta$ & Full parameter vector $[\nu;\omega^{\mathrm{loc}};\omega^{\mathrm{glo}_1};\omega^{\mathrm{glo}_2}] \in \mathbb{R}^{d}$, $d = n + E + d_T + d_\psi$. \\
-$\lambda$ & Tikhonov regularisation strength on $\|\theta\|^2$. \\
+$\lambda$ & Ridge/Tikhonov regularisation strength: the weight on the
+$L_2$ penalty $\|\theta\|^2$, used to discourage very large fitted
+parameters. \\
 $\gamma \in [0,1]$ & Mixing weight between the stationary-match loss $L_d$ and the hitting-rate loss $L_h$. \\
 $\Lam(\tau)$ & Log-likelihood-ratio score of a test trajectory $\tau$ under two fitted chains (\cref{sec:methodology}). \\
 $\AUC$ & Area under the ROC curve of the LR score against labelled regime test trajectories. \\

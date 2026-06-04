@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  4 JUN 2026 02:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.22)  4 JUN 2026 13:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1097,158 +1097,141 @@ nc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/l
 m/lm-mathex.enc}] (./sections/02_introduction.tex [6] [7]
 [8]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 232.
-) (./sections/05_phase1_synthetic.tex [9]) (./sections/06_phase4_sumo.tex
-[10]
+put line 249.
+ [9]) (./sections/05_phase1_synthetic.tex
+<figures/fig01_phase1_rmae.png, id=429, 426.393pt x 267.399pt>
+File: figures/fig01_phase1_rmae.png Graphic file (type png)
+<use figures/fig01_phase1_rmae.png>
+Package pdftex.def Info: figures/fig01_phase1_rmae.png  used on input line 20.
+(pdftex.def)             Requested size: 407.66833pt x 255.66376pt.
+ [10])
+(./sections/06_phase4_sumo.tex [11 <./figures/fig01_phase1_rmae.png>]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 6
 0.
- (/usr/local/texlive/2026/texmf-dist/tex/latex/lm/ts1lmr.fd
+
+(/usr/local/texlive/2026/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [11{/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
-<figures/fig03_phase4_features_lift.png, id=455, 455.301pt x 252.945pt>
+) [12{/usr/local/texlive/2026/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
+<figures/fig03_phase4_features_lift.png, id=461, 455.301pt x 252.945pt>
 File: figures/fig03_phase4_features_lift.png Graphic file (type png)
 <use figures/fig03_phase4_features_lift.png>
 Package pdftex.def Info: figures/fig03_phase4_features_lift.png  used on input 
-line 130.
+line 113.
 (pdftex.def)             Requested size: 430.31812pt x 239.07288pt.
- [12 <./figures/fig03_phase4_features_lift.png>]
-<figures/fig05_phase4_multiseed.png, id=472, 657.657pt x 272.6988pt>
+ [13 <./figures/fig03_phase4_features_lift.png>]
+<figures/fig05_phase4_multiseed.png, id=478, 657.657pt x 272.6988pt>
 File: figures/fig05_phase4_multiseed.png Graphic file (type png)
 <use figures/fig05_phase4_multiseed.png>
 Package pdftex.def Info: figures/fig05_phase4_multiseed.png  used on input line
- 207.
+ 190.
 (pdftex.def)             Requested size: 443.9066pt x 184.07205pt.
- [13] [14 <./figures/fig05_phase4_multiseed.png>]
+ [14] [15 <./figures/fig05_phase4_multiseed.png>] [16]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 340.
+(Font)              <5> on input line 326.
 
-[15] [16]
-<figures/fig02_phase4_tsweep.png, id=513, 390.258pt x 252.4632pt>
+[17]
+<figures/fig02_phase4_tsweep.png, id=518, 390.258pt x 252.4632pt>
 File: figures/fig02_phase4_tsweep.png Graphic file (type png)
 <use figures/fig02_phase4_tsweep.png>
-Package pdftex.def Info: figures/fig02_phase4_tsweep.png  used on input line 41
-8.
+Package pdftex.def Info: figures/fig02_phase4_tsweep.png  used on input line 40
+4.
 (pdftex.def)             Requested size: 353.31439pt x 228.56691pt.
- [17 <./figures/fig02_phase4_tsweep.png>])
-(./sections/07_phase5_xuancheng.tex [18] [19] [20]
-<figures/fig04_phase5_xuancheng.png, id=555, 460.119pt x 274.626pt>
+ [18 <./figures/fig02_phase4_tsweep.png>]) [19]
+(./sections/07_phase5_xuancheng.tex [20] [21]
+<figures/fig04_phase5_xuancheng.png, id=560, 460.119pt x 274.626pt>
 File: figures/fig04_phase5_xuancheng.png Graphic file (type png)
 <use figures/fig04_phase5_xuancheng.png>
 Package pdftex.def Info: figures/fig04_phase5_xuancheng.png  used on input line
- 157.
+ 158.
 (pdftex.def)             Requested size: 353.31439pt x 210.88857pt.
-<figures/fig09_phase5_proxy_sweeps.png, id=562, 661.9932pt x 272.6988pt>
+ [22] [23 <./figures/fig04_phase5_xuancheng.png>]
+<figures/fig09_phase5_proxy_sweeps.png, id=578, 661.9932pt x 272.6988pt>
 File: figures/fig09_phase5_proxy_sweeps.png Graphic file (type png)
 <use figures/fig09_phase5_proxy_sweeps.png>
 Package pdftex.def Info: figures/fig09_phase5_proxy_sweeps.png  used on input l
-ine 222.
+ine 279.
 (pdftex.def)             Requested size: 430.31812pt x 177.26875pt.
- [21 <./figures/fig04_phase5_xuancheng.png>] [22 <./figures/fig09_phase5_proxy_
-sweeps.png>] [23]
+ [24] [25 <./figures/fig09_phase5_proxy_sweeps.png>]
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 341.
-<figures/fig07_phase5_multistart.png, id=585, 657.657pt x 272.6988pt>
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 347.
+<figures/fig07_phase5_multistart.png, id=595, 563.706pt x 272.6988pt>
 File: figures/fig07_phase5_multistart.png Graphic file (type png)
 <use figures/fig07_phase5_multistart.png>
 Package pdftex.def Info: figures/fig07_phase5_multistart.png  used on input lin
-e 373.
-(pdftex.def)             Requested size: 335.19873pt x 138.99548pt.
- [24])
-(./sections/08_discussion.tex [25 <./figures/fig07_phase5_multistart.png>]
-[26] [27]) (./sections/10_conclusion.tex [28]
-<figures/fig08_conclusion_synthesis.png, id=629, 470.2368pt x 260.172pt>
+e 379.
+(pdftex.def)             Requested size: 452.9679pt x 219.13301pt.
+ [26])
+(./sections/08_discussion.tex [27 <./figures/fig07_phase5_multistart.png>]
+[28] [29]) (./sections/10_conclusion.tex [30] [31]
+<figures/fig08_conclusion_synthesis.png, id=646, 469.755pt x 260.172pt>
 File: figures/fig08_conclusion_synthesis.png Graphic file (type png)
 <use figures/fig08_conclusion_synthesis.png>
 Package pdftex.def Info: figures/fig08_conclusion_synthesis.png  used on input 
 line 64.
-(pdftex.def)             Requested size: 416.72963pt x 230.57573pt.
- [29])
-(./sections/09_reflection.tex [30 <./figures/fig08_conclusion_synthesis.png>]
-[31]) [32] (./main.bbl [33] [34]
-Underfull \hbox (badness 3199) in paragraph at lines 93--94
-[]\T1/lmr/m/n/12 (+20) Imperial Col-lege Lon-don, Dyson School of De-sign En-gi
--neer-ing, ``Design-
- []
-
-
-Underfull \hbox (badness 2753) in paragraph at lines 93--94
-\T1/lmr/m/n/12 (+20) Engineering Mas-ter's Project: Mod-ule De-scrip-tor and As
--sess-ment Brief,''
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 93--94
-[][]$\T1/lmr/m/n/12 (+20) https : / / imperialcollegelondon . github . io / Des
-ign-[]Engineering-[]Masters-[]Project /
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 93--94
-\T1/lmr/m/n/12 (+20) Module _ and _ assessment/$[][], 2025, [][]$https : / / im
-perialcollegelondon . github . io /
- []
-
-) (./sections/A_appendix.tex [35]
+(pdftex.def)             Requested size: 416.72963pt x 230.80202pt.
+)
+(./sections/09_reflection.tex [32 <./figures/fig08_conclusion_synthesis.png>]
+[33]) [34] (./main.bbl [35] [36]) [37] (./sections/A_appendix.tex
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <17.28> on input line 44.
- [36] [37] [38]
-<figures/fig06_phase4_multistart.png, id=739, 657.657pt x 272.6988pt>
+(Font)              <17.28> on input line 31.
+ [38] [39]
+[40]
+<figures/fig06_phase4_multistart.png, id=740, 513.117pt x 272.6988pt>
 File: figures/fig06_phase4_multistart.png Graphic file (type png)
 <use figures/fig06_phase4_multistart.png>
 Package pdftex.def Info: figures/fig06_phase4_multistart.png  used on input lin
-e 258.
-(pdftex.def)             Requested size: 443.9066pt x 184.07205pt.
- [39 <./figures/fig06_phase4_multistart.png>]
+e 245.
+(pdftex.def)             Requested size: 443.9066pt x 235.92282pt.
+ [41] [42 <./figures/fig06_phase4_multistart.png>]
 (/usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 )
 (/usr/local/texlive/2026/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
-) [40]
-[41] [42] [43] [44]) [45] (./main.aux)
+) [43]
+[44] [45] [46]) [47] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: BD6DF1572227CA6AE739A56260F29454;13727.
+(rerunfilecheck)             Checksum: 78543C9FC74B9B7B3894A30F25C29A16;13662.
  ) 
 Here is how much of TeX's memory you used:
- 32498 strings out of 467525
- 596450 string characters out of 5418982
- 1373794 words of memory out of 5000000
- 60217 multiletter control sequences out of 15000+600000
- 774150 words of font info for 352 fonts, out of 8000000 for 9000
+ 32505 strings out of 467525
+ 596700 string characters out of 5418982
+ 1330293 words of memory out of 5000000
+ 60220 multiletter control sequences out of 15000+600000
+ 769936 words of font info for 353 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 102i,13n,107p,1752b,1336s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 102i,13n,107p,1752b,2178s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbsy10.pfb></usr/l
 ocal/texlive/2026/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/local/texli
 ve/2026/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/2026/te
 xmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/local/texlive/2026/texmf-dist/fo
-nts/type1/public/lm/lmbxi10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1
-/public/lm/lmex10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm
-/lmmi10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi12.pf
-b></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi6.pfb></usr/loc
-al/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr/local/texlive/
-2026/texmf-dist/fonts/type1/public/lm/lmmib10.pfb></usr/local/texlive/2026/texm
-f-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2026/texmf-dist/font
-s/type1/public/lm/lmr12.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/pub
-lic/lm/lmr17.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr6
-.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/l
-ocal/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texli
-ve/2026/texmf-dist/fonts/type1/public/lm/lmri12.pfb></usr/local/texlive/2026/te
-xmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive/2026/texmf-dist/f
-onts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/
-public/lm/lmsy8.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/l
-mtk10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-</usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt12.pfb></usr/loca
-l/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/texlive/2
-026/texmf-dist/fonts/type1/public/lm/lmtti10.pfb></usr/local/texlive/2026/texmf
--dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (45 pages, 1130335 bytes).
+nts/type1/public/lm/lmex10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/
+public/lm/lmmi10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/
+lmmi12.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi6.pfb>
+</usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr/local
+/texlive/2026/texmf-dist/fonts/type1/public/lm/lmmib10.pfb></usr/local/texlive/
+2026/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2026/texmf-
+dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2026/texmf-dist/fonts/
+type1/public/lm/lmr17.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/publi
+c/lm/lmr6.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmr8.pf
+b></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/lo
+cal/texlive/2026/texmf-dist/fonts/type1/public/lm/lmri12.pfb></usr/local/texliv
+e/2026/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive/2026/tex
+mf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2026/texmf-dist/fon
+ts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/pu
+blic/lm/lmtk10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lm
+tt10.pfb></usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt12.pfb><
+/usr/local/texlive/2026/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local/
+texlive/2026/texmf-dist/fonts/type1/public/lm/lmtti10.pfb></usr/local/texlive/2
+026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on main.pdf (47 pages, 1163173 bytes).
 PDF statistics:
- 992 PDF objects out of 1000 (max. 8388607)
- 852 compressed objects within 9 object streams
- 218 named destinations out of 1000 (max. 500000)
- 78365 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 989 PDF objects out of 1000 (max. 8388607)
+ 847 compressed objects within 9 object streams
+ 219 named destinations out of 1000 (max. 500000)
+ 76322 words of extra memory for PDF output out of 89155 (max. 10000000)
 
